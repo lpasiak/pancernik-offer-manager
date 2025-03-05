@@ -7,7 +7,6 @@ class EasyStorageData:
         self.data = pd.read_excel(file_path)
 
         print("Easystorage Data downloaded.")
-        print("-----------------------------------")
     
     @property
     def outlet_products(self):

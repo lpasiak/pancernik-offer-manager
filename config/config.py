@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Shoper SITE - can be either TEST (development) or MAIN (deployment)
 SITE = 'MAIN'
@@ -27,8 +28,12 @@ CLEANUP_SHEET_DIMENSIONS_IGNORE_NAME = 'Bez wymiarów'
 # Root directory
 ROOT_DIR = Path(__file__).parent.parent
 
-# GSheets credentials file
-CREDENTIALS_FILE = ROOT_DIR / 'credentials' / 'gsheets_credentials.json'
+# Credentials files
+GOOGLE_CREDENTIALS_FILE = ROOT_DIR / 'credentials' / 'gsheets_credentials.json'
+ENV_FILE = ROOT_DIR / 'credentials' / 'env'
 
 # Directory for .xlsx, .csv, .json files
 SHEETS_DIR = ROOT_DIR / 'sheets'
+
+# Load environment variables from .env file
+load_dotenv(ENV_FILE)

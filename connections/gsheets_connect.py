@@ -33,4 +33,3 @@ class GSheetsClient:
         self.sheet = self.gc.open_by_key(self.sheet_id)
 
         print(f"Google Authentication {config.SHEET} | {self.sheet_name} successful.")
-        print("-----------------------------------")
