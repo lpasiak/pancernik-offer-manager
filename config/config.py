@@ -2,8 +2,24 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
+# Root directory
+ROOT_DIR = Path(__file__).parent.parent
+
+# Credentials files
+GOOGLE_CREDENTIALS_FILE = ROOT_DIR / 'credentials' / 'gsheets_credentials.json'
+ENV_FILE = ROOT_DIR / 'credentials' / 'env'
+
+# Directory for .xlsx, .csv, .json files
+SHEETS_DIR = ROOT_DIR / 'sheets'
+
+# Load environment variables from .env file
+load_dotenv(ENV_FILE)
+
 # Shoper SITE - can be either TEST (development) or MAIN (deployment)
-SITE = 'MAIN'
+SITE = 'TEST'
+SHOPER_SITE_URL = os.getenv(f'SHOPER_SITE_URL_{SITE}')
+SHOPER_LOGIN = os.getenv(f'SHOPER_LOGIN_{SITE}')
+SHOPER_PASSWORD = os.getenv(f'SHOPER_PASSWORD_{SITE}')
 
 # Shoper SITE LIMIT for API requests (50 is max)
 SHOPER_LIMIT = 50
@@ -24,16 +40,3 @@ OUTLET_SHEET_ARCHIVED_NAME = 'Archiwum'
 CLEANUP_SHEET_ID = os.getenv('CLEANUP_SHEET_ID')
 CLEANUP_SHEET_DIMENSIONS_NAME = 'Wymiary'
 CLEANUP_SHEET_DIMENSIONS_IGNORE_NAME = 'Bez wymiarów'
-
-# Root directory
-ROOT_DIR = Path(__file__).parent.parent
-
-# Credentials files
-GOOGLE_CREDENTIALS_FILE = ROOT_DIR / 'credentials' / 'gsheets_credentials.json'
-ENV_FILE = ROOT_DIR / 'credentials' / 'env'
-
-# Directory for .xlsx, .csv, .json files
-SHEETS_DIR = ROOT_DIR / 'sheets'
-
-# Load environment variables from .env file
-load_dotenv(ENV_FILE)
