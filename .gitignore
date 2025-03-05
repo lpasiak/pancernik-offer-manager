@@ -20,6 +20,8 @@ __pycache__
 *.env.*.*
 *.env.*.*.*
 *.env.*.*.*.*
+env
+venv
 
 *.xlsx
 *.xls
