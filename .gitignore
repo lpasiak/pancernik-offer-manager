@@ -22,8 +22,3 @@ __pycache__
 *.env.*.*.*.*
 env
 venv
-
-*.xlsx
-*.xls
-*.csv
-*.json
