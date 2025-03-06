@@ -5,4 +5,3 @@ from .gsheets_connect import GSheetsClient
 from .easystorage_data import EasyStorageData
 
 print('API Connections loaded.')
-print('-----------------------------------')
