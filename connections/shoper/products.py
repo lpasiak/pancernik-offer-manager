@@ -55,8 +55,33 @@ class ShoperProducts:
             print(f'❌ Request failed: {str(e)}')
             return None
         
-    def update_product(self, product_id, **kwargs):
-        pass
+    def update_product(self, product_id, **parameters):
+        """Update a product from Shoper. Returns True if successful, None if failed
+        Args:
+            product_id (int): Product id
+            parameters key=value: Parameters to update
+        Returns:
+            True|None: True if successful, None if failed
+        """
+
+        try:
+            params = {}
+
+            for key, value in parameters.items():
+                if value is not None:
+                    params[key] = value
+            response = self.client._handle_request('PUT', f'{self.client.site_url}/webapi/rest/products/{product_id}', json=params)
+
+            if response.status_code == 200:
+                print(f'✅ Product {product_id} updated successfully')
+                return True  
+                
+            print(f'❌ API Error: {response.status_code}, {response.text}')
+            return None
+        
+        except Exception as e:
+            print(f'❌ Request failed: {str(e)}')
+            return None
 
     def get_a_product_by_code(self, identifier, pictures=False, use_code=False):
         """Get a product from Shoper by either product ID or product code.
