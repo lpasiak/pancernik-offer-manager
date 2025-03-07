@@ -1,8 +1,7 @@
 from ..shoper_connect import ShoperAPIClient
 from .pictures import ShoperPictures
-import config
+import config, json
 import pandas as pd
-import json
 
 class ShoperProducts:
     def __init__(self, client=ShoperAPIClient):
@@ -55,12 +54,14 @@ class ShoperProducts:
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
             return None
+        
+    def update_product(self, product_id, **kwargs):
+        pass
 
-    def get_a_single_product(self, identifier, pictures=False, use_code=False):
+    def get_a_product_by_code(self, identifier, pictures=False, use_code=False):
         """Get a product from Shoper by either product ID or product code.
         Args:
             identifier (int|str): Product ID (int) or product code (str)
-            pictures (bool): If True, return product with images included as 'img' list
             use_code (bool): If True, use product code (SKU) instead of ID
         Returns:
             dict|None: Product data if successful, None if failed
@@ -104,36 +105,36 @@ class ShoperProducts:
             print(f'❌ Error fetching product {identifier}: {str(e)}')
             return None
 
-    def get_all_products(self, **filters):
-        """Get all products from Shoper with flexible filtering.
-        Args:
-            **filters: Arbitrary keyword arguments for filtering
-        Returns:
-            pd.DataFrame|None: DataFrame with products if successful, None if failed
-        """
+    # TO BE REBUILT in the future, so a user will be able to filter products
+    def get_all_products(self):
+        """Get all products from Shoper and return them as df or None and save to Excel."""
         try:
+            print("Downloading all products...")
+
             products = []
             page = 1
-            url = f'{self.client.site_url}/webapi/rest/products'
             
             while True:
                 params = {'limit': config.SHOPER_LIMIT, 'page': page}
-                response = self.client._handle_request('GET', url, params=params)
+                response = self.client._handle_request('GET', f'{self.client.site_url}/webapi/rest/products', params=params)
                 data = response.json()
-                
+                number_of_pages = data['pages']
+
                 if response.status_code != 200:
                     print(f'❌ API Error: {response.status_code}, {response.text}')
                     return None
                     
                 page_data = data.get('list', [])
+                
                 if not page_data:
                     break
                     
+                print(f'Page: {page}/{number_of_pages}')
                 products.extend(page_data)
                 page += 1
                 
             df = pd.DataFrame(products)
-            df.to_excel(config.ROOT_DIR / 'shoper_all_filtered_products.xlsx', index=False)
+            df.to_excel(config.SHEETS_DIR / 'shoper_all_products.xlsx', index=False)
             return df
             
         except Exception as e:

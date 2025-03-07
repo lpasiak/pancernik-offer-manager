@@ -9,7 +9,6 @@ client = ShoperAPIClient(
 )
 client.connect()
 
-products = ShoperProducts(client)
+shoper_products = ShoperProducts(client)
+# shoper_products.get_all_products()
 
-x = products.get_a_single_product(11251, pictures=True)
-print(x)

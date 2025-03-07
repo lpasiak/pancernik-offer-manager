@@ -1,6 +1,5 @@
 from ..shoper_connect import ShoperAPIClient
-import json
-import config
+import config, json
 
 class ShoperPictures:
 
