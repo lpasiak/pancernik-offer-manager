@@ -9,10 +9,10 @@ class ShoperAttributes:
         self.client = client
 
     def get_all_attribute_groups(self):
-        
+        """Get all attribute groups from Shoper. Returns a pandas DataFrame if successful, None if failed"""
         attribute_groups = []
         page = 1
-        url = f'{self.site_url}/webapi/rest/attribute-groups'
+        url = f'{self.client.site_url}/webapi/rest/attribute-groups'
 
         print("Downloading all attribute groups.")
         while True:
@@ -35,13 +35,14 @@ class ShoperAttributes:
             page += 1
 
         df = pd.DataFrame(attribute_groups)
-        df.to_excel(os.path.join(self.sheets_dir, 'shoper_all_attribute_groups.xlsx'), index=False)
-        return attribute_groups
+        df.to_excel(config.SHEETS_DIR / 'shoper_all_attribute_groups.xlsx', index=False)
+        return df
     
     def get_all_attributes(self):
+        """Get all attributes from Shoper. Returns a pandas DataFrame if successful, None if failed"""
         attributes = []
         page = 1
-        url = f'{self.site_url}/webapi/rest/attributes'
+        url = f'{self.client.site_url}/webapi/rest/attributes'
 
         print("Downloading all attributes.")
         while True:
@@ -64,5 +65,5 @@ class ShoperAttributes:
             page += 1
 
         df = pd.DataFrame(attributes)
-        df.to_excel(os.path.join(self.sheets_dir, 'shoper_all_attributes.xlsx'), index=False)
+        df.to_excel(config.SHEETS_DIR / 'shoper_all_attributes.xlsx', index=False)
         return df
