@@ -14,22 +14,28 @@ class ShoperProducts:
         Args:
             product_data (dict): Product data
         Returns:
-            product_id (int)|None: Product id if successful, None if failed
+            int|None: Product ID if successful, None if failed
         """
         try:
             response = self.client._handle_request('POST', f'{self.client.site_url}/webapi/rest/products', json=product_data)
-            response_data = response.json()  # Could raise JSONDecodeError
             
             if response.status_code == 200:
-                print(f'✅ Product {response_data["product_id"]} created successfully')
-                return response_data
+                try:
+                    product_id = response.json()
+                    if isinstance(product_id, int):
+                        print(f'✅ Product {product_id} | {product_data["code"]} created successfully')
+                        return product_id
+                    else:
+                        print(f'❌ Unexpected response format: {product_id}')
+                        return None
+                except ValueError as e:
+                    print(f'❌ Invalid response format: {str(e)}')
+                    return None
                 
-            # Handle "successful" requests that failed for business reasons
             print(f'❌ API Error: {response.status_code}, {response.text}')
             return None
             
         except Exception as e:
-            # Handle network errors, JSON parsing errors, etc.
             print(f'❌ Request failed: {str(e)}')
             return None
 
@@ -73,7 +79,7 @@ class ShoperProducts:
             response = self.client._handle_request('PUT', f'{self.client.site_url}/webapi/rest/products/{product_id}', json=params)
 
             if response.status_code == 200:
-                print(f'✅ Product {product_id} updated successfully')
+                print(f'✅ Product {product_id} updated successfully with {parameters}')
                 return True  
                 
             print(f'❌ API Error: {response.status_code}, {response.text}')

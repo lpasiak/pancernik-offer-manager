@@ -1,4 +1,4 @@
-import os, random
+import random
 import config
 
 class OutletProduct:
@@ -13,19 +13,61 @@ class OutletProduct:
         self._validate_input(product_data, damage_type)
         
         self.source_product = product_data
+        self.source_product_id = self.source_product['product_id']
+        self.barcode = self.source_product['code']
         self.outlet_code = outlet_code
         self.damage_type = damage_type
-        self.description = self._create_description()
+        self.product_description = self._create_description()
         self.product_description_short = config.outlet_info.damage_types_short[self.damage_type]
         self.price = self._set_outlet_price()
         self.product_type = self._set_product_type()
         self.tags = [6] if config.SITE == 'MAIN' else [1]
         self.category_list = self._set_category_list()
         self.main_category_id = self.source_product['category_id']
+        self.related = self.source_product['related']
 
     def transform_to_outlet(self):
-        """Transform the product to an outlet product."""
-        return self
+        """Transform the product to an outlet product and return as a dicitonary."""
+        outlet_product = {
+        'producer_id': self.source_product['producer_id'],
+        'category_id': self.main_category_id,
+        'categories': self.category_list,
+        'code': self.outlet_code,
+        'additional_producer': self.source_product.get('additional_producer', ''),
+        'pkwiu': self.source_product['pkwiu'],
+
+        'translations': {
+            "pl_PL": {
+                'name': f'OUTLET: {self.source_product["translations"]["pl_PL"]["name"]}',
+                'short_description': self.product_description_short,
+                'description': self.product_description,
+                'active': '1',
+                'order': random.randint(1,5)
+            }
+        },
+        'stock': {
+            'price': self.price,
+            'active': 1,
+            'stock': 1,
+            'availability_id': None,
+            'delivery_id': 1,
+            'weight': 0.2,
+            'weight_type': self.source_product.get('weight_type', ''),
+        },
+        'tax_id': self.source_product['tax_id'],
+        'unit_id': self.source_product['unit_id'],
+        'vol_weight': self.source_product['vol_weight'],
+        'currency_id': self.source_product['currency_id'],
+        'gauge_id': self.source_product['gauge_id'],
+        'unit_price_calculation': self.source_product['unit_price_calculation'],
+        'newproduct': False,
+        'related': self.related,
+        'tags': self.tags,
+        'type': self.source_product['type'],
+        'safety_information': self.source_product['safety_information'],
+        'feeds_excludes': self.source_product['feeds_excludes'],
+        }
+        return outlet_product
     
     def _validate_input(self, product_data, damage_type):
         """Validate input parameters.
@@ -129,8 +171,32 @@ class OutletProduct:
         # Default category if no matches found
         return 7525
 
+    def set_outlet_pictures(self, new_product_id):
+        if not self.source_product.get('img'):
+            return []
+        
+        source_images = self.source_product['img']
+        final_images = []
+        site_url = config.SHOPER_SITE_URL
+        
+        for image in source_images:
+            image_id = f"{image['gfx_id']}.{image['extension']}"
+
+            image_item = {
+                'product_id': new_product_id,
+                'url': f"{site_url}/userdata/public/gfx/{image_id}",
+                'main': str(image['main']),
+                'order': image['order'],
+                'name': image['translations']['pl_PL']['name']
+            }
+            final_images.append(image_item)
+
+        final_images.sort(key=lambda x: x['order'])
+
+        return final_images
+
     def product_url(self, product_id):
         """Generate the product URL based on the source product and new outlet product ID."""
         product_url = self.source_product['translations']['pl_PL'].get('seo_url', '')
 
-        return product_url + f'-{product_id}'
+        return f'{product_url}-outlet-{product_id}'
