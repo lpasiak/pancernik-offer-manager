@@ -16,7 +16,7 @@ SHEETS_DIR = ROOT_DIR / 'sheets'
 load_dotenv(ENV_FILE)
 
 # Shoper SITE - can be either TEST (development) or MAIN (deployment)
-SITE = 'TEST'
+SITE = 'MAIN'
 SHOPER_SITE_URL = os.getenv(f'SHOPER_SITE_URL_{SITE}')
 SHOPER_LOGIN = os.getenv(f'SHOPER_LOGIN_{SITE}')
 SHOPER_PASSWORD = os.getenv(f'SHOPER_PASSWORD_{SITE}')

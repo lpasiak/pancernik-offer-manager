@@ -3,7 +3,7 @@ from connections.shoper.products import ShoperProducts
 from connections.shoper.attributes import ShoperAttributes
 from connections.shoper.categories import ShoperCategories
 from connections.gsheets_connect import GSheetsClient
-from outlet_manager.models.product import OutletProduct
+from outlet_manager import outlet_manager
 import config
 import pandas as pd
 
@@ -26,8 +26,4 @@ shoper_categories = ShoperCategories(shoper_client)
 
 # shoper_categories.get_all_categories()
 
-test_product = shoper_products.get_a_product_by_code('10740', pictures=True)
-print(test_product)
-
-new_outlet = OutletProduct(test_product, 'OUT_XD', 'USZ')
-print(new_outlet)
+outlet_manager.display_outlets_to_create()

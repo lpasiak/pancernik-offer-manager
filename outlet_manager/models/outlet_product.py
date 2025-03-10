@@ -21,7 +21,12 @@ class OutletProduct:
         self.product_type = self._set_product_type()
         self.tags = [6] if config.SITE == 'MAIN' else [1]
         self.category_list = self._set_category_list()
+        self.main_category_id = self.source_product['category_id']
 
+    def transform_to_outlet(self):
+        """Transform the product to an outlet product."""
+        return self
+    
     def _validate_input(self, product_data, damage_type):
         """Validate input parameters.
         Args:
@@ -123,3 +128,9 @@ class OutletProduct:
 
         # Default category if no matches found
         return 7525
+
+    def product_url(self, product_id):
+        """Generate the product URL based on the source product and new outlet product ID."""
+        product_url = self.source_product['translations']['pl_PL'].get('seo_url', '')
+
+        return product_url + f'-{product_id}'
