@@ -1,6 +1,7 @@
 from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts
 from connections.shoper.attributes import ShoperAttributes
+from connections.shoper.categories import ShoperCategories
 import config
 import pandas as pd
 
@@ -13,6 +14,7 @@ client.connect()
 
 shoper_products = ShoperProducts(client)
 shoper_attributes = ShoperAttributes(client)
+shoper_categories = ShoperCategories(client)
 
 # shoper_products.get_all_products()
 
