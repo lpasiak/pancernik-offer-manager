@@ -1,4 +1,3 @@
-from connections.gsheets_connect import GSheetsClient
 from outlet_manager.outlet_manager import OutletManager
 
 def main():
