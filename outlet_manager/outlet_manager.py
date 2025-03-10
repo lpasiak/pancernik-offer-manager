@@ -77,14 +77,14 @@ class OutletManager:
 
             try:
                 # Create and update outlet offer
-                self._create_and_update_outlet(new_outlet)
+                self._update_outlet_after_creation(new_outlet)
                 print('-----------------------------------')
                 
             except Exception as e:
                 print(f'❌ Error creating outlet offer for product {product["product_id"]}: {e}')
 
-    def _create_and_update_outlet(self, new_outlet):
-        """Helper method to create and update an outlet offer"""
+    def _update_outlet_after_creation(self, new_outlet):
+        """Helper function to update an outlet offer after it gets created"""
         product_data = new_outlet.transform_to_outlet()
         created_offer_id = self.shoper_products.create_product(product_data)
         
