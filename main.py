@@ -1,12 +1,12 @@
 from connections.gsheets_connect import GSheetsClient
-from outlet_manager import outlet_manager
+from outlet_manager.outlet_manager import OutletManager
 import config
 
-gsheets_client = GSheetsClient(
-    credentials=config.GOOGLE_CREDENTIALS_FILE,
-    sheet_id=config.OUTLET_SHEET_ID
-)
+def main():
+    
+    out_manager = OutletManager()
+    if out_manager.connect():
+        out_manager.get_offers_ready_to_publish()
 
-gsheets_client.connect()
-
-outlet_manager.create_outlet_offers()
+if __name__ == '__main__':
+    main()

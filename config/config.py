@@ -1,5 +1,6 @@
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import datetime
 import os
 
 # Root directory
@@ -11,6 +12,8 @@ ENV_FILE = ROOT_DIR / 'credentials' / 'env'
 
 # Directory for .xlsx, .csv, .json files
 SHEETS_DIR = ROOT_DIR / 'sheets'
+
+TODAY = datetime.today().strftime('%d-%m-%Y')
 
 # Load environment variables from .env file
 load_dotenv(ENV_FILE)
