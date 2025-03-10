@@ -19,18 +19,13 @@ class GSheetsClient:
         self.gc = None
         self.sheet = None
 
-        # We will save downloaded data in Excel in 'sheets' directory.
-        # It needs to be created if it doesn't exist in our local files.
-        self.sheets_dir = Path('sheets')
-        self.sheets_dir.mkdir(exist_ok=True)
-
     def connect(self):
         """Authenticate with Google Sheets."""
 
         self.gc = gspread.service_account(filename=self.credentials_path)
         self.sheet = self.gc.open_by_key(self.sheet_id)
 
-        print(f"Google Authentication {config.SHEET} successful.")
+        print(f"Google Authentication successful.")
 
     def get_data(self, sheet_name, include_row_numbers=False):
         """Get data from a Google Sheets worksheet as a pandas DataFrame.

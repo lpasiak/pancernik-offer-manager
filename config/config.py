@@ -16,7 +16,7 @@ SHEETS_DIR = ROOT_DIR / 'sheets'
 load_dotenv(ENV_FILE)
 
 # Shoper SITE - can be either TEST (development) or MAIN (deployment)
-SITE = 'MAIN'
+SITE = 'TEST'
 SHOPER_SITE_URL = os.getenv(f'SHOPER_SITE_URL_{SITE}')
 SHOPER_LOGIN = os.getenv(f'SHOPER_LOGIN_{SITE}')
 SHOPER_PASSWORD = os.getenv(f'SHOPER_PASSWORD_{SITE}')
@@ -35,6 +35,9 @@ OUTLET_SHEET_ID = os.getenv('OUTLET_SHEET_ID')
 OUTLET_SHEET_NAME = 'Outlety'
 OUTLET_SHEET_LACKING_PRODUCTS_NAME = 'Brak produktów'
 OUTLET_SHEET_ARCHIVED_NAME = 'Archiwum'
+
+OUTLET_VALID_DAMAGE_TYPES = ['USZ', 'ZAR', 'OBA']
+OUTLET_DISCOUNT_PERCENTAGE = 0.8
 
 # CLEANUP MANAGER Google Sheets
 CLEANUP_SHEET_ID = os.getenv('CLEANUP_SHEET_ID')
