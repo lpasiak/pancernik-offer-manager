@@ -4,14 +4,16 @@ from connections.shoper.products import ShoperProducts, ShoperPictures
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 import config
+from typing import Optional
+import pandas as pd
 
 class OutletManager:
     def __init__(self):
-        self.shoper_client = None
-        self.gsheets_client = None
-        self.shoper_products = None
-        self.shoper_pictures = None
-        self.gsheets_worksheets = None
+        self.shoper_client: Optional[ShoperAPIClient] = None
+        self.gsheets_client: Optional[GSheetsClient] = None
+        self.shoper_products: Optional[ShoperProducts] = None
+        self.shoper_pictures: Optional[ShoperPictures] = None
+        self.gsheets_worksheets: Optional[GsheetsWorksheets] = None
         
     def connect(self):
         """Initialize all necessary connections"""
@@ -34,7 +36,6 @@ class OutletManager:
             self.gsheets_client.connect()
             self.gsheets_worksheets = GsheetsWorksheets(self.gsheets_client)
             
-            print("API Connections loaded.")
             return True
             
         except Exception as e:
@@ -43,6 +44,8 @@ class OutletManager:
 
     def get_offers_ready_to_publish(self):
         """Get offers that are ready to be published"""
+        
+        assert self.gsheets_worksheets is not None  # Tell linter this won't be None
         df = self.gsheets_worksheets.get_data(sheet_name='Outlety', include_row_numbers=True)
 
         if df is None:
@@ -65,15 +68,22 @@ class OutletManager:
             return df
         return None
 
-    def create_outlet_offers(self, offers_to_create):
-        """Create outlet offers for the given products"""
-        if not offers_to_create:
+    def create_outlet_offers(self, df_offers_to_be_published):
+        """Create outlet offers for the given products
+        Args:
+            df_offers_to_be_published (df): A pandas DataFrame containing the products to create with ['EAN'] column.
+        """
+        assert self.shoper_products is not None  # Tell linter this won't be None
+        assert self.shoper_pictures is not None  # Tell linter this won't be None
+        assert self.shoper_client is not None  # Tell linter this won't be None
+
+        if df_offers_to_be_published is None or df_offers_to_be_published.empty:
             print("No offers to create")
             return
 
-        for product in offers_to_create:
-            source_product = self.shoper_products.get_a_product_by_code(product['product_id'], pictures=True)
-            new_outlet = OutletProduct(source_product, product['outlet_code'], product['damage_type'])
+        for _, product in df_offers_to_be_published.iterrows():
+            source_product = self.shoper_products.get_a_product_by_code(product['EAN'], pictures=True, use_code=True)
+            new_outlet = OutletProduct(source_product, product['SKU'], product['Uszkodzenie'])
 
             try:
                 # Create and update outlet offer
@@ -85,6 +95,9 @@ class OutletManager:
 
     def _update_outlet_after_creation(self, new_outlet):
         """Helper function to update an outlet offer after it gets created"""
+        assert self.shoper_products is not None  # Tell linter this won't be None
+        assert self.shoper_pictures is not None  # Tell linter this won't be None
+        
         product_data = new_outlet.transform_to_outlet()
         created_offer_id = self.shoper_products.create_product(product_data)
         
@@ -108,5 +121,6 @@ class OutletManager:
 
         # Update stock image
         created_product = self.shoper_products.get_a_product_by_code(created_offer_id)
-        stock_gfx = created_product['main_image']['gfx_id']
-        self.shoper_products.update_product(created_offer_id, stock={'gfx_id': stock_gfx})
+        if created_product and 'main_image' in created_product:
+            stock_gfx = created_product['main_image']['gfx_id']
+            self.shoper_products.update_product(created_offer_id, stock={'gfx_id': stock_gfx})

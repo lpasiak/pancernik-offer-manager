@@ -1,10 +1,9 @@
-from ..gsheets_connect import GSheetsClient
 import pandas as pd
 import config
 
 class GsheetsWorksheets:
 
-    def __init__(self, client=GSheetsClient):
+    def __init__(self, client):
         """Initialize a Shoper Client"""
         self.client = client
 

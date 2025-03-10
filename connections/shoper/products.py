@@ -1,10 +1,9 @@
-from ..shoper_connect import ShoperAPIClient
 from .pictures import ShoperPictures
 import config, json
 import pandas as pd
 
 class ShoperProducts:
-    def __init__(self, client=ShoperAPIClient):
+    def __init__(self, client):
         """Initialize a Shoper Client"""
         self.client = client
         self.pictures = ShoperPictures(client)

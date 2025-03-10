@@ -1,9 +1,8 @@
-from ..shoper_connect import ShoperAPIClient
 import config, json
 
 class ShoperPictures:
 
-    def __init__(self, client=ShoperAPIClient):
+    def __init__(self, client):
         """Initialize a Shoper Client"""
         self.client = client
 
