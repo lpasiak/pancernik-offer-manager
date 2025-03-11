@@ -3,6 +3,7 @@ from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts, ShoperPictures
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
+from datetime import datetime
 import config
 
 class OutletManager:
@@ -40,6 +41,8 @@ class OutletManager:
             print(f"Error initializing connections: {e}")
             return False
 
+    # NEW OUTLET OFFER CREATION
+
     def get_offers_ready_to_publish(self):
         """Get offers that are ready to be published"""
         
@@ -61,58 +64,111 @@ class OutletManager:
         print(f'Selected products ready to publish: {len(df)}')
 
         if len(df) > 0:
-            print(df)
+            print(df[['EAN', 'SKU']])
             return df
         return None
 
-    def create_outlet_offers(self, df_offers_to_be_published):
+    def create_outlet_offers(self, df_offers):
         """Create outlet offers for the given products
         Args:
             df_offers_to_be_published (df): A pandas DataFrame containing the products to create with ['EAN'] column.
         """
 
-        if df_offers_to_be_published is None or df_offers_to_be_published.empty:
+        if df_offers is None or df_offers.empty:
             print("No offers to create")
             return
+        
+        # Product counter and gsheets updates list
+        date_created = datetime.today().strftime('%Y-%m-%d')
+        product_count = len(df_offers)
+        product_counter = 0
+        gsheet_updates = []
+        print(f'Creating {product_count} outlet offers')
 
-        for _, product in df_offers_to_be_published.iterrows():
+        for _, product in df_offers.iterrows():
             source_product = self.shoper_products.get_a_product_by_code(product['EAN'], pictures=True, use_code=True)
             new_outlet = OutletProduct(source_product, product['SKU'], product['Uszkodzenie'])
 
+            # Variables to be used for gsheets updates
+
+            product_code = product['SKU']
+            product_category_id = int(source_product['category_id'])
+
             try:
-                # Create and update outlet offer
-                self._update_outlet_after_creation(new_outlet)
+
+                # Get the row number of the product in the Google Sheets
+                google_sheets_row = df_offers.loc[df_offers['SKU'] == product_code, 'Row Number'].values
+
+                # Create outlet offer
+                product_data = new_outlet.transform_to_outlet()
+                created_offer_id = self.shoper_products.create_product(product_data)
+                
+                # If the product is not created, skip the rest of the current iteration and move to the next product
+                if created_offer_id is None:
+                    print(f"❌ Failed to create outlet offer for product {product['SKU']}")
+                    continue
+                    
+                print(f"✅ Created outlet product with ID: {created_offer_id}")
+                
+                # Update product details
+                self.shoper_products.update_product(created_offer_id, barcode=new_outlet.barcode)
+                self.shoper_products.update_product(created_offer_id, related=new_outlet.related)
+                
+                # Update URL
+                product_url = new_outlet.product_url(created_offer_id)
+                product_url_json = {'pl_PL': {'seo_url': product_url}}
+                product_url_link = f'{config.SHOPER_SITE_URL}/{product_url}'
+                self.shoper_products.update_product(created_offer_id, translations=product_url_json)
+
+                # Update images
+                outlet_pictures = new_outlet.set_outlet_pictures(created_offer_id)
+                for picture in outlet_pictures:
+                    self.shoper_pictures.update_product_image(created_offer_id, picture)
+
+                # Update stock image
+                created_product = self.shoper_products.get_a_product_by_code(created_offer_id)
+                if created_product and 'main_image' in created_product:
+                    stock_gfx = created_product['main_image']['gfx_id']
+                    self.shoper_products.update_product(created_offer_id, stock={'gfx_id': stock_gfx})
+                
+                # Creating a list of updates to be made in gsheets
+                if len(google_sheets_row) > 0:
+                    row_number = google_sheets_row[0]
+                    gsheet_updates.append([
+                        row_number, 
+                        True, 
+                        date_created, 
+                        product_url_link, 
+                        int(created_offer_id), 
+                        product_category_id
+                    ])
+                else:
+                    print(f"Warning: SKU {product_code} not found in Google Sheets!")
+                product_counter += 1
+                print(f'Products created: {product_counter}/{product_count}')
+
                 print('-----------------------------------')
                 
             except Exception as e:
                 print(f'❌ Error creating outlet offer for product {product["product_id"]}: {e}')
 
-    def _update_outlet_after_creation(self, new_outlet):
-        """Helper function to update an outlet offer after it gets created"""
-        
-        product_data = new_outlet.transform_to_outlet()
-        created_offer_id = self.shoper_products.create_product(product_data)
-        
-        if not created_offer_id:
-            raise ValueError("No product ID in response")
-            
-        print(f"✅ Created outlet product with ID: {created_offer_id}")
-        
-        # Update product details
-        self.shoper_products.update_product(created_offer_id, barcode=new_outlet.barcode)
-        self.shoper_products.update_product(created_offer_id, related=new_outlet.related)
-        
-        # Update URL
-        product_url_json = {'pl_PL': {'seo_url': new_outlet.product_url(created_offer_id)}}
-        self.shoper_products.update_product(created_offer_id, translations=product_url_json)
+        print(f'Created {product_counter} outlet offers')
+        # Update Google Sheets
+        self.batch_update_created_offers_gsheets(gsheet_updates)
 
-        # Update images
-        outlet_pictures = new_outlet.set_outlet_pictures(created_offer_id)
-        for picture in outlet_pictures:
-            self.shoper_pictures.update_product_image(created_offer_id, picture)
+    def batch_update_created_offers_gsheets(self, gsheets_updates):
+        """Save created offers to Google Sheets
+        Args:
+            gsheets_updates (list): List of updates containing [row_number, created, date_created, product_url, product_id, product_category_id]
+        """
+        try:
+            self.gsheets_worksheets.batch_update_from_a_list(
+                worksheet_name='Outlety',
+                updates=gsheets_updates,
+                start_column='F',
+                num_columns=5
+            )
+        except Exception as e:
+            print(f"Failed to update Google Sheets: {str(e)}")
 
-        # Update stock image
-        created_product = self.shoper_products.get_a_product_by_code(created_offer_id)
-        if created_product and 'main_image' in created_product:
-            stock_gfx = created_product['main_image']['gfx_id']
-            self.shoper_products.update_product(created_offer_id, stock={'gfx_id': stock_gfx})
+    # ATTRIBUTE APPENDING

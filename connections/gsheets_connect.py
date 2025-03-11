@@ -2,6 +2,7 @@ import gspread
 import pandas as pd
 from pathlib import Path
 import config
+import time
 
 class GSheetsClient:
 
@@ -18,6 +19,27 @@ class GSheetsClient:
         self.sheet_id = sheet_id
         self.gc = None
         self.sheet = None
+
+    def _handle_request(self, func, *args, **kwargs):
+        """
+        Handle Google Sheets API requests with automatic retry on quota exceeded errors.
+        Args:
+            func: The gspread function to execute
+            *args: Positional arguments to pass to the function
+            **kwargs: Keyword arguments to pass to the function
+        Returns:
+            The result of the API call
+        """
+        while True:
+            try:
+                return func(*args, **kwargs)
+            except gspread.exceptions.APIError as e:
+                if "RESOURCE_EXHAUSTED" in str(e):
+                    print("API quota exceeded. Waiting 1 second before retry...")
+                    time.sleep(1)  # Wait 100 seconds before retrying
+                else:
+                    raise  # Re-raise if it's a different API error
+
 
     def connect(self):
         """Authenticate with Google Sheets."""

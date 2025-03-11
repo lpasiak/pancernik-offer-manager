@@ -25,6 +25,7 @@ class OutletProduct:
         self.category_list = self._set_category_list()
         self.main_category_id = self.source_product['category_id']
         self.related = self.source_product['related']
+        self.attributes = self._transform_attributes()
 
     def transform_to_outlet(self):
         """Transform the product to an outlet product and return as a dicitonary."""
@@ -66,7 +67,9 @@ class OutletProduct:
         'type': self.source_product['type'],
         'safety_information': self.source_product['safety_information'],
         'feeds_excludes': self.source_product['feeds_excludes'],
+        'attributes': self.attributes
         }
+
         return outlet_product
     
     def _validate_input(self, product_data, damage_type):
@@ -171,6 +174,23 @@ class OutletProduct:
         # Default category if no matches found
         return 7525
 
+    def _transform_attributes(self):
+        """Transform the attributes of the source product to the attributes of the outlet product."""
+
+        src_product_attribute_dict = self.source_product['attributes']
+        attribute_dict = {}
+
+        for group, attributes in src_product_attribute_dict.items():
+            if isinstance(attributes, dict):
+                for key, value in attributes.items():
+                    attribute_dict[key] = value
+
+        if config.SITE == 'MAIN':
+            attribute_dict['1402'] = ''     # _outlet
+            attribute_dict['1538'] = 'Tak'  # Outlet
+
+        return attribute_dict
+    
     def set_outlet_pictures(self, new_product_id):
         if not self.source_product.get('img'):
             return []
