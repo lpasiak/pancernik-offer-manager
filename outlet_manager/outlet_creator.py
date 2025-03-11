@@ -1,4 +1,4 @@
-from .models.outlet_product import OutletProduct
+from .models.product import OutletProduct
 from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts, ShoperPictures
 from connections.gsheets_connect import GSheetsClient
@@ -7,7 +7,7 @@ from datetime import datetime
 import config
 import time
 
-class OutletManager:
+class OutletCreator:
     def __init__(self):
         self.shoper_client = None
         self.gsheets_client = None
@@ -138,7 +138,7 @@ class OutletManager:
                                 print(f"❌ Failed to upload image after {max_retries} attempts: {e}")
                             else:
                                 print(f"⚠️ Image upload attempt {retry_count} failed, retrying...")
-                                time.sleep(2)  # Wait before retry
+                                time.sleep(1)  # Wait before retry
 
                 # Update stock image
                 try:
