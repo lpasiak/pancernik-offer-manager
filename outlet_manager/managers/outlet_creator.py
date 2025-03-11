@@ -1,4 +1,4 @@
-from .models.product import OutletProduct
+from ..models.product import OutletProduct
 from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts, ShoperPictures
 from connections.gsheets_connect import GSheetsClient
@@ -41,8 +41,6 @@ class OutletCreator:
         except Exception as e:
             print(f"Error initializing connections: {e}")
             return False
-
-    # NEW OUTLET OFFER CREATION
 
     def get_offers_ready_to_publish(self):
         """Get offers that are ready to be published"""
@@ -188,5 +186,3 @@ class OutletCreator:
             )
         except Exception as e:
             print(f"Failed to update Google Sheets: {str(e)}")
-
-    # ATTRIBUTE APPENDING

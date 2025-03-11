@@ -1,4 +1,4 @@
-from outlet_manager.outlet_creator import OutletCreator
+from outlet_manager.managers.outlet_creator import OutletCreator
 from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts
 import config
