@@ -5,6 +5,7 @@ from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 from datetime import datetime
 import config
+import time
 
 class OutletManager:
     def __init__(self):
@@ -122,15 +123,32 @@ class OutletManager:
 
                 # Update images
                 outlet_pictures = new_outlet.set_outlet_pictures(created_offer_id)
-                for picture in outlet_pictures:
-                    self.shoper_pictures.update_product_image(created_offer_id, picture)
+                for i, picture in enumerate(outlet_pictures, 1):
+                    max_retries = 3
+                    retry_count = 0
+                    
+                    while retry_count < max_retries:
+                        try:
+                            self.shoper_pictures.update_product_image(created_offer_id, picture)
+                            break  # Success, exit retry loop
+                            
+                        except Exception as e:
+                            retry_count += 1
+                            if retry_count == max_retries:
+                                print(f"❌ Failed to upload image after {max_retries} attempts: {e}")
+                            else:
+                                print(f"⚠️ Image upload attempt {retry_count} failed, retrying...")
+                                time.sleep(2)  # Wait before retry
 
                 # Update stock image
-                created_product = self.shoper_products.get_a_product_by_code(created_offer_id)
-                if created_product and 'main_image' in created_product:
-                    stock_gfx = created_product['main_image']['gfx_id']
-                    self.shoper_products.update_product(created_offer_id, stock={'gfx_id': stock_gfx})
-                
+                try:
+                    created_product = self.shoper_products.get_a_product_by_code(created_offer_id)
+                    if created_product and 'main_image' in created_product:
+                        stock_gfx = created_product['main_image']['gfx_id']
+                        self.shoper_products.update_product(created_offer_id, stock={'gfx_id': stock_gfx})
+                except Exception as e:
+                    print(f"Error updating stock image: {e}")
+
                 # Creating a list of updates to be made in gsheets
                 if len(google_sheets_row) > 0:
                     row_number = google_sheets_row[0]
