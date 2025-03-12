@@ -1,6 +1,6 @@
-from ..models.product import OutletProduct
 from connections.shoper_connect import ShoperAPIClient
-from connections.shoper.products import ShoperProducts, ShoperPictures
+from connections.shoper.products import ShoperProducts
+from connections.shoper.pictures import ShoperPictures
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 import config
@@ -10,7 +10,6 @@ class OutletStockManager:
         self.shoper_client = None
         self.gsheets_client = None
         self.shoper_products = None
-        self.shoper_pictures = None
         self.gsheets_worksheets = None
         
     def connect(self):
@@ -24,7 +23,6 @@ class OutletStockManager:
             )
             self.shoper_client.connect()
             self.shoper_products = ShoperProducts(self.shoper_client)
-            self.shoper_pictures = ShoperPictures(self.shoper_client)
             
             # Initialize Google Sheets connections
             self.gsheets_client = GSheetsClient(

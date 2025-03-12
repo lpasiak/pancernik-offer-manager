@@ -1,6 +1,7 @@
 from ..models.product import OutletProduct
 from connections.shoper_connect import ShoperAPIClient
-from connections.shoper.products import ShoperProducts, ShoperPictures
+from connections.shoper.products import ShoperProducts
+from connections.shoper.pictures import ShoperPictures
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 from datetime import datetime
