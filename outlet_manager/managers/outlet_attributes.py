@@ -109,7 +109,7 @@ class OutletAttributeManager:
         
         # Update the attribute of the product
         for product_ean, product_ids in products.items():
-            params = {'attributes': {attribute_id: product_ids}}
+            params = {attribute_id: product_ids}
             self.shoper_products.update_product_by_code(product_ean, use_code=True, attributes=params)
             product_counter += 1
             print(f'Products updated: {product_counter}/{len(products)}')

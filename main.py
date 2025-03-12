@@ -15,9 +15,6 @@ Akcja: """
 
 def main():
 
-    out_attribute_manager = OutletAttributeManager()
-    out_attribute_manager.connect()
-    out_attribute_manager.update_main_products_attributes()
     while True:
         action = context_menu()
 
