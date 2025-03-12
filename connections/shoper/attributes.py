@@ -66,3 +66,20 @@ class ShoperAttributes:
         df = pd.DataFrame(attributes)
         df.to_excel(config.SHEETS_DIR / 'shoper_all_attributes.xlsx', index=False)
         return df
+    
+    def get_attribute_by_id(self, attribute_id):
+        """Get an attribute by its ID
+        Args:
+            attribute_id (int): The ID of the attribute to get
+        Returns:
+            dict: The attribute data
+        """
+        url = f'{self.client.site_url}/webapi/rest/attributes/{attribute_id}'
+        
+        response = self.client._handle_request('GET', url)
+        
+        if response.status_code != 200:
+            print(f'❌ API Error: {response.status_code}, {response.text}')
+            return None
+        
+        return response.json()
