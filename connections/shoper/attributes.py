@@ -74,7 +74,7 @@ class ShoperAttributes:
         Returns:
             dict: The attribute group data
         """
-        url = f'{self.client.site_url}/webapi/rest/attributes/attribute-groups/{attribute_group_id}'
+        url = f'{self.client.site_url}/webapi/rest/attribute-groups/{attribute_group_id}'
         
         response = self.client._handle_request('GET', url)
         
@@ -90,7 +90,7 @@ class ShoperAttributes:
             attribute_group_id (int): The ID of the attribute group to create
             categories (list): Product categories list as integers
         """
-        url = f'{self.client.site_url}/webapi/rest/attributes/attribute-groups/{attribute_group_id}'
+        url = f'{self.client.site_url}/webapi/rest/attribute-groups/{attribute_group_id}'
 
         response = self.client._handle_request('PUT', url, json={'categories': categories})
         
