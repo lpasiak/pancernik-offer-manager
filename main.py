@@ -24,7 +24,7 @@ def main():
             products_to_publish = out_creator.get_offers_ready_to_publish()
             out_creator.create_outlet_offers(products_to_publish)
 
-            # Move products to the lacking
+            # Move products to lacking
             out_stock_manager = OutletStockManager()
             out_stock_manager.connect()
             out_stock_manager.move_products_to_lacking()
