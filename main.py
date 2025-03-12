@@ -1,7 +1,6 @@
 from outlet_manager.managers.outlet_creator import OutletCreator
 from outlet_manager.managers.outlet_attributes import OutletAttributeManager
-from connections.shoper_connect import ShoperAPIClient
-from connections.shoper.products import ShoperProducts
+from outlet_manager.managers.outlet_stock import OutletStockManager
 import config
 
 def context_menu():
@@ -24,6 +23,11 @@ def main():
             out_creator.connect()
             products_to_publish = out_creator.get_offers_ready_to_publish()
             out_creator.create_outlet_offers(products_to_publish)
+
+            # Move products to the lacking
+            out_stock_manager = OutletStockManager()
+            out_stock_manager.connect()
+            out_stock_manager.move_products_to_lacking()
 
             # Update attribute groups
             out_attribute_manager = OutletAttributeManager()
