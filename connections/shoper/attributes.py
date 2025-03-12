@@ -67,16 +67,32 @@ class ShoperAttributes:
         df.to_excel(config.SHEETS_DIR / 'shoper_all_attributes.xlsx', index=False)
         return df
     
-    def get_attribute_by_id(self, attribute_id):
-        """Get an attribute by its ID
+    def get_attribute_group_by_id(self, attribute_group_id):
+        """Get an attribute group by its ID
         Args:
-            attribute_id (int): The ID of the attribute to get
+            attribute_group_id (int): The ID of the attribute group to get
         Returns:
-            dict: The attribute data
+            dict: The attribute group data
         """
-        url = f'{self.client.site_url}/webapi/rest/attributes/{attribute_id}'
+        url = f'{self.client.site_url}/webapi/rest/attributes/attribute-groups/{attribute_group_id}'
         
         response = self.client._handle_request('GET', url)
+        
+        if response.status_code != 200:
+            print(f'❌ API Error: {response.status_code}, {response.text}')
+            return None
+        
+        return response.json()
+
+    def update_attribute_group_categories(self, attribute_group_id, categories):
+        """Create an attribute group
+        Args:
+            attribute_group_id (int): The ID of the attribute group to create
+            categories (list): Product categories list as integers
+        """
+        url = f'{self.client.site_url}/webapi/rest/attributes/attribute-groups/{attribute_group_id}'
+
+        response = self.client._handle_request('PUT', url, json={'categories': categories})
         
         if response.status_code != 200:
             print(f'❌ API Error: {response.status_code}, {response.text}')
