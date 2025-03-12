@@ -90,12 +90,9 @@ class OutletProduct:
         """Set the product type based on the source product attributes."""
         if self.source_product['attributes'] != []:
             try:
-                if config.SITE == 'MAIN':
-                    return self.source_product['attributes']['550']['1370']
-                elif config.SITE == 'TEST':
-                    return self.source_product['attributes']['8']['28']
-                else:
-                    raise ValueError(f"Unknown site configuration: {config.SITE}")
+                group_id = config.PRODUCT_TYPE[config.SITE]['group']
+                type_id = config.PRODUCT_TYPE[config.SITE]['id']
+                return self.source_product['attributes'][group_id][type_id]
                 
             except (KeyError, TypeError):
                 print(f"Warning: Could not determine product type for {self.outlet_code}")

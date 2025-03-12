@@ -48,17 +48,30 @@ class OutletAttributeManager:
         
         # Get all necessary products
         df_all_products = self.gsheets_worksheets.get_data(sheet_name='Outlety', include_row_numbers=True)
-
         mask = (
             (df_all_products['ID Shoper'].notna() & df_all_products['ID Shoper'].ne('')) &
             (df_all_products['ID Kategorii'].notna() & df_all_products['ID Kategorii'].ne(''))
         )
-
-        # df_all_products = df_all_products[mask]
+        df_all_products = df_all_products[mask]
 
         # Get unique category list
-        category_ids = df_all_products['ID Kategorii'].astype(int).unique().tolist()
+        category_ids_to_append = df_all_products['ID Kategorii'].astype(int).unique().tolist()
 
-        # Get an attribute group to append
-        attribute_group_to_append = config.OUTLET_ATTRIBUTE_IDS[config.SITE]['group']
-        attribute_group_categories = self.shoper_attributes.get
+        # Attribute group to append categories to
+        attribute_group_to_append = config.OUTLET_MAIN_PRODUCT_ATTRIBUTE_IDS[config.SITE]['group']
+
+        # Get attribute group all categories
+        attribute_group_categories = self.shoper_attributes.get_attribute_group_by_id(attribute_group_to_append)['categories']
+
+        # Merge current and new categories
+        categories_to_import = sorted(list(set(attribute_group_categories + category_ids_to_append)))
+
+        # Update attribute group categories
+        response = self.shoper_attributes.update_attribute_group_categories(attribute_group_to_append, categories_to_import)
+
+        if response:
+            print(f'✅ Attribute group {attribute_group_to_append} updated with {len(categories_to_import)} categories')
+        else:
+            print(f'❌ Attribute group {attribute_group_to_append} update failed')
+
+

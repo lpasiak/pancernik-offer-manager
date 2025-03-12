@@ -1,19 +1,38 @@
 from outlet_manager.managers.outlet_creator import OutletCreator
+from outlet_manager.managers.outlet_attributes import OutletAttributeManager
 from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts
 import config
 
+def context_menu():
+    menu_text = """Co chcesz zrobić?
+1. Wystawić produkty outletowe
+2. Dograć atrybuty do produktów
+q żeby wyjść.
+
+Akcja: """
+    return str(input(menu_text))
+
+
 def main():
-    # shoper_client = ShoperAPIClient(config.SHOPER_SITE_URL, config.SHOPER_LOGIN, config.SHOPER_PASSWORD)
-    # shoper_client.connect()  # Add connect() call to authenticate
-    # shoper_products = ShoperProducts(shoper_client)
-    # print(shoper_products.get_a_product_by_code('8809640252648', use_code=True))
 
+    while True:
+        action = context_menu()
 
-    out_creator = OutletCreator()
-    out_creator.connect()
-    products_to_publish = out_creator.get_offers_ready_to_publish()
-    out_creator.create_outlet_offers(products_to_publish)
+        if action == '1':
+            out_creator = OutletCreator()
+            out_creator.connect()
+            products_to_publish = out_creator.get_offers_ready_to_publish()
+            out_creator.create_outlet_offers(products_to_publish)
+        elif action == '2':
+            out_attribute_manager = OutletAttributeManager()
+            out_attribute_manager.connect()
+            out_attribute_manager.update_attribute_groups()
+        elif action == 'q':
+            print('Do zobaczenia!')
+            break
+        else:
+            print('Nie ma takiego wyboru :/')
 
 if __name__ == '__main__':
     main()

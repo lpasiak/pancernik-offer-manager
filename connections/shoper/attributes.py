@@ -89,6 +89,8 @@ class ShoperAttributes:
         Args:
             attribute_group_id (int): The ID of the attribute group to create
             categories (list): Product categories list as integers
+        Returns:
+            dict: The attribute group data
         """
         url = f'{self.client.site_url}/webapi/rest/attribute-groups/{attribute_group_id}'
 
@@ -98,4 +100,4 @@ class ShoperAttributes:
             print(f'❌ API Error: {response.status_code}, {response.text}')
             return None
         
-        return response.json()
+        return True
