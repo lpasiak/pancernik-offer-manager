@@ -1,7 +1,6 @@
 from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts
 from connections.shoper.attributes import ShoperAttributes
-from connections.shoper.categories import ShoperCategories
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 import config
@@ -13,7 +12,6 @@ class OutletAttributeManager:
         self.gsheets_client = None
         self.shoper_products = None
         self.shoper_attributes = None
-        self.shoper_categories = None
         self.gsheets_worksheets = None
         
     def connect(self):
@@ -28,7 +26,6 @@ class OutletAttributeManager:
             self.shoper_client.connect()
             self.shoper_products = ShoperProducts(self.shoper_client)
             self.shoper_attributes = ShoperAttributes(self.shoper_client)
-            self.shoper_categories = ShoperCategories(self.shoper_client)
             
             # Initialize Google Sheets connections
             self.gsheets_client = GSheetsClient(
