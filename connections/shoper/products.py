@@ -48,7 +48,6 @@ class ShoperProducts:
                     print(f'❌ Error fetching product images: {str(e)}')
                     # Continue without images if they fail to fetch
 
-            print(f'✅ Product {identifier} fetched successfully')
             return product
 
         except Exception as e:
