@@ -6,8 +6,7 @@ import config
 
 def context_menu():
     menu_text = """Co chcesz zrobić?
-1. Wystawić produkty outletowe
-2. Dograć atrybuty do produktów
+1. Wystawić produkty outletowe i dograć atrybuty
 q żeby wyjść.
 
 Akcja: """
@@ -16,18 +15,24 @@ Akcja: """
 
 def main():
 
+    out_attribute_manager = OutletAttributeManager()
+    out_attribute_manager.connect()
+    out_attribute_manager.update_main_products_attributes()
     while True:
         action = context_menu()
 
         if action == '1':
+            # Create outlet offers
             out_creator = OutletCreator()
             out_creator.connect()
             products_to_publish = out_creator.get_offers_ready_to_publish()
             out_creator.create_outlet_offers(products_to_publish)
-        elif action == '2':
+
+            # Update attribute groups
             out_attribute_manager = OutletAttributeManager()
             out_attribute_manager.connect()
             out_attribute_manager.update_attribute_groups()
+            out_attribute_manager.update_main_products_attributes()
         elif action == 'q':
             print('Do zobaczenia!')
             break

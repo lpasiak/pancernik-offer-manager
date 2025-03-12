@@ -5,6 +5,7 @@ from connections.shoper.categories import ShoperCategories
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 import config
+import pandas as pd
 
 class OutletAttributeManager:
     def __init__(self):
@@ -43,16 +44,24 @@ class OutletAttributeManager:
             print(f"Error initializing connections: {e}")
             return False
 
-    def update_attribute_groups(self):
-        """Select all categories and append """
-        
-        # Get all necessary products
+    def select_products_with_ids(self):
+        """Get all products with ID and category
+        Returns:
+            pd.DataFrame: DataFrame with products that have ID and category
+            """
         df_all_products = self.gsheets_worksheets.get_data(sheet_name='Outlety', include_row_numbers=True)
         mask = (
             (df_all_products['ID Shoper'].notna() & df_all_products['ID Shoper'].ne('')) &
             (df_all_products['ID Kategorii'].notna() & df_all_products['ID Kategorii'].ne(''))
         )
-        df_all_products = df_all_products[mask]
+
+        return df_all_products[mask]
+
+    def update_attribute_groups(self):
+        """Select all categories from the gsheets and append them to the attribute group"""
+        
+        # Get all necessary products
+        df_all_products = self.select_products_with_ids()
 
         # Get unique category list
         category_ids_to_append = df_all_products['ID Kategorii'].astype(int).unique().tolist()
@@ -74,4 +83,34 @@ class OutletAttributeManager:
         else:
             print(f'❌ Attribute group {attribute_group_to_append} update failed')
 
+    def update_main_products_attributes(self):
+        """Update the attribute of a product"""
+
+        # Get all necessary products
+        df_all_products = self.select_products_with_ids()
+
+        # Remove duplicated EANs
+        single_ean_products = df_all_products.drop_duplicates(subset=['EAN'], keep='first').copy()
+
+        # Get the attribute ID
+        attribute_id = config.OUTLET_MAIN_PRODUCT_ATTRIBUTE_IDS[config.SITE]['id']
+
+        # Create a dictionary of products with EAN as key and list of IDs as value
+        products = {}
+        product_counter = 0
+
+        print(f'Updating {len(products)} main products attributes')
+        # Create a dictionary of products with EAN as key and list of IDs as value
+        for _, row_single in single_ean_products.iterrows():
+            product_ean = row_single['EAN']
+            product_ids_list = df_all_products[df_all_products['EAN'] == product_ean]['ID Shoper'].tolist()
+            if product_ids_list:
+                products[product_ean] = ', '.join(map(str, product_ids_list))
+        
+        # Update the attribute of the product
+        for product_ean, product_ids in products.items():
+            params = {'attributes': {attribute_id: product_ids}}
+            self.shoper_products.update_product_by_code(product_ean, use_code=True, attributes=params)
+            product_counter += 1
+            print(f'Products updated: {product_counter}/{len(products)}')
 

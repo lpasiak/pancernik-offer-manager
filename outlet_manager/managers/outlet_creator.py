@@ -86,7 +86,7 @@ class OutletCreator:
         print(f'Creating {product_count} outlet offers')
 
         for _, product in df_offers.iterrows():
-            source_product = self.shoper_products.get_a_product_by_code(product['EAN'], pictures=True, use_code=True)
+            source_product = self.shoper_products.get_product_by_code(product['EAN'], pictures=True, use_code=True)
             new_outlet = OutletProduct(source_product, product['SKU'], product['Uszkodzenie'])
 
             # Variables to be used for gsheets updates
@@ -111,14 +111,14 @@ class OutletCreator:
                 print(f"✅ Created outlet product with ID: {created_offer_id}")
                 
                 # Update product details
-                self.shoper_products.update_product(created_offer_id, barcode=new_outlet.barcode)
-                self.shoper_products.update_product(created_offer_id, related=new_outlet.related)
+                self.shoper_products.update_product_by_code(created_offer_id, barcode=new_outlet.barcode)
+                self.shoper_products.update_product_by_code(created_offer_id, related=new_outlet.related)
                 
                 # Update URL
                 product_url = new_outlet.product_url(created_offer_id)
                 product_url_json = {'pl_PL': {'seo_url': product_url}}
                 product_url_link = f'{config.SHOPER_SITE_URL}/{product_url}'
-                self.shoper_products.update_product(created_offer_id, translations=product_url_json)
+                self.shoper_products.update_product_by_code(created_offer_id, translations=product_url_json)
 
                 # Update images
                 outlet_pictures = new_outlet.set_outlet_pictures(created_offer_id)
@@ -141,10 +141,10 @@ class OutletCreator:
 
                 # Update stock image
                 try:
-                    created_product = self.shoper_products.get_a_product_by_code(created_offer_id)
+                    created_product = self.shoper_products.get_product_by_code(created_offer_id)
                     if created_product and 'main_image' in created_product:
                         stock_gfx = created_product['main_image']['gfx_id']
-                        self.shoper_products.update_product(created_offer_id, stock={'gfx_id': stock_gfx})
+                        self.shoper_products.update_product_by_code(created_offer_id, stock={'gfx_id': stock_gfx})
                 except Exception as e:
                     print(f"Error updating stock image: {e}")
 

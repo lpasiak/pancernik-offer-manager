@@ -8,6 +8,53 @@ class ShoperProducts:
         self.client = client
         self.pictures = ShoperPictures(client)
 
+    def get_product_by_code(self, identifier, pictures=False, use_code=False):
+        """Get a product from Shoper by either product ID or product code.
+        Args:
+            identifier (int|str): Product ID (int) or product code (str)
+            use_code (bool): If True, use product code (SKU) instead of ID
+        Returns:
+            dict|None: Product data if successful, None if failed
+        """
+        try:
+            if use_code:
+                # Get product by product code (SKU)
+                product_filter = {
+                    "filters": json.dumps({"stock.code": identifier})
+                }
+                response = self.client._handle_request('GET', f'{self.client.site_url}/webapi/rest/products', params=product_filter)
+                product_list = response.json().get('list', [])
+
+                if not product_list:
+                    print(f'❌ Product {identifier} doesn\'t exist')
+                    return None
+
+                product = product_list[0]
+                
+            else:
+                # Get product by product ID
+                response = self.client._handle_request('GET', f'{self.client.site_url}/webapi/rest/products/{identifier}')
+                product = response.json()
+                
+                if response.status_code != 200:
+                    print(f'❌ API Error: {response.status_code}, {response.text}')
+                    return None
+
+            # Get product pictures if requested
+            if pictures:
+                try:
+                    product['img'] = self.pictures.get_product_pictures(product['product_id'])
+                except Exception as e:
+                    print(f'❌ Error fetching product images: {str(e)}')
+                    # Continue without images if they fail to fetch
+
+            print(f'✅ Product {identifier} fetched successfully')
+            return product
+
+        except Exception as e:
+            print(f'❌ Error fetching product {identifier}: {str(e)}')
+            return None
+        
     def create_product(self, product_data):
         """Create a new product in Shoper
         Args:
@@ -60,16 +107,24 @@ class ShoperProducts:
             print(f'❌ Request failed: {str(e)}')
             return None
         
-    def update_product(self, product_id, **parameters):
+    def update_product_by_code(self, identifier, use_code=False, **parameters):
         """Update a product from Shoper. Returns True if successful, None if failed
         Args:
-            product_id (int): Product id
+            identifier (int|str): Product id or product code
+            use_code (bool): If True, use product code (SKU) instead of ID
             parameters key=value: Parameters to update
         Returns:
             True|None: True if successful, None if failed
         """
 
         try:
+            if use_code:
+                # Get product id by product code (SKU)
+                product = self.get_product_by_code(identifier, use_code=True)
+                product_id = product['product_id']
+            else:
+                product_id = identifier
+
             params = {}
 
             for key, value in parameters.items():
@@ -86,53 +141,6 @@ class ShoperProducts:
         
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
-            return None
-
-    def get_a_product_by_code(self, identifier, pictures=False, use_code=False):
-        """Get a product from Shoper by either product ID or product code.
-        Args:
-            identifier (int|str): Product ID (int) or product code (str)
-            use_code (bool): If True, use product code (SKU) instead of ID
-        Returns:
-            dict|None: Product data if successful, None if failed
-        """
-        try:
-            if use_code:
-                # Get product by product code (SKU)
-                product_filter = {
-                    "filters": json.dumps({"stock.code": identifier})
-                }
-                response = self.client._handle_request('GET', f'{self.client.site_url}/webapi/rest/products', params=product_filter)
-                product_list = response.json().get('list', [])
-
-                if not product_list:
-                    print(f'❌ Product {identifier} doesn\'t exist')
-                    return None
-
-                product = product_list[0]
-                
-            else:
-                # Get product by product ID
-                response = self.client._handle_request('GET', f'{self.client.site_url}/webapi/rest/products/{identifier}')
-                product = response.json()
-                
-                if response.status_code != 200:
-                    print(f'❌ API Error: {response.status_code}, {response.text}')
-                    return None
-
-            # Get product pictures if requested
-            if pictures:
-                try:
-                    product['img'] = self.pictures.get_product_pictures(product['product_id'])
-                except Exception as e:
-                    print(f'❌ Error fetching product images: {str(e)}')
-                    # Continue without images if they fail to fetch
-
-            print(f'✅ Product {identifier} fetched successfully')
-            return product
-
-        except Exception as e:
-            print(f'❌ Error fetching product {identifier}: {str(e)}')
             return None
 
     # TO BE REBUILT in the future, so a user will be able to filter products
