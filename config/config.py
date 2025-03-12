@@ -42,9 +42,14 @@ OUTLET_SHEET_ARCHIVED_NAME = 'Archiwum'
 OUTLET_VALID_DAMAGE_TYPES = ['USZ', 'ZAR', 'OBA']
 OUTLET_DISCOUNT_PERCENTAGE = 0.8
 
-OUTLET_ATTRIBUTE_IDS = {
+OUTLET_MAIN_PRODUCT_ATTRIBUTE_IDS = {
     'MAIN': {'id': '1402', 'group': '577'},
     'TEST': {'id': '29', 'group': '9'}
+}
+
+PRODUCT_TYPE = {
+    'MAIN': {'id': '1370', 'group': '550'},
+    'TEST': {'id': '28', 'group': '8'}
 }
 
 # CLEANUP MANAGER Google Sheets
