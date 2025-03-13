@@ -60,7 +60,7 @@ class OutletCreator:
         )
         df = df[mask]
 
-        df.to_excel(config.SHEETS_DIR / f'offers_ready_to_publish {config.TODAY}.xlsx', index=False)
+        df.to_excel(config.SHEETS_DIR / f'offers_ready_to_publish.xlsx', index=False)
         print(f'Selected products ready to publish: {len(df)}')
 
         if len(df) > 0:
@@ -111,7 +111,7 @@ class OutletCreator:
                 print(f"✅ Created outlet product with ID: {created_offer_id}")
                 
                 # Update product details
-                self.shoper_products.update_product_by_code(created_offer_id, barcode=new_outlet.barcode)
+                self.shoper_products.update_product_by_code(created_offer_id, ean=new_outlet.barcode)
                 self.shoper_products.update_product_by_code(created_offer_id, related=new_outlet.related)
                 
                 # Update URL
