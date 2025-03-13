@@ -37,7 +37,7 @@ class ShoperProducts:
                 product = response.json()
                 
                 if response.status_code != 200:
-                    print(f'❌ API Error: {response.status_code}, {response.text}')
+                    print(f'❌ API Error: {response.json()['error_description']}')
                     return None
 
             # Get product pictures if requested
@@ -77,7 +77,7 @@ class ShoperProducts:
                     print(f'❌ Invalid response format: {str(e)}')
                     return None
                 
-            print(f'❌ API Error: {response.status_code}, {response.text}')
+            print(f'❌ API Error: {response.json()['error_description']}')
             return None
             
         except Exception as e:
@@ -99,7 +99,7 @@ class ShoperProducts:
                 print(f'✅ Product {product_id} removed successfully')
                 return True
                 
-            print(f'❌ API Error: {response.status_code}, {response.text}')
+            print(f'❌ API Error: {response.json()['error_description']}')
             return None
             
         except Exception as e:
@@ -135,7 +135,7 @@ class ShoperProducts:
                 print(f'✅ Product {product_id} updated successfully with {list(parameters.keys())}')
                 return True
                 
-            print(f'❌ API Error: {response.status_code}, {response.text}')
+            print(f'❌ API Error: {response.json()['error_description']}')
             return None
         
         except Exception as e:
@@ -158,7 +158,7 @@ class ShoperProducts:
                 number_of_pages = data['pages']
 
                 if response.status_code != 200:
-                    print(f'❌ API Error: {response.status_code}, {response.text}')
+                    print(f'❌ API Error: {response.json()['error_description']}')
                     return None
                     
                 page_data = data.get('list', [])
