@@ -53,7 +53,7 @@ class OutletDiscountManager:
             format='%d-%m-%Y',
             errors='coerce'
         )
-        
+
         # Calculate days difference
         days_difference = (today - df_all_products['Data wystawienia']).dt.days
         
@@ -68,7 +68,7 @@ class OutletDiscountManager:
         filtered_products = df_all_products[mask]
         
         if len(filtered_products) > 0:
-            print(f'\nSelected {len(filtered_products)} products ready to discount.')
+            print(f'ℹ️ Selected {len(filtered_products)} products ready to discount.')
             return filtered_products
         
         return None
@@ -76,3 +76,6 @@ class OutletDiscountManager:
     def create_discounts(self):
         """Create discounts for products that have been in outlet for more than configured days."""
         
+        df_to_discount = self.select_products_to_discount()
+
+        return df_to_discount
