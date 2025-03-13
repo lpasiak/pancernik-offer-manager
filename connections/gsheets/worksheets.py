@@ -32,20 +32,6 @@ class GsheetsWorksheets:
                 mask = (df['SKU'].notna() & df['SKU'].ne(''))
                 df = df[mask]
 
-            if 'Data wystawienia' in df.columns:
-                df['Data wystawienia'] = pd.to_datetime(
-                    df['Data wystawienia'], 
-                    format='%d-%m-%Y',
-                    errors='coerce'
-                )
-        
-            if 'Data' in df.columns:
-                df['Data'] = pd.to_datetime(
-                    df['Data'], 
-                    format='%d-%m-%Y',
-                    errors='coerce'
-                )
-
             if include_row_numbers:
                 df.insert(0, 'Row Number', range(2, len(df) + 2)) # GSheets rows start at 2
 
