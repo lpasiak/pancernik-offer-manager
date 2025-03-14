@@ -44,7 +44,7 @@ class OutletStockManager:
 
         # datetime.today().strftime('%Y-%m-%d')
         # Get all products from the outlet gsheet
-        df_all_products = self.gsheets_worksheets.get_data(sheet_name='Outlety', include_row_numbers=True)
+        df_all_products = self.gsheets_worksheets.get_data(sheet_name=config.OUTLET_SHEET_NAME, include_row_numbers=True)
 
         mask = (
             (df_all_products["Wystawione"] != 'TRUE') & 

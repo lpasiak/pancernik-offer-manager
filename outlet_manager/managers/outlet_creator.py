@@ -46,7 +46,7 @@ class OutletCreator:
     def get_offers_ready_to_publish(self):
         """Get offers that are ready to be published"""
         
-        df = self.gsheets_worksheets.get_data(sheet_name='Outlety', include_row_numbers=True)
+        df = self.gsheets_worksheets.get_data(sheet_name=config.OUTLET_SHEET_NAME, include_row_numbers=True)
 
         if df is None:
             return None
@@ -180,7 +180,7 @@ class OutletCreator:
         """
         try:
             self.gsheets_worksheets.batch_update_from_a_list(
-                worksheet_name='Outlety',
+                worksheet_name=config.OUTLET_SHEET_NAME,
                 updates=gsheets_updates,
                 start_column='F',
                 num_columns=5
