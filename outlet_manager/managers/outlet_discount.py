@@ -3,9 +3,7 @@ from connections.shoper.products import ShoperProducts
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 from connections.shoper.specialoffers import ShoperSpecialOffers
-
 import config
-from datetime import datetime, timedelta
 import pandas as pd
 
 class OutletDiscountManager:
@@ -77,6 +75,7 @@ class OutletDiscountManager:
     
     def create_discounts(self, df_offers_to_discount):
         """Create discounts for products that have been in outlet for more than configured days.
+        Note: If there is an existent discounts, it removes it and creates a new one.
         Args:
             df_offers_to_discount (df): A pandas DataFrame containing the products to create with ['EAN'] column.
         """
@@ -84,6 +83,9 @@ class OutletDiscountManager:
         if df_offers_to_discount is None or df_offers_to_discount.empty:
             print("No offers to discount")
             return
+        
+        # Testing on 2 products
+        df_offers_to_discount = df_offers_to_discount.head(2)
         
         product_discount_count = len(df_offers_to_discount)
         product_discount_counter = 0
@@ -96,14 +98,21 @@ class OutletDiscountManager:
                 # Get the row number of the product in the Google Sheets
                 google_sheets_row = product['Row Number']
                 product_code = product['SKU']
+                product_id = product['ID Shoper']
 
                 # Create a special offer
                 product_data = {
-                    'product_id': product['ID Shoper'],
+                    'product_id': product_id,
                     'discount': config.OUTLET_DISCOUNT_PERCENTAGE,
                     'discount_type': 3
                 }
                 
+                # TODO: Temporary resolution. Come back to it and remove reduntant api calls.
+                product_info = self.shoper_products.get_product_by_code(product_id)
+                if product_info and product_info.get('special_offer'):
+                    self.shoper_special_offers.remove_special_offer_from_product(product_id)
+
+                # Create a new special offer
                 self.shoper_special_offers.create_special_offer(product_data)
 
                 # Creating a list of updates to be made in gsheets
@@ -123,8 +132,10 @@ class OutletDiscountManager:
                 print(f'❌ Error creating special offer {product_code}: {e}')
                 continue
 
-        self.batch_update_discounted_offers_gsheets(gsheets_updates)
-    
+        print(f"Updating Google Sheets for {len(gsheets_updates)} products...")
+        if gsheets_updates:
+            self.batch_update_discounted_offers_gsheets(gsheets_updates)
+        
     def batch_update_discounted_offers_gsheets(self, gsheets_updates):
         """Save discounted offers' info to Google Sheets
         Args:
@@ -134,8 +145,9 @@ class OutletDiscountManager:
             self.gsheets_worksheets.batch_update_from_a_list(
                 worksheet_name=config.OUTLET_SHEET_NAME,
                 updates=gsheets_updates,
-                start_column='F',
+                start_column='K',
                 num_columns=1
             )
+            print("✅ Successfully updated Google Sheets")
         except Exception as e:
-            print(f"Failed to update Google Sheets: {str(e)}")
+            print(f"❌ Failed to update Google Sheets: {str(e)}")

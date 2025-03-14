@@ -2,7 +2,6 @@ from outlet_manager.managers.outlet_creator import OutletCreator
 from outlet_manager.managers.outlet_attributes import OutletAttributeManager
 from outlet_manager.managers.outlet_stock import OutletStockManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
-import config
 
 def context_menu():
     menu_text = """Co chcesz zrobić?
