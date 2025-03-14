@@ -96,7 +96,6 @@ class OutletAttributeManager:
         products = {}
         product_counter = 0
 
-        print(f'Updating {len(products)} main products attributes')
         # Create a dictionary of products with EAN as key and list of IDs as value
         for _, row_single in single_ean_products.iterrows():
             product_ean = row_single['EAN']
@@ -104,6 +103,8 @@ class OutletAttributeManager:
             if product_ids_list:
                 products[product_ean] = ', '.join(map(str, product_ids_list))
         
+        print(f'Updating {len(products)} main products attributes')
+
         # Update the attribute of the product
         for product_ean, product_ids in products.items():
             params = {attribute_id: product_ids}
