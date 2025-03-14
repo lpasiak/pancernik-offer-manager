@@ -149,10 +149,9 @@ class OutletCreator:
                     print(f"Error updating stock image: {e}")
 
                 # Creating a list of updates to be made in gsheets
-                if len(google_sheets_row) > 0:
-                    row_number = google_sheets_row[0]
+                if google_sheets_row is not None:
                     gsheet_updates.append([
-                        row_number, 
+                        google_sheets_row,
                         True, 
                         date_created, 
                         product_url_link, 

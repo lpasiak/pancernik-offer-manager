@@ -103,24 +103,17 @@ class OutletDiscountManager:
                     'discount': config.OUTLET_DISCOUNT_PERCENTAGE,
                     'discount_type': 3
                 }
-                response = self.shoper_special_offers.create_special_offer(product_data)
-                promotion_id = response.json()
-
-                if response.status_code == 200:
-                    print(f'✅ Special offer {promotion_id} of product {product_code} created.')
-                else:
-                    print(f'❌ Failed to create a special offer for product {product_code}: {response.json()['error_description']}')
+                
+                self.shoper_special_offers.create_special_offer(product_data)
 
                 # Creating a list of updates to be made in gsheets
-                if len(google_sheets_row) > 0:
-                    row_number = google_sheets_row[0]
+                if google_sheets_row is not None:
                     gsheets_updates.append([
-                        row_number, 
+                        google_sheets_row,
                         True
                     ])
                 else:
                     print(f"Warning: SKU {product_code} not found in Google Sheets!")
-
 
                 product_discount_counter += 1
                 print(f'Products discounted: {product_discount_counter}/{product_discount_count}')
@@ -130,7 +123,7 @@ class OutletDiscountManager:
                 print(f'❌ Error creating special offer {product_code}: {e}')
                 continue
 
-        # self.batch_update_discounted_offers_gsheets(gsheets_updated)
+        self.batch_update_discounted_offers_gsheets(gsheets_updates)
     
     def batch_update_discounted_offers_gsheets(self, gsheets_updates):
         """Save discounted offers' info to Google Sheets

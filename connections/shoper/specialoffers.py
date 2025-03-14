@@ -38,8 +38,6 @@ class ShoperSpecialOffers:
             if response.status_code == 200:
                 print(f'✅ Special offer {params['product_id']} created.')
                 return response.json()
-            else:
-                print(f'❌ Failed to create a special offer {params['product_id']}: {response.json()['error_description']}')
 
         except Exception as e:
             print(f'❌ Error creating special offer {discount_data['product_id']}: {e}')
