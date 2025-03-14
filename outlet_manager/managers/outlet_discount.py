@@ -107,7 +107,7 @@ class OutletDiscountManager:
                     'discount_type': 3
                 }
                 
-                # TODO: Temporary resolution. Come back to it and remove reduntant api calls.
+                # TODO: Temporary solution. Come back to it and remove reduntant api calls.
                 product_info = self.shoper_products.get_product_by_code(product_id)
                 if product_info and product_info.get('special_offer'):
                     self.shoper_special_offers.remove_special_offer_from_product(product_id)
