@@ -2,6 +2,8 @@ from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
+from connections.shoper.specialoffers import ShoperSpecialOffers
+
 import config
 from datetime import datetime, timedelta
 import pandas as pd
@@ -24,6 +26,7 @@ class OutletDiscountManager:
             )
             self.shoper_client.connect()
             self.shoper_products = ShoperProducts(self.shoper_client)
+            self.shoper_special_offers = ShoperSpecialOffers(self.shoper_client)
             
             # Initialize Google Sheets connections
             self.gsheets_client = GSheetsClient(
@@ -46,36 +49,100 @@ class OutletDiscountManager:
         """
         today = pd.Timestamp.today()
 
-        df_all_products = self.gsheets_worksheets.get_data(sheet_name='Outlety', include_row_numbers=True)
+        df = self.gsheets_worksheets.get_data(sheet_name=config.OUTLET_SHEET_NAME, include_row_numbers=True)
 
-        df_all_products['Data wystawienia'] = pd.to_datetime(
-            df_all_products['Data wystawienia'], 
+        df['Data wystawienia'] = pd.to_datetime(
+            df['Data wystawienia'], 
             format='%d-%m-%Y',
             errors='coerce'
         )
 
         # Calculate days difference
-        days_difference = (today - df_all_products['Data wystawienia']).dt.days
+        days_difference = (today - df['Data wystawienia']).dt.days
         
         # Create mask with string comparisons for boolean columns
         mask = (
-            (df_all_products['Wystawione'] == 'TRUE') & 
-            (df_all_products['Druga obniżka'] == 'FALSE') &
+            (df['Wystawione'] == 'TRUE') & 
+            (df['Druga obniżka'] == 'FALSE') &
             (days_difference >= config.OUTLET_DAYS_TO_DISCOUNT) &
-            (df_all_products['Data wystawienia'].notna())  # Add check for valid dates
+            (df['Data wystawienia'].notna())  # Add check for valid dates
         )
 
-        filtered_products = df_all_products[mask]
+        df = df[mask]
         
-        if len(filtered_products) > 0:
-            print(f'ℹ️ Selected {len(filtered_products)} products ready to discount.')
-            return filtered_products
-        
+        if len(df) > 0:
+            print(f'ℹ️ Selected {len(df)} products ready to discount.')
+            return df
         return None
     
-    def create_discounts(self):
-        """Create discounts for products that have been in outlet for more than configured days."""
+    def create_discounts(self, df_offers_to_discount):
+        """Create discounts for products that have been in outlet for more than configured days.
+        Args:
+            df_offers_to_discount (df): A pandas DataFrame containing the products to create with ['EAN'] column.
+        """
         
-        df_to_discount = self.select_products_to_discount()
+        if df_offers_to_discount is None or df_offers_to_discount.empty:
+            print("No offers to discount")
+            return
+        
+        product_discount_count = len(df_offers_to_discount)
+        product_discount_counter = 0
+        gsheets_updates = []
+        print(f'Discounting {product_discount_count} outlet offers')
+        
+        for _, product in df_offers_to_discount.iterrows():
 
-        return df_to_discount
+            try:
+                # Get the row number of the product in the Google Sheets
+                google_sheets_row = product['Row Number']
+                product_code = product['SKU']
+
+                # Create a special offer
+                product_data = {
+                    'product_id': product['ID Shoper'],
+                    'discount': config.OUTLET_DISCOUNT_PERCENTAGE,
+                    'discount_type': 3
+                }
+                response = self.shoper_special_offers.create_special_offer(product_data)
+                promotion_id = response.json()
+
+                if response.status_code == 200:
+                    print(f'✅ Special offer {promotion_id} of product {product_code} created.')
+                else:
+                    print(f'❌ Failed to create a special offer for product {product_code}: {response.json()['error_description']}')
+
+                # Creating a list of updates to be made in gsheets
+                if len(google_sheets_row) > 0:
+                    row_number = google_sheets_row[0]
+                    gsheets_updates.append([
+                        row_number, 
+                        True
+                    ])
+                else:
+                    print(f"Warning: SKU {product_code} not found in Google Sheets!")
+
+
+                product_discount_counter += 1
+                print(f'Products discounted: {product_discount_counter}/{product_discount_count}')
+                print('-----------------------------------')
+
+            except Exception as e:
+                print(f'❌ Error creating special offer {product_code}: {e}')
+                continue
+
+        # self.batch_update_discounted_offers_gsheets(gsheets_updated)
+    
+    def batch_update_discounted_offers_gsheets(self, gsheets_updates):
+        """Save discounted offers' info to Google Sheets
+        Args:
+            gsheets_updates (list): List of updates containing [row_number, discount]
+        """
+        try:
+            self.gsheets_worksheets.batch_update_from_a_list(
+                worksheet_name=config.OUTLET_SHEET_NAME,
+                updates=gsheets_updates,
+                start_column='F',
+                num_columns=1
+            )
+        except Exception as e:
+            print(f"Failed to update Google Sheets: {str(e)}")

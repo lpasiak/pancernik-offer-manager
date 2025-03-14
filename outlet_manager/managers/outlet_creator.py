@@ -97,7 +97,7 @@ class OutletCreator:
             try:
 
                 # Get the row number of the product in the Google Sheets
-                google_sheets_row = df_offers.loc[df_offers['SKU'] == product_code, 'Row Number'].values
+                google_sheets_row = product['Row Number']
 
                 # Create outlet offer
                 product_data = new_outlet.transform_to_outlet()
@@ -161,9 +161,9 @@ class OutletCreator:
                     ])
                 else:
                     print(f"Warning: SKU {product_code} not found in Google Sheets!")
+
                 product_counter += 1
                 print(f'Products created: {product_counter}/{product_count}')
-
                 print('-----------------------------------')
                 
             except Exception as e:

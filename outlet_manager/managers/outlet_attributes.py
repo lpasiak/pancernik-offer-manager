@@ -62,12 +62,14 @@ class OutletAttributeManager:
 
         # Get unique category list
         category_ids_to_append = df_all_products['ID Kategorii'].astype(int).unique().tolist()
-
+        category_ids_to_append = [int(i) for i in category_ids_to_append]
+        
         # Attribute group to append categories to
         attribute_group_to_append = config.OUTLET_MAIN_PRODUCT_ATTRIBUTE_IDS[config.SITE]['group']
 
         # Get attribute group all categories
         attribute_group_categories = self.shoper_attributes.get_attribute_group_by_id(attribute_group_to_append)['categories']
+        attribute_group_categories = [int(i) for i in attribute_group_categories]
 
         # Merge current and new categories
         categories_to_import = sorted(list(set(attribute_group_categories + category_ids_to_append)))

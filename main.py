@@ -6,7 +6,7 @@ import config
 
 def context_menu():
     menu_text = """Co chcesz zrobić?
-1. Wystawić produkty outletowe i dograć atrybuty
+1. Wystawić produkty outletowe
 2. Ustawić obniżki na produkty outletowe
 3. Posprzątać sprzedane produkty
 4. Ustawić atrybuty produktów
@@ -37,11 +37,12 @@ def main():
             # Create discounts
             out_discount_manager = OutletDiscountManager()
             out_discount_manager.connect()
-            out_discount_manager.create_discounts()
+            products_to_discount = out_discount_manager.select_products_to_discount()
+            out_discount_manager.create_discounts(products_to_discount)
 
         elif action == '3':
             pass
-        
+
         elif action == '4':
             # Update attribute groups
             out_attribute_manager = OutletAttributeManager()
