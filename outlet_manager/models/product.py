@@ -117,7 +117,7 @@ class OutletProduct:
         else:
             price = self.source_product['stock']['price']
 
-        return float(price) * config.OUTLET_DISCOUNT_PERCENTAGE
+        return float(price) - float(price) * (config.OUTLET_DISCOUNT_PERCENTAGE / 100)
     
     def _set_category_list(self):
         """Get the category list from the source product and append the correct outlet category.
