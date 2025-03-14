@@ -56,7 +56,8 @@ class ShoperSpecialOffers:
 
         try:
             if use_code:
-                promo_id = self.products.get_product_by_code(identifier, use_code=True)['special_offer']['promo_id']
+                product = self.products.get_product_by_code(identifier, use_code=True)
+                promo_id = product.get('special_offer', {}).get('promo_id')
             else:
                 product = self.products.get_product_by_code(identifier)
                 promo_id = product.get('special_offer', {}).get('promo_id')
