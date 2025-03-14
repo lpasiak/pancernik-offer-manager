@@ -8,6 +8,8 @@ def context_menu():
     menu_text = """Co chcesz zrobić?
 1. Wystawić produkty outletowe i dograć atrybuty
 2. Ustawić obniżki na produkty outletowe
+3. Posprzątać sprzedane produkty
+4. Ustawić atrybuty produktów
 q żeby wyjść.
 
 Akcja: """
@@ -31,17 +33,21 @@ def main():
             out_stock_manager.connect()
             out_stock_manager.move_products_to_lacking()
 
-            # Update attribute groups
-            out_attribute_manager = OutletAttributeManager()
-            out_attribute_manager.connect()
-            out_attribute_manager.update_attribute_groups()
-            out_attribute_manager.update_main_products_attributes()
-
         elif action == '2':
             # Create discounts
             out_discount_manager = OutletDiscountManager()
             out_discount_manager.connect()
             out_discount_manager.create_discounts()
+
+        elif action == '3':
+            pass
+        
+        elif action == '4':
+            # Update attribute groups
+            out_attribute_manager = OutletAttributeManager()
+            out_attribute_manager.connect()
+            out_attribute_manager.update_attribute_groups()
+            out_attribute_manager.update_main_products_attributes()
 
         elif action == 'q':
             print('Do zobaczenia!')
