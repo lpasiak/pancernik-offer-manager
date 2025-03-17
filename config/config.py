@@ -44,6 +44,7 @@ OUTLET_SHEET_ARCHIVED_NAME = 'Archiwum'
 OUTLET_VALID_DAMAGE_TYPES = ['USZ', 'ZAR', 'OBA']
 OUTLET_DISCOUNT_PERCENTAGE = 20
 OUTLET_DAYS_TO_DISCOUNT = 14
+OUTLET_DAYS_TO_BE_REMOVED = 60
 
 OUTLET_MAIN_PRODUCT_ATTRIBUTE_IDS = {
     'MAIN': {'id': '1402', 'group': '577'},
@@ -54,6 +55,8 @@ PRODUCT_TYPE = {
     'MAIN': {'id': '1370', 'group': '550'},
     'TEST': {'id': '28', 'group': '8'}
 }
+
+EASYSTORAGE_FILE_PATH = ROOT_DIR / 'sheets' / 'Easystorage.xlsx'
 
 # CLEANUP MANAGER Google Sheets
 CLEANUP_SHEET_ID = os.getenv('CLEANUP_SHEET_ID')
