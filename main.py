@@ -2,7 +2,9 @@ from outlet_manager.managers.outlet_creator import OutletCreator
 from outlet_manager.managers.outlet_attributes import OutletAttributeManager
 from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
-from outlet_manager.managers.outlet_cleaner import OutletCleaner
+from outlet_manager.managers.outlet_archiver import OutletArchiver
+from connections.easystorage_data import EasyStorageData
+import config
 
 def context_menu():
     menu_text = """Co chcesz zrobić?
@@ -42,9 +44,10 @@ def main():
 
         elif action == '3':
             # Remove products that have been sold or haven't sold for 6 weeks
-            out_to_be_removed = OutletCleaner()
-            out_to_be_removed.connect()
-            out_to_be_removed.select_products_to_be_cleaned()
+            out_archiver = OutletArchiver()
+            out_archiver.connect()
+            products_sold_to_archive = out_archiver.select_sold_products()
+            out_archiver.archive_sold_products(products_sold_to_archive)
 
         elif action == '4':
             # Update attribute groups
