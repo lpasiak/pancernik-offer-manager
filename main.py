@@ -2,13 +2,14 @@ from outlet_manager.managers.outlet_creator import OutletCreator
 from outlet_manager.managers.outlet_attributes import OutletAttributeManager
 from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
+from outlet_manager.managers.outlet_cleaner import OutletCleaner
 
 def context_menu():
     menu_text = """Co chcesz zrobić?
-1. Wystawić produkty outletowe
-2. Ustawić obniżki na produkty outletowe
-3. Posprzątać sprzedane produkty
-4. Ustawić atrybuty produktów
+1. Wystawić outlety
+2. Obniżki na outlety
+3. Przenieść sprzedane/archiwalne
+4. Atrybuty produktów
 q żeby wyjść.
 
 Akcja: """
@@ -28,7 +29,7 @@ def main():
             out_creator.create_outlet_offers(products_to_publish)
 
             # Move products to lacking
-            out_lacking_products_manager = OutletLackingManager
+            out_lacking_products_manager = OutletLackingManager()
             out_lacking_products_manager.connect()
             out_lacking_products_manager.move_products_to_lacking()
 
@@ -40,7 +41,10 @@ def main():
             out_discount_manager.create_discounts(products_to_discount)
 
         elif action == '3':
-            pass
+            # Remove products that have been sold or haven't sold for 6 weeks
+            out_to_be_removed = OutletCleaner()
+            out_to_be_removed.connect()
+            out_to_be_removed.select_products_to_be_cleaned()
 
         elif action == '4':
             # Update attribute groups
