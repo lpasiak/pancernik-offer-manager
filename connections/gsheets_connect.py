@@ -1,7 +1,6 @@
 import gspread
 import pandas as pd
 from pathlib import Path
-import config
 import time
 
 class GSheetsClient:
@@ -35,11 +34,10 @@ class GSheetsClient:
                 return func(*args, **kwargs)
             except gspread.exceptions.APIError as e:
                 if "RESOURCE_EXHAUSTED" in str(e):
-                    print("API quota exceeded. Waiting 1 second before retry...")
-                    time.sleep(1)  # Wait 100 seconds before retrying
+                    print("API quota exceeded. Waiting 20 seconds before retry...")
+                    time.sleep(20)  # Wait 20 seconds before retrying
                 else:
                     raise  # Re-raise if it's a different API error
-
 
     def connect(self):
         """Authenticate with Google Sheets."""
