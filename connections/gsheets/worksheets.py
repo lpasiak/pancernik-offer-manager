@@ -134,3 +134,30 @@ class GsheetsWorksheets:
         except Exception as e:
             print(f"❌ Error moving products: {e}")
             raise
+
+    def save_data(self, worksheet_name: str, df: pd.DataFrame):
+        """Batch remove current data and save new data to a Google Sheets worksheet.
+        Args:
+            worksheet_name (str): Name of the worksheet to save the data to
+            df (pd.DataFrame): DataFrame containing the data to save
+        """
+        try:
+            # Transform the data to match Google Sheets format
+            source_worksheet = self.client._handle_request(self.client.sheet.worksheet, worksheet_name)
+
+            df_string = df.astype(str)
+            header = df_string.columns.values.tolist()
+            data = df_string.values.tolist()
+            all_values = [header] + data
+
+            print('Cleaning the worksheet...')
+            # Clear existing content
+            source_worksheet.clear()
+            # Update the worksheet with the new data
+            print('Saving the data...')
+            source_worksheet.update(all_values)
+            print(f"✅ Successfully saved data to {worksheet_name}")
+
+        except Exception as e:
+            print(f"❌ Error saving data to Google Sheets: {e}")
+            raise
