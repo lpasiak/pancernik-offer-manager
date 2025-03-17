@@ -56,11 +56,11 @@ class OutletLackingManager:
 
         selected_offers = df_all_products[mask].copy()
 
-        print('\nℹ️ Checking if all the products exist on Shoper...\n')
+        print('ℹ️ Checking if all the products exist on Shoper...')
         
         # If there are no products to move, return
         if selected_offers.empty:
-            print('\nℹ️ No products to move to the lacking sheet\n')
+            print('ℹ️ No products to move to the lacking sheet')
             return
 
         # Check if the products exist on Shoper
