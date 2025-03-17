@@ -36,7 +36,7 @@ class ShoperSpecialOffers:
             response = self.client._handle_request('POST', url, json=params)
 
             if response.status_code == 200:
-                print(f'✅ Special offer {params['product_id']} created.')
+                print(f'✅ Special offer for product ID {params['product_id']} created.')
                 return response.json()
 
         except Exception as e:

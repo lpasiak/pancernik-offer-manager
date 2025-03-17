@@ -85,7 +85,7 @@ class OutletDiscountManager:
             return
         
         # Testing on 2 products
-        df_offers_to_discount = df_offers_to_discount.head(2)
+        # df_offers_to_discount = df_offers_to_discount.head(2)
         
         product_discount_count = len(df_offers_to_discount)
         product_discount_counter = 0
@@ -125,6 +125,7 @@ class OutletDiscountManager:
                     print(f"Warning: SKU {product_code} not found in Google Sheets!")
 
                 product_discount_counter += 1
+                print(f'Set {config.OUTLET_DISCOUNT_PERCENTAGE}% discount for {product_code}')
                 print(f'Products discounted: {product_discount_counter}/{product_discount_count}')
                 print('-----------------------------------')
 
