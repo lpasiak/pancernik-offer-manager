@@ -2,7 +2,10 @@ from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
+from connections.easystorage_data import EasyStorageData
 import config
+from datetime import datetime
+
 
 class OutletCleaner:
     def __init__(self):
@@ -10,6 +13,7 @@ class OutletCleaner:
         self.gsheets_client = None
         self.shoper_products = None
         self.gsheets_worksheets = None
+        self.easystorage_data = None
         
     def connect(self):
         """Initialize all necessary connections"""
@@ -30,9 +34,61 @@ class OutletCleaner:
             )
             self.gsheets_client.connect()
             self.gsheets_worksheets = GsheetsWorksheets(self.gsheets_client)
+            self.easystorage_file = EasyStorageData(config.EASYSTORAGE_FILE_PATH)
+            self.easystorate_data = self.easystorage_file.outlet_products()
             
             return True
             
         except Exception as e:
             print(f"Error initializing connections: {e}")
             return False
+        
+    def select_products_to_be_cleaned(self):
+        """Move products that have been sold or haven't sold for 6 weeks."""
+        print(self.easystorate_data)
+
+        
+        # today = datetime.today().strftime('%d-%m-%Y')
+
+        # # datetime.today().strftime('%Y-%m-%d')
+        # # Get all products from the outlet gsheet
+        # df_all_products = self.gsheets_worksheets.get_data(sheet_name=config.OUTLET_SHEET_NAME, include_row_numbers=True)
+
+        # mask = (
+        #     (df_all_products["Wystawione"] != 'TRUE') & 
+        #     (df_all_products['Data'].fillna('') != today))
+
+        # columns_to_keep = ['Row Number', 'EAN', 'SKU', 'Nazwa', 'Uszkodzenie', 'Data']
+        # df_all_products = df_all_products[columns_to_keep]
+
+        # selected_offers = df_all_products[mask].copy()
+
+        # print('\nℹ️ Checking if all the products exist on Shoper...\n')
+        
+        # # If there are no products to move, return
+        # if selected_offers.empty:
+        #     print('\nℹ️ No products to move to the lacking sheet\n')
+        #     return
+
+        # # Check if the products exist on Shoper
+        # for index, row in selected_offers.iterrows():
+        #     response = self.shoper_products.get_product_by_code(row['EAN'], use_code=True)
+            
+        #     if response is not None:
+        #         selected_offers = selected_offers.drop(index)
+        #         print(f'ℹ️ Product {row["EAN"]} exists on Shoper.')
+
+        # if selected_offers.empty:
+        #     print('ℹ️ No products to move to the lacking sheet')
+        #     return
+
+        # selected_offers = selected_offers[columns_to_keep]
+
+        # # Move products to the lacking gsheet and remove them from the outlet gsheet
+        # self.gsheets_worksheets.batch_move_products(
+        #     source_worksheet_name=config.OUTLET_SHEET_NAME,
+        #     target_worksheet_name=config.OUTLET_SHEET_LACKING_PRODUCTS_NAME,
+        #     values_df=selected_offers
+        # )
+
+        # print('✅ Products moved to the lacking sheet')

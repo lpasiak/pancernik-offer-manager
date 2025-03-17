@@ -1,6 +1,6 @@
 from outlet_manager.managers.outlet_creator import OutletCreator
 from outlet_manager.managers.outlet_attributes import OutletAttributeManager
-from outlet_manager.managers.outlet_stock import OutletStockManager
+from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
 
 def context_menu():
@@ -28,9 +28,9 @@ def main():
             out_creator.create_outlet_offers(products_to_publish)
 
             # Move products to lacking
-            out_stock_manager = OutletStockManager()
-            out_stock_manager.connect()
-            out_stock_manager.move_products_to_lacking()
+            out_lacking_products_manager = OutletLackingManager
+            out_lacking_products_manager.connect()
+            out_lacking_products_manager.move_products_to_lacking()
 
         elif action == '2':
             # Create discounts

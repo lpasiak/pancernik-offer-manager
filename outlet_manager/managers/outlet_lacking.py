@@ -5,7 +5,8 @@ from connections.gsheets.worksheets import GsheetsWorksheets
 import config
 from datetime import datetime
 
-class OutletStockManager:
+
+class OutletLackingManager:
     def __init__(self):
         self.shoper_client = None
         self.gsheets_client = None
