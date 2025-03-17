@@ -74,15 +74,20 @@ class OutletArchiver:
             print(f'{gsheets_length} products to analyze...')
             for index, row in gsheets_data.iterrows():
 
-                product_sku = row['SKU']
-                product_data = self.shoper_products.get_product_by_code(row['ID Shoper'])
-                product_stock = int(product_data['stock']['stock'])
+                try:
+                    product_sku = row['SKU']
+                    product_data = self.shoper_products.get_product_by_code(row['ID Shoper'])
+                    product_stock = int(product_data['stock']['stock'])
 
-                print(f'Analyzing product {product_sku} | {index + 1}/{gsheets_length}')
-                
-                # If product has 0 items on Shoper and it is not in easy storage warehouse
-                if product_stock != 0 or product_sku in easy_storage_sku_list:
+                    print(f'Analyzing product {product_sku} | {index + 1}/{gsheets_length}')
+                    
+                    # If product has 0 items on Shoper and it is not in easy storage warehouse
+                    if product_stock != 0 or product_sku in easy_storage_sku_list:
+                        gsheets_data = gsheets_data.drop(index)
+                except Exception as e:
+                    print(f"Error: {e}")
                     gsheets_data = gsheets_data.drop(index)
+                    continue
 
             if gsheets_data.empty:
                 print('No products sold.')
@@ -107,9 +112,11 @@ class OutletArchiver:
         sold_products_df['Druga obniżka'] = sold_products_df['Druga obniżka'].map({'TRUE': True, 'FALSE': False})
         sold_products_df['SKU'] = sold_products_df['SKU'].astype('object')
 
+        sold_products_len = len(sold_products_df)
         # Remove from Shoper
         for index, row in sold_products_df.iterrows():
             self.shoper_products.remove_product(row['ID Shoper'])
+            print(f'Products: {index + 1}/{sold_products_len}')
 
         # Move to archived sheet
         offers_to_move = sold_products_df[['Row Number', 'EAN', 'SKU', 'Nazwa', 'Uszkodzenie', 'Data', 'Wystawione', 'Data wystawienia', 'Druga obniżka', 'Status', 'Zutylizowane']]
