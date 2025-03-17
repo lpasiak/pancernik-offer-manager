@@ -68,7 +68,7 @@ class GsheetsWorksheets:
                 })
 
             if batch_data:
-                worksheet.batch_update(batch_data)
+                self.client._handle_request(worksheet.batch_update, batch_data)
                 print(f"✓ Successfully updated {len(updates)} rows in {worksheet_name}")
             
         except Exception as e:
@@ -83,20 +83,20 @@ class GsheetsWorksheets:
             values_df (pd.DataFrame): DataFrame containing the values to move
         """
         try:
-            source_worksheet = self.client.sheet.worksheet(source_worksheet_name)
-            target_worksheet = self.client.sheet.worksheet(target_worksheet_name)
+            source_worksheet = self.client._handle_request(self.client.sheet.worksheet, source_worksheet_name)
+            target_worksheet = self.client._handle_request(self.client.sheet.worksheet, target_worksheet_name)
 
             # Prepare the values
             df_without_rows = values_df.drop('Row Number', axis=1)
             values_to_append = df_without_rows.values.tolist()
 
             # Get current sheet dimensions and calculate needed rows
-            current_rows = len(target_worksheet.get_all_values())
+            current_rows = len(self.client._handle_request(target_worksheet.get_all_values))
             needed_rows = current_rows + len(values_to_append)
 
             # Resize the sheet if necessary by adding empty rows
             if needed_rows > current_rows:
-                target_worksheet.resize(rows=needed_rows)
+                self.client._handle_request(target_worksheet.resize, rows=needed_rows)
 
             # Find the first empty row in the target worksheet
             next_row = current_rows + 1  # Add 1 to start after the last row
@@ -109,21 +109,22 @@ class GsheetsWorksheets:
 
             # Perform the batch update to add rows to target worksheet
             try:
-                target_worksheet.batch_update(batch_data)
+                self.client._handle_request(target_worksheet.batch_update, batch_data)
                 print(f"✅ Successfully moved {len(values_to_append)} products to lacking products sheet.")
             except Exception as e:
                 print(f"❌ Failed to move products to lacking products sheet: {str(e)}")
                 return
 
-            # Remove the products from the source worksheet
+            # Remove the products from the source worksheet from bottom to top
             try:
-                # Get row numbers to delete in reverse order to maintain correct indices
                 row_numbers = sorted(values_df['Row Number'].tolist(), reverse=True)
-
-                # Delete rows one by one from bottom to top
+                counter_length = len(row_numbers)
+                counter = 0
+                
                 for row in row_numbers:
                     self.client._handle_request(source_worksheet.delete_rows, int(row))
-                    print(f"✅ Deleted row {row} from {source_worksheet_name}")
+                    counter += 1
+                    print(f"✅ Deleted row {row} from {source_worksheet_name} | {counter}/{counter_length}")
 
                 print(f"✅ Successfully removed {len(values_to_append)} products from the source worksheet.")
 
