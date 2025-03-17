@@ -122,7 +122,7 @@ class GsheetsWorksheets:
 
                 # Delete rows one by one from bottom to top
                 for row in row_numbers:
-                    source_worksheet.delete_rows(int(row))
+                    self.client._handle_request(source_worksheet.delete_rows, int(row))
                     print(f"✅ Deleted row {row} from {source_worksheet_name}")
 
                 print(f"✅ Successfully removed {len(values_to_append)} products from the source worksheet.")
