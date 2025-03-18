@@ -29,7 +29,9 @@ def context_menu_promo():
     menu_text = """--------------------------------
 Co chcesz zrobić?
 1. Pobrać promocje
-2. Zaimportować promocja
+2. Zaimportować promocje
+3. Uaktualnić stany magazynowe
+4. Usunąć promocje
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
@@ -108,7 +110,22 @@ def main():
             if action == '1':
                 promo_manager = PromoManager()
                 promo_manager.connect()
-                promo_export = promo_manager.export_all_promo_products()
+                promo_manager.export_all_promo_products()
+
+            if action == '2':
+                promo_manager = PromoManager()
+                promo_manager.connect()
+                promo_manager.import_promo_percent_from_gsheet()
+
+            if action == '3':
+                promo_manager = PromoManager()
+                promo_manager.connect()
+                promo_manager.update_product_stock_from_gsheet()
+    
+            if action == '4':
+                promo_manager = PromoManager()
+                promo_manager.connect()
+                promo_manager.remove_promo_offers_from_gsheet()
 
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
