@@ -177,10 +177,26 @@ class OutletProduct:
         src_product_attribute_dict = self.source_product['attributes']
         attribute_dict = {}
 
-        for group, attributes in src_product_attribute_dict.items():
-            if isinstance(attributes, dict):
-                for key, value in attributes.items():
-                    attribute_dict[key] = value
+        # If attributes is an empty list, just return empty dict with outlet attributes
+        if not src_product_attribute_dict:  # This works for empty list/dict
+            if config.SITE == 'MAIN':
+                attribute_dict['1402'] = ''     # _outlet
+                attribute_dict['1538'] = 'Tak'  # Outlet
+            return attribute_dict
+
+        # Handle if attributes is a list
+        if isinstance(src_product_attribute_dict, list):
+            for attribute in src_product_attribute_dict:
+                if isinstance(attribute, dict):
+                    for key, value in attribute.items():
+                        attribute_dict[key] = value
+                        
+        # Handle if attributes is a dictionary
+        elif isinstance(src_product_attribute_dict, dict):
+            for group, attributes in src_product_attribute_dict.items():
+                if isinstance(attributes, dict):
+                    for key, value in attributes.items():
+                        attribute_dict[key] = value
 
         if config.SITE == 'MAIN':
             attribute_dict['1402'] = ''     # _outlet
