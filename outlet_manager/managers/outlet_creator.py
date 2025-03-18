@@ -60,7 +60,6 @@ class OutletCreator:
         )
         df = df[mask]
 
-        df.to_excel(config.SHEETS_DIR / f'offers_ready_to_publish.xlsx', index=False)
         print(f'Selected products ready to publish: {len(df)}')
 
         if len(df) > 0:

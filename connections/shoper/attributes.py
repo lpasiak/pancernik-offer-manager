@@ -35,7 +35,6 @@ class ShoperAttributes:
             page += 1
 
         df = pd.DataFrame(attribute_groups)
-        df.to_excel(config.SHEETS_DIR / 'shoper_all_attribute_groups.xlsx', index=False)
         return df
     
     def get_all_attributes(self):
@@ -66,7 +65,6 @@ class ShoperAttributes:
             page += 1
 
         df = pd.DataFrame(attributes)
-        df.to_excel(config.SHEETS_DIR / 'shoper_all_attributes.xlsx', index=False)
         return df
     
     def get_attribute_group_by_id(self, attribute_group_id):

@@ -8,7 +8,7 @@ class ShoperCategories:
         self.client = client
 
     def get_all_categories(self):
-        """Get all categories from Shoper and return them as df or None and save to Excel."""
+        """Get all categories from Shoper and return them as df or None"""
         try:
             print("Downloading all categories.")
 
@@ -36,7 +36,6 @@ class ShoperCategories:
                 page += 1
             
             df = pd.DataFrame(categories)
-            df.to_excel(config.SHEETS_DIR / 'shoper_all_categories.xlsx', index=False)
             return df
         
         except Exception as e:

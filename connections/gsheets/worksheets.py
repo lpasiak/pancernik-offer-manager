@@ -35,7 +35,6 @@ class GsheetsWorksheets:
             if include_row_numbers:
                 df.insert(0, 'Row Number', range(2, len(df) + 2)) # GSheets rows start at 2
 
-            df.to_excel(config.SHEETS_DIR / f'gsheets_{sheet_name.lower()}.xlsx', index=False)
             print('Downloaded all the data from Google Sheets.')
             return df
         

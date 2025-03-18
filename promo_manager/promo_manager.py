@@ -74,8 +74,6 @@ class PromoManager:
             'ID produktu': df['product_id'].astype('object')
         })
 
-        # Save to Excel
-        new_df.to_excel(config.SHEETS_DIR / 'promo_products.xlsx', index=False)
         # Save to promo sheets
         self.gsheets_worksheets.save_data(config.PROMO_SHEET_EXPORT_NAME, new_df)
 

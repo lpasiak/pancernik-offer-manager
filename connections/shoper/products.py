@@ -148,7 +148,7 @@ class ShoperProducts:
 
     # TO BE REBUILT in the future, so a user will be able to filter products
     def get_all_products(self):
-        """Get all products from Shoper and return them as df or None and save to Excel."""
+        """Get all products from Shoper and return them as df or None."""
         try:
             print("Downloading all products...")
 
@@ -176,7 +176,6 @@ class ShoperProducts:
                 page += 1
 
             df = pd.DataFrame(products)
-            df.to_excel(config.SHEETS_DIR / 'shoper_all_products.xlsx', index=False)
             return df
             
         except Exception as e:
