@@ -27,7 +27,7 @@ class ShoperProducts:
 
                 if not product_list:
                     print(f'❌ Product {identifier} doesn\'t exist')
-                    return None
+                    return {'success': False, 'error': f'❌ Product {identifier} doesn\'t exist'}
 
                 product = product_list[0]
                 
@@ -37,8 +37,9 @@ class ShoperProducts:
                 product = response.json()
                 
                 if response.status_code != 200:
-                    print(f'❌ API Error: {response.json()['error_description']}')
-                    return None
+                    error_description = response.json()['error_description']
+                    print(f'❌ API Error: {error_description}')
+                    return {'success': False, 'error': error_description}
 
             # Get product pictures if requested
             if pictures:
@@ -51,8 +52,8 @@ class ShoperProducts:
             return product
 
         except Exception as e:
-            print(f'❌ Error fetching product {identifier}: {str(e)}')
-            return None
+            print(f'❌ Request failed: {str(e)}')
+            return str(e)
         
     def create_product(self, product_data):
         """Create a new product in Shoper
@@ -77,12 +78,13 @@ class ShoperProducts:
                     print(f'❌ Invalid response format: {str(e)}')
                     return None
                 
-            print(f'❌ API Error: {response.json()['error_description']}')
-            return None
+            error_description = response.json()['error_description']
+            print(f'❌ API Error: {error_description}')
+            return {'success': False, 'error': error_description}
             
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
-            return None
+            return str(e)
 
     # TO BE REBUILT in the future, so a user will also be able to remove a product by SKU
     def remove_product(self, product_id):
@@ -99,12 +101,13 @@ class ShoperProducts:
                 print(f'✅ Product {product_id} removed successfully')
                 return True
                 
-            print(f'❌ API Error: {response.json()['error_description']}')
-            return None
+            error_description = response.json()['error_description']
+            print(f'❌ API Error: {error_description}')
+            return {'success': False, 'error': error_description}
             
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
-            return None
+            return str(e)
         
     def update_product_by_code(self, identifier, use_code=False, **parameters):
         """Update a product from Shoper. Returns True if successful, None if failed
@@ -135,12 +138,13 @@ class ShoperProducts:
                 print(f'✅ Product {product_id} updated successfully with {list(parameters.keys())}')
                 return True
                 
-            print(f'❌ API Error: {response.json()['error_description']}')
-            return None
+            error_description = response.json()['error_description']
+            print(f'❌ API Error: {error_description}')
+            return {'success': False, 'error': error_description}
         
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
-            return None
+            return str(e)
 
     # TO BE REBUILT in the future, so a user will be able to filter products
     def get_all_products(self):
@@ -158,8 +162,9 @@ class ShoperProducts:
                 number_of_pages = data['pages']
 
                 if response.status_code != 200:
-                    print(f'❌ API Error: {response.json()['error_description']}')
-                    return None
+                    error_description = response.json()['error_description']
+                    print(f'❌ API Error: {error_description}')
+                    return {'success': False, 'error': error_description}
                     
                 page_data = data.get('list', [])
                 
@@ -175,5 +180,5 @@ class ShoperProducts:
             return df
             
         except Exception as e:
-            print(f'❌ Error fetching all products: {str(e)}')
-            return None
+            print(f'❌ Request failed: {str(e)}')
+            return str(e)

@@ -21,8 +21,9 @@ class ShoperAttributes:
             number_of_pages = data['pages']
 
             if response.status_code != 200:
-                print(f'❌ API Error: {response.status_code}, {response.text}')
-                return None
+                error_description = response.json()['error_description']
+                print(f'❌ API Error: {error_description}')
+                return {'success': False, 'error': error_description}
 
             page_data = response.json().get('list', [])
 
@@ -51,9 +52,10 @@ class ShoperAttributes:
             number_of_pages = data['pages']
 
             if response.status_code != 200:
-                print(f'❌ API Error: {response.status_code}, {response.text}')
-                return None
-
+                error_description = response.json()['error_description']
+                print(f'❌ API Error: {error_description}')
+                return {'success': False, 'error': error_description}
+            
             page_data = response.json().get('list', [])
 
             if not page_data:  # If no data is returned
@@ -79,8 +81,9 @@ class ShoperAttributes:
         response = self.client._handle_request('GET', url)
         
         if response.status_code != 200:
-            print(f'❌ API Error: {response.status_code}, {response.text}')
-            return None
+            error_description = response.json()['error_description']
+            print(f'❌ API Error: {error_description}')
+            return {'success': False, 'error': error_description}
         
         return response.json()
 
@@ -97,7 +100,8 @@ class ShoperAttributes:
         response = self.client._handle_request('PUT', url, json={'categories': categories})
         
         if response.status_code != 200:
-            print(f'❌ API Error: {response.status_code}, {response.text}')
-            return None
+            error_description = response.json()['error_description']
+            print(f'❌ API Error: {error_description}')
+            return {'success': False, 'error': error_description}
         
         return True

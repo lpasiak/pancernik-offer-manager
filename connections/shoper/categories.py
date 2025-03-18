@@ -22,8 +22,9 @@ class ShoperCategories:
                 number_of_pages = data['pages']
 
                 if response.status_code != 200:
-                    print(f'❌ API Error: {response.status_code}, {response.text}')
-                    return None
+                    error_description = response.json()['error_description']
+                    print(f'❌ API Error: {error_description}')
+                    return {'success': False, 'error': error_description}
 
                 page_data = response.json().get('list', [])
 
@@ -39,6 +40,6 @@ class ShoperCategories:
             return df
         
         except Exception as e:
-            print(f'❌ Error fetching all categories: {str(e)}')
-            return None
+            print(f'❌ Request failed: {str(e)}')
+            return str(e)
     

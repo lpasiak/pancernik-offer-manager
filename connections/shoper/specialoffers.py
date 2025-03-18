@@ -38,10 +38,14 @@ class ShoperSpecialOffers:
             if response.status_code == 200:
                 print(f'✅ Special offer for product ID {params['product_id']} created.')
                 return response.json()
-
+            else:
+                error_description = response.json()['error_description']
+                print(f'❌ API Error: {error_description}')
+                return {'success': False, 'error': error_description}
+            
         except Exception as e:
-            print(f'❌ Error creating special offer {discount_data['product_id']}: {e}')
-            return None
+            print(f'❌ Request failed: {str(e)}')
+            return str(e)
 
     def remove_special_offer_from_product(self, identifier, use_code=False):
         """Remove a special offer for a product.
@@ -68,9 +72,10 @@ class ShoperSpecialOffers:
                     print(f'✅ Special offer {promo_id} removed successfully.')
                     return True
                 else:
-                    print(f'❌ Special offer {promo_id} removal failed. {response.json()['error_description']}')
-                    return False
-                
+                    error_description = response.json()['error_description']
+                    print(f'❌ API Error: {error_description}')
+                    return {'success': False, 'error': error_description}
+                    
         except Exception as e:
-            print(f'❌ Error removing special offer {identifier}: {str(e)}')
-            return False
+            print(f'❌ Request failed: {str(e)}')
+            return str(e)
