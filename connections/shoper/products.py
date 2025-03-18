@@ -169,7 +169,7 @@ class ShoperProducts:
                 print(f'Page: {page}/{number_of_pages}')
                 products.extend(page_data)
                 page += 1
-                
+
             df = pd.DataFrame(products)
             df.to_excel(config.SHEETS_DIR / 'shoper_all_products.xlsx', index=False)
             return df
