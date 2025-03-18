@@ -93,7 +93,7 @@ class OutletArchiver:
                 print('No products sold.')
                 return
             
-            print('Products that were sold:')
+            print(f'{len(gsheets_data)} Products that were sold:')
             print(gsheets_data[['SKU', 'Nazwa']])
             return gsheets_data
         
@@ -113,10 +113,13 @@ class OutletArchiver:
         sold_products_df['SKU'] = sold_products_df['SKU'].astype('object')
 
         sold_products_len = len(sold_products_df)
+        counters = 0
+
         # Remove from Shoper
         for index, row in sold_products_df.iterrows():
             self.shoper_products.remove_product(row['ID Shoper'])
-            print(f'Products: {index + 1}/{sold_products_len}')
+            counter += 1
+            print(f'Products: {counter}/{sold_products_len}')
 
         # Move to archived sheet
         offers_to_move = sold_products_df[['Row Number', 'EAN', 'SKU', 'Nazwa', 'Uszkodzenie', 'Data', 'Wystawione', 'Data wystawienia', 'Druga obniżka', 'Status', 'Zutylizowane']]
