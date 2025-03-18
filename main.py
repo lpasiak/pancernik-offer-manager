@@ -3,64 +3,120 @@ from outlet_manager.managers.outlet_attributes import OutletAttributeManager
 from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
 from outlet_manager.managers.outlet_archiver import OutletArchiver
-from connections.easystorage_data import EasyStorageData
-import config
+from promo_manager.promo_manager import PromoManager
 
 def context_menu():
-    menu_text = """Co chcesz zrobić?
+    menu_text = """--------------------------------
+Z czym dziś chcesz pracować?
+1. Menedżer outletów
+2. Menedżer promocji
+q żeby wyjść.
+Akcja: """
+    return str(input(menu_text))
+
+def context_menu_outlet():
+    menu_text = """--------------------------------
+Co chcesz zrobić?
 1. Wystawić outlety
 2. Obniżki na outlety
 3. Przenieść sprzedane/archiwalne
 4. Atrybuty produktów
 q żeby wyjść.
-
 Akcja: """
     return str(input(menu_text))
 
+def context_menu_promo():
+    menu_text = """--------------------------------
+Co chcesz zrobić?
+1. Pobrać promocje
+2. Zaimportować promocja
+q żeby wyjść.
+Akcja: """
+    return str(input(menu_text))
+
+def econtext_menu_easystorage():
+    menu_text = """--------------------------------
+Czy wyeksportowałeś i zapisałeś plik z EasyStorage? (y/n)
+Akcja: """
+    return str(input(menu_text))
 
 def main():
 
+    # Main program
     while True:
         action = context_menu()
 
+        # Outlet manager
         if action == '1':
-            # Create outlet offers
-            out_creator = OutletCreator()
-            out_creator.connect()
-            products_to_publish = out_creator.get_offers_ready_to_publish()
-            out_creator.create_outlet_offers(products_to_publish)
+            action = context_menu_outlet()
+            if action == '1':
+                # Create outlet offers
+                out_creator = OutletCreator()
+                out_creator.connect()
+                products_to_publish = out_creator.get_offers_ready_to_publish()
+                out_creator.create_outlet_offers(products_to_publish)
 
-            # Move products to lacking
-            out_lacking_products_manager = OutletLackingManager()
-            out_lacking_products_manager.connect()
-            out_lacking_products_manager.move_products_to_lacking()
+                # Move products to lacking
+                out_lacking_products_manager = OutletLackingManager()
+                out_lacking_products_manager.connect()
+                out_lacking_products_manager.move_products_to_lacking()
 
+            elif action == '2':
+                # Create discounts
+                out_discount_manager = OutletDiscountManager()
+                out_discount_manager.connect()
+                products_to_discount = out_discount_manager.select_products_to_discount()
+                out_discount_manager.create_discounts(products_to_discount)
+
+            elif action == '3':
+                # Remove products that have been sold or haven't sold for 6 weeks
+                action = econtext_menu_easystorage()
+
+                if action == 'y':
+                    out_archiver = OutletArchiver()
+                    out_archiver.connect()
+                    products_sold_to_archive = out_archiver.select_sold_products()
+                    out_archiver.archive_sold_products(products_sold_to_archive)
+
+                elif action == 'n':
+                    print('Pobierz plik z EasyStorage i zapisz go jako Easystorage.xlsx w folderze "sheets"')
+
+                elif action.lower() == 'q':
+                    print('Do zobaczenia!')
+                    break
+            
+                else:
+                    print('Nie ma takiego wyboru :/')
+
+            elif action == '4':
+                # Update attribute groups
+                out_attribute_manager = OutletAttributeManager()
+                out_attribute_manager.connect()
+                out_attribute_manager.update_attribute_groups()
+                out_attribute_manager.update_main_products_attributes()
+
+            elif action.lower() == 'q':
+                print('Do zobaczenia!')
+                break
+            else:
+                print('Nie ma takiego wyboru :/')
+
+        # Promo manager
         elif action == '2':
-            # Create discounts
-            out_discount_manager = OutletDiscountManager()
-            out_discount_manager.connect()
-            products_to_discount = out_discount_manager.select_products_to_discount()
-            out_discount_manager.create_discounts(products_to_discount)
+            action = context_menu_promo()
 
-        elif action == '3':
-            # Remove products that have been sold or haven't sold for 6 weeks
-            out_archiver = OutletArchiver()
-            out_archiver.connect()
-            products_sold_to_archive = out_archiver.select_sold_products()
-            out_archiver.archive_sold_products(products_sold_to_archive)
+            if action == '1':
+                promo_manager = PromoManager()
+                promo_manager.connect()
+                promo_export = promo_manager.export_all_promo_products()
 
-        elif action == '4':
-            # Update attribute groups
-            out_attribute_manager = OutletAttributeManager()
-            out_attribute_manager.connect()
-            out_attribute_manager.update_attribute_groups()
-            out_attribute_manager.update_main_products_attributes()
-
-        elif action == 'q':
-            print('Do zobaczenia!')
-            break
-        else:
-            print('Nie ma takiego wyboru :/')
+            elif action.lower() == 'q':
+                print('Do zobaczenia!')
+                break
+            
+        elif action.lower() == 'q':
+                print('Do zobaczenia!')
+                break
 
 if __name__ == '__main__':
     main()
