@@ -85,16 +85,15 @@ class OutletCreator:
         print(f'Creating {product_count} outlet offers')
 
         for _, product in df_offers.iterrows():
-            source_product = self.shoper_products.get_product_by_code(product['EAN'], pictures=True, use_code=True)
-            new_outlet = OutletProduct(source_product, product['SKU'], product['Uszkodzenie'])
-
-            # Variables to be used for gsheets updates
-
-            product_code = product['SKU']
-            product_category_id = int(source_product['category_id'])
 
             try:
 
+                source_product = self.shoper_products.get_product_by_code(product['EAN'], pictures=True, use_code=True)
+                new_outlet = OutletProduct(source_product, product['SKU'], product['Uszkodzenie'])
+
+                product_code = product['SKU']
+                product_category_id = int(source_product['category_id'])
+                
                 # Get the row number of the product in the Google Sheets
                 google_sheets_row = product['Row Number']
 
