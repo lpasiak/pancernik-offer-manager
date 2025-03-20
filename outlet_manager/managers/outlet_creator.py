@@ -1,4 +1,4 @@
-from ..models.product import OutletProduct
+from ..models.outlet_product import OutletProduct
 from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts
 from connections.shoper.pictures import ShoperPictures
