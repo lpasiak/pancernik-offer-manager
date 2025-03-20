@@ -85,6 +85,16 @@ class OutletProduct:
 
         if not isinstance(product_data, dict):
             raise ValueError("product_data must be a dictionary")
+            
+        # Check if product data is an error response
+        if product_data.get('success') is False:
+            raise ValueError(f"Invalid product data: {product_data.get('error', 'Unknown error')}")
+            
+        # Check for required fields
+        required_fields = ['product_id', 'code', 'category_id', 'translations', 'stock']
+        missing_fields = [field for field in required_fields if field not in product_data]
+        if missing_fields:
+            raise ValueError(f"Product data is missing required fields: {', '.join(missing_fields)}")
 
     def _set_product_type(self):
         """Set the product type based on the source product attributes."""

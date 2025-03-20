@@ -164,7 +164,7 @@ class OutletCreator:
                 print('-----------------------------------')
                 
             except Exception as e:
-                print(f'❌ Error creating outlet offer for product {product["product_id"]}: {e}')
+                print(f'❌ Error creating outlet offer for product {product["SKU"]}: {e}')
 
         print(f'Created {product_counter} outlet offers')
         # Update Google Sheets
