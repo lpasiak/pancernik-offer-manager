@@ -113,7 +113,7 @@ class OutletArchiver:
         sold_products_df['SKU'] = sold_products_df['SKU'].astype('object')
 
         sold_products_len = len(sold_products_df)
-        counters = 0
+        counter = 0
 
         # Remove from Shoper
         for index, row in sold_products_df.iterrows():
