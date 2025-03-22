@@ -29,7 +29,7 @@ class GSheetsClient:
         Returns:
             The result of the API call
         """
-        max_retries = 3
+        max_retries = 20
         retry_count = 0
         base_delay = 20  # Start with 20 seconds delay
 
