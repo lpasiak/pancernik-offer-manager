@@ -29,15 +29,25 @@ class GSheetsClient:
         Returns:
             The result of the API call
         """
-        while True:
+        max_retries = 3
+        retry_count = 0
+        base_delay = 20  # Start with 20 seconds delay
+
+        while retry_count < max_retries:
             try:
                 return func(*args, **kwargs)
             except gspread.exceptions.APIError as e:
-                if "RESOURCE_EXHAUSTED" in str(e):
-                    print("API quota exceeded. Waiting 20 seconds before retry...")
-                    time.sleep(20)  # Wait 20 seconds before retrying
+                retry_count += 1
+                if "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e):
+                    delay = base_delay * (2 ** (retry_count - 1))  # Exponential backoff
+                    print(f"API quota exceeded. Waiting {delay} seconds before retry {retry_count}/{max_retries}...")
+                    time.sleep(delay)
                 else:
                     raise  # Re-raise if it's a different API error
+            except Exception as e:
+                raise  # Re-raise any other exceptions
+
+        raise Exception(f"Failed after {max_retries} retries")
 
     def connect(self):
         """Authenticate with Google Sheets."""
