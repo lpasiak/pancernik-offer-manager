@@ -67,7 +67,9 @@ class OutletLackingManager:
         for index, row in selected_offers.iterrows():
             response = self.shoper_products.get_product_by_code(row['EAN'], use_code=True)
             
-            if response is not None:
+            if response is None or (isinstance(response, dict) and response.get('success') is False):
+                print(f'ℹ️ Product {row["EAN"]} does not exist on Shoper.')
+            else:
                 selected_offers = selected_offers.drop(index)
                 print(f'ℹ️ Product {row["EAN"]} exists on Shoper.')
 
