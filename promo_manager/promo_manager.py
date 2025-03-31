@@ -95,41 +95,47 @@ class PromoManager:
         counter = 0
         # Import special offers
         for id, row in result_df.iterrows():
-            product = self.shoper_products.get_product_by_code(row['SKU'], use_code=True)
-
-            product_id = product['product_id']
-            
-            discount_data = {
-                'product_id': product_id,
-                'discount': row['Kwota promocji (%)'],
-                'discount_type': 3
-            }
-
-            if product.get('special_offer') is not None:
-                # Remove the special offer
-                self.shoper_special_offers.remove_special_offer_from_product(product_id)
 
             try:
-                # Create the special offer
-                response = self.shoper_special_offers.create_special_offer(discount_data)
+                product = self.shoper_products.get_product_by_code(row['SKU'], use_code=True)
+
+                product_id = product['product_id']
                 
-                if isinstance(response, int):
-                    result_df.at[id, 'Komunikat promocji'] = f'Promocja dodana dla {row["SKU"]}. Nr promocji: {response}'
-                    counter += 1
-                    print(f'Products: {counter}/{counter_products}')
+                discount_data = {
+                    'product_id': product_id,
+                    'discount': row['Kwota promocji (%)'],
+                    'discount_type': 3
+                }
+
+                if product.get('special_offer') is not None:
+                    # Remove the special offer
+                    self.shoper_special_offers.remove_special_offer_from_product(product_id)
+
+                try:
+                    # Create the special offer
+                    response = self.shoper_special_offers.create_special_offer(discount_data)
+                    
+                    if isinstance(response, int):
+                        result_df.at[id, 'Komunikat promocji'] = f'Promocja dodana dla {row["SKU"]}. Nr promocji: {response}'
+                        counter += 1
+                        print(f'Products: {counter}/{counter_products}')
+
+                except Exception as e:
+                    print(f'❌ Error: {e}')
+                    result_df.at[id, 'Komunikat promocji'] = f'Błąd przy tworzeniu promocji: {str(e)}'
 
             except Exception as e:
                 print(f'❌ Error: {e}')
-                result_df.at[id, 'Komunikat promocji'] = f'Błąd przy tworzeniu promocji: {str(e)}'
+                result_df.at[id, 'Komunikat promocji'] = f'Błąd przy pobieraniu produktu: {str(e)}'
 
-        # Prepare updates in correct format
-        updates = []
-        for _, row in result_df.iterrows():
-            updates.append([
-                int(row['Row Number']),  # Make sure row number is an integer
-                row['Komunikat promocji']
-            ])
-            
+            # Prepare updates in correct format
+            updates = []
+            for _, row in result_df.iterrows():
+                updates.append([
+                    int(row['Row Number']),  # Make sure row number is an integer
+                    row['Komunikat promocji']
+                ])
+
         # Update the worksheet
         self.gsheets_worksheets.batch_update_from_a_list(
             worksheet_name = config.PROMO_SHEET_IMPORT_NAME_PERCENT,
