@@ -112,6 +112,8 @@ class OutletArchiver:
         sold_products_df['Druga obniżka'] = sold_products_df['Druga obniżka'].map({'TRUE': True, 'FALSE': False})
         sold_products_df['SKU'] = sold_products_df['SKU'].astype('object')
 
+        sold_products_df = sold_products_df.replace({float('nan'): None, 'nan': None})
+
         sold_products_len = len(sold_products_df)
         counter = 0
 
