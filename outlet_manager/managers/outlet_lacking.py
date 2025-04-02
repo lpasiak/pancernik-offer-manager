@@ -4,6 +4,7 @@ from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 import config
 from datetime import datetime
+import pandas as pd
 
 
 class OutletLackingManager:
@@ -49,18 +50,21 @@ class OutletLackingManager:
 
         mask = (
             (df_all_products["Wystawione"] != 'TRUE') & 
-            (df_all_products['Data'].fillna('') != today))
+            (df_all_products['Data'].fillna('') != today) &
+            (pd.to_datetime(df_all_products['Data'].fillna(''), format='%d-%m-%Y', errors='coerce').notna()) &
+            (df_all_products['Data'].fillna('').str.len() > 0)
+        )
 
         columns_to_keep = ['Row Number', 'EAN', 'SKU', 'Nazwa', 'Uszkodzenie', 'Data']
         df_all_products = df_all_products[columns_to_keep]
 
         selected_offers = df_all_products[mask].copy()
 
-        print('ℹ️ Checking if all the products exist on Shoper...')
+        print('Checking if all the products exist on Shoper...')
         
         # If there are no products to move, return
         if selected_offers.empty:
-            print('ℹ️ No products to move to the lacking sheet')
+            print('No products to move to the lacking sheet')
             return
 
         # Check if the products exist on Shoper
@@ -68,13 +72,13 @@ class OutletLackingManager:
             response = self.shoper_products.get_product_by_code(row['EAN'], use_code=True)
             
             if response is None or (isinstance(response, dict) and response.get('success') is False):
-                print(f'ℹ️ Product {row["EAN"]} does not exist on Shoper.')
+                print(f'Product {row["EAN"]} does not exist on Shoper.')
             else:
                 selected_offers = selected_offers.drop(index)
-                print(f'ℹ️ Product {row["EAN"]} exists on Shoper.')
+                print(f'Product {row["EAN"]} exists on Shoper.')
 
         if selected_offers.empty:
-            print('ℹ️ No products to move to the lacking sheet')
+            print('No products to move to the lacking sheet')
             return
 
         selected_offers = selected_offers[columns_to_keep]
