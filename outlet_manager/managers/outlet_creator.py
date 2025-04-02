@@ -56,8 +56,10 @@ class OutletCreator:
 
         mask = (
             (df['Wystawione'] != 'TRUE') &
-            (df['Data'].fillna('') != config.TODAY)
+            (df['Data'].fillna('') != config.TODAY) &
+            (df['Data'].fillna('').str.len() > 0)
         )
+
         df = df[mask]
 
         print(f'Selected products ready to publish: {len(df)}')
