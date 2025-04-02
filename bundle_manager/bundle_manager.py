@@ -41,22 +41,3 @@ class BundleManager:
         except Exception as e:
             print(f"Error initializing connections: {e}")
             return False
-        
-    def create_a_bundle(self, bundle_id):
-        product = self.shoper_products.get_product_by_code(bundle_id)
-
-        product['code'] = 'TestowyProduktZestawBizon'
-        product['stock']['code'] = 'TestowyProduktZestawBizon'
-        product['translations']['pl_PL']['name'] = 'Testowy zestaw Bizon'
-        product['translations']['pl_PL']['seo_url'] = 'testowy-zestaw-bizon'
-        
-        self.shoper_products.create_product(product)
-
-    # def create_a_bundle(self, product_sku_1, product_sku_2):
-    #     product_1 = self.shoper_products.get_product_by_code(product_sku_1, use_code=True)
-    #     product_2 = self.shoper_products.get_product_by_code(product_sku_2, use_code=True)
-
-    #     bundled_product = BundledProduct(product_1, product_2)
-    #     bundled_product_json = bundled_product.transform_to_bundle()
-
-    #     self.shoper_products.create_product(bundled_product_json)
