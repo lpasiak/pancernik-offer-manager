@@ -41,3 +41,10 @@ class BundleManager:
         except Exception as e:
             print(f"Error initializing connections: {e}")
             return False
+
+    def create_a_bundle(self, product_1_sku, product_2_sku):
+        product_1 = self.shoper_products.get_product_by_code(product_1_sku, use_code=True, pictures=True)
+        product_2 = self.shoper_products.get_product_by_code(product_2_sku, use_code=True, pictures=True)
+
+        bundled_product = BundledProduct(product_1, product_2)
+        print(bundled_product.categories)

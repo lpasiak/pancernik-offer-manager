@@ -146,20 +146,20 @@ def main():
                 print('Do zobaczenia!')
                 break
 
-        # # Bundle manager
-        # elif action == '3':
-        #     action = context_menu_bundle()
+        # Bundle manager
+        elif action == '3':
+            action = context_menu_bundle()
 
-        #     if action == '1':
-        #         bundle_manager = BundleManager()
-        #         bundle_manager.connect()
-        #         bundle_manager.create_a_bundle(87106)
+            if action == '1':
+                bundle_manager = BundleManager()
+                bundle_manager.connect()
+                bundle_manager.create_a_bundle('5904665389942', '5907339019107')
 
-        #     elif action.lower() == 'q':
-        #         print('Do zobaczenia!')
-        #         break
-        #     else:
-        #         print('Nie ma takiego wyboru :/')
+            elif action.lower() == 'q':
+                print('Do zobaczenia!')
+                break
+            else:
+                print('Nie ma takiego wyboru :/')
 
 if __name__ == '__main__':
     main()
