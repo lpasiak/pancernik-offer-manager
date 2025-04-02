@@ -4,12 +4,15 @@ from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
 from outlet_manager.managers.outlet_archiver import OutletArchiver
 from promo_manager.promo_manager import PromoManager
+from bundle_manager.bundle_manager import BundleManager
+
 
 def context_menu():
     menu_text = """--------------------------------
 Z czym dziś chcesz pracować?
 1. Menedżer outletów
 2. Menedżer promocji
+3. Menedżer zestawów
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
@@ -36,7 +39,15 @@ q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
 
-def econtext_menu_easystorage():
+def context_menu_bundle():
+    menu_text = """--------------------------------
+Co chcesz zrobić?
+1. Utworzyć zestaw
+q żeby wyjść.
+Akcja: """
+    return str(input(menu_text))
+
+def context_menu_easystorage():
     menu_text = """--------------------------------
 Czy wyeksportowałeś i zapisałeś plik z EasyStorage? (y/n)
 Akcja: """
@@ -72,7 +83,7 @@ def main():
 
             elif action == '3':
                 # Remove products that have been sold or haven't sold for 6 weeks
-                action = econtext_menu_easystorage()
+                action = context_menu_easystorage()
 
                 if action == 'y':
                     out_archiver = OutletArchiver()
@@ -134,6 +145,21 @@ def main():
         elif action.lower() == 'q':
                 print('Do zobaczenia!')
                 break
+
+        # # Bundle manager
+        # elif action == '3':
+        #     action = context_menu_bundle()
+
+        #     if action == '1':
+        #         bundle_manager = BundleManager()
+        #         bundle_manager.connect()
+        #         bundle_manager.create_a_bundle(87106)
+
+        #     elif action.lower() == 'q':
+        #         print('Do zobaczenia!')
+        #         break
+        #     else:
+        #         print('Nie ma takiego wyboru :/')
 
 if __name__ == '__main__':
     main()
