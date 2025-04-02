@@ -5,6 +5,7 @@ from connections.shoper.pictures import ShoperPictures
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 from datetime import datetime
+import pandas as pd
 import config
 import time
 
@@ -57,6 +58,7 @@ class OutletCreator:
         mask = (
             (df['Wystawione'] != 'TRUE') &
             (df['Data'].fillna('') != config.TODAY) &
+            (pd.to_datetime(df['Data'].fillna(''), format='%d-%m-%Y', errors='coerce').notna()) &
             (df['Data'].fillna('').str.len() > 0)
         )
 
