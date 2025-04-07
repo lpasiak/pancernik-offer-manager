@@ -28,8 +28,12 @@ SHOPER_PASSWORD = os.getenv(f'SHOPER_PASSWORD_{SITE}')
 SHOPER_LIMIT = 50
 
 # Shopify SITE
-SHOPIFY_API = os.getenv('SHOPIFY_API_KEY')
-SHOPIFY_API_SECRET = os.getenv('SHOPIFY_API_SECRET')
+SHOPIFY_CREDENTIALS = {
+    'api_key': os.getenv('SHOPIFY_API_KEY'),
+    'api_secret': os.getenv('SHOPIFY_API_SECRET'),
+    'api_token': os.getenv('SHOPIFY_API_TOKEN'),
+    'shop_url': os.getenv('SHOPIFY_URL')
+}
 
 # PROMOTION MANAGER Google Sheets
 PROMO_SHEET_ID = os.getenv('PROMO_SHEET_ID')
@@ -65,3 +69,8 @@ EASYSTORAGE_FILE_PATH = ROOT_DIR / 'sheets' / 'Easystorage.xlsx'
 CLEANUP_SHEET_ID = os.getenv('CLEANUP_SHEET_ID')
 CLEANUP_SHEET_DIMENSIONS_NAME = 'Wymiary'
 CLEANUP_SHEET_DIMENSIONS_IGNORE_NAME = 'Bez wymiarów'
+CLEANUP_ALLEGRO_TITLES_NAME = 'Nazwy Allegro'
+MISSING_ALLEGRO_OFFERS_NAME = 'Uzupełnianie Allegro | sklep-pancernik'
+MISSING_SHOPIFY_OFFERS_NAME = 'Uzupełnianie Shopify'
+MISSING_ATTRIBUTES_NAME = 'Uzupełnianie Atrybuty'
+CLEANUP_ARCHIVED_NAME = 'Archiwum'
