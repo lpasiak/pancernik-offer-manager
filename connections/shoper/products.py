@@ -181,3 +181,39 @@ class ShoperProducts:
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
             return str(e)
+        
+    def get_all_products_json(self):
+        """Get all products from Shoper and return them as df or None."""
+        try:
+            print("Downloading all products...")
+
+            products = []
+            page = 1
+            
+            while True:
+                params = {'limit': config.SHOPER_LIMIT, 'page': page}
+                response = self.client._handle_request('GET', f'{self.client.site_url}/webapi/rest/products', params=params)
+                data = response.json()
+                number_of_pages = data['pages']
+
+                if response.status_code != 200:
+                    error_description = response.json()['error_description']
+                    print(f'❌ API Error: {error_description}')
+                    return {'success': False, 'error': error_description}
+                    
+                page_data = data.get('list', [])
+                
+                if not page_data:
+                    break
+                    
+                print(f'Page: {page}/{number_of_pages}')
+                products.extend(page_data)
+                page += 1
+
+            # Convert list of dicts to dict of dicts using product ID as key
+            products_dict = {product['product_id']: product for product in products}
+            return products_dict
+            
+        except Exception as e:
+            print(f'❌ Request failed: {str(e)}')
+            return str(e)

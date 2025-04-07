@@ -3,6 +3,7 @@ from outlet_manager.managers.outlet_attributes import OutletAttributeManager
 from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
 from outlet_manager.managers.outlet_archiver import OutletArchiver
+from export_manager.export_manager import ExportManager
 from promo_manager.promo_manager import PromoManager
 from bundle_manager.bundle_manager import BundleManager
 
@@ -10,6 +11,7 @@ from bundle_manager.bundle_manager import BundleManager
 def context_menu():
     menu_text = """--------------------------------
 Z czym dziś chcesz pracować?
+XD. Pobrać informacje z Shopera
 1. Menedżer outletów
 2. Menedżer promocji
 3. Menedżer zestawów
@@ -58,6 +60,12 @@ def main():
     # Main program
     while True:
         action = context_menu()
+
+        # Export manager
+        if action == 'XD':
+            export_manager = ExportManager()
+            export_manager.connect()
+            export_manager.export_data()
 
         # Outlet manager
         if action == '1':
