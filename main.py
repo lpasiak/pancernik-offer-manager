@@ -65,7 +65,7 @@ def main():
         if action == 'XD':
             export_manager = ExportManager()
             export_manager.connect()
-            export_manager.export_data()
+            export_manager.export_all_data()
 
         # Outlet manager
         if action == '1':

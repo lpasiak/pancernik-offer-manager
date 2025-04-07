@@ -1,8 +1,7 @@
 from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts
 from connections.shoper.pictures import ShoperPictures
-from connections.gsheets_connect import GSheetsClient
-from connections.gsheets.worksheets import GsheetsWorksheets
+from connections.shoper.categories import ShoperCategories
 import config
 import json
 import os
@@ -26,6 +25,7 @@ class ExportManager:
             self.shoper_client.connect()
             self.shoper_products = ShoperProducts(self.shoper_client)
             self.shoper_pictures = ShoperPictures(self.shoper_client)
+            self.shoper_categories = ShoperCategories(self.shoper_client)
             
             return True
             
@@ -35,6 +35,7 @@ class ExportManager:
 
     def export_all_data(self):
         self.export_products()
+        self.export_categories()
 
     def export_products(self):
         products = self.shoper_products.get_all_products_json()
@@ -44,3 +45,12 @@ class ExportManager:
             json.dump(products, f, ensure_ascii=False, indent=4)
             
         print(f"Products exported successfully to {output_file}")
+
+    def export_categories(self):
+        categories = self.shoper_categories.get_all_categories_json()
+        output_file = os.path.join(config.DRIVE_EXPORT_DIR, 'shoper-api', 'categories.json')
+        
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(categories, f, ensure_ascii=False, indent=4)
+            
+        print(f"Categories exported successfully to {output_file}")
