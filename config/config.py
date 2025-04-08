@@ -35,6 +35,7 @@ SHOPIFY_CREDENTIALS = {
     'api_token': os.getenv('SHOPIFY_API_TOKEN'),
     'shop_url': os.getenv('SHOPIFY_URL')
 }
+SHOPIFY_API_VERSION = '2025-04'
 
 # Allegro SITE
 ALLEGRO_API_SECRET_SANDBOX = os.getenv('ALLEGRO_API_SECRET_SANDBOX')
