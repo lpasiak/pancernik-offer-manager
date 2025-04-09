@@ -3,7 +3,7 @@ from outlet_manager.managers.outlet_attributes import OutletAttributeManager
 from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
 from outlet_manager.managers.outlet_archiver import OutletArchiver
-from export_manager.export_manager import ExportManagerShoper
+from export_manager.export_manager import ExportManagerShoper, ExportManagerShopify
 from promo_manager.promo_manager import PromoManager
 from bundle_manager.bundle_manager import BundleManager
 
@@ -75,13 +75,16 @@ def main():
             action = context_menu_export()
 
             if action == '1':
-                export_manager = ExportManagerShoper()
-                export_manager.connect()
-                export_manager.export_all_data_from_shoper()
+                shoper_export_manager = ExportManagerShoper()
+                shoper_export_manager.connect()
+                shoper_export_manager.export_all_data_from_shoper()
+                break
 
             if action == '2':
-                export_manager = ExportManagerShoper()
-                export_manager.connect()
+                shopify_export_manager = ExportManagerShopify()
+                shopify_export_manager.connect()
+                shopify_export_manager.export_shopify_products()
+                break
 
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
@@ -89,7 +92,7 @@ def main():
         
             else:
                 print('Nie ma takiego wyboru :/')
-                
+
         # Outlet manager
         if action == '1':
             action = context_menu_outlet()
