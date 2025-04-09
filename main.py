@@ -7,7 +7,6 @@ from export_manager.export_manager import ExportManagerShoper, ExportManagerShop
 from promo_manager.promo_manager import PromoManager
 from bundle_manager.bundle_manager import BundleManager
 
-
 def context_menu():
     menu_text = """--------------------------------
 Z czym dziś chcesz pracować?

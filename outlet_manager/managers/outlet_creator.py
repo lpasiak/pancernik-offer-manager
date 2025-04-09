@@ -9,6 +9,7 @@ import pandas as pd
 import config
 import time
 
+
 class OutletCreator:
     def __init__(self):
         self.shoper_client = None

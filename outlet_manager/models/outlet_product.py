@@ -1,6 +1,7 @@
 import random
 import config
 
+
 class OutletProduct:
     """
     OutletProduct is a Class that transforms a regular product into a product that is an outlet product.

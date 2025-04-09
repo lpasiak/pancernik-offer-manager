@@ -1,6 +1,7 @@
 import config
 import pandas as pd
 
+
 class ShoperAttributes:
 
     def __init__(self, client):

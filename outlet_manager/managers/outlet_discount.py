@@ -6,6 +6,7 @@ from connections.shoper.specialoffers import ShoperSpecialOffers
 import config
 import pandas as pd
 
+
 class OutletDiscountManager:
     def __init__(self):
         self.shoper_client = None

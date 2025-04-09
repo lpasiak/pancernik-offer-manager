@@ -1,5 +1,5 @@
 import shopify
-import config, json
+import json
 import pandas as pd
 from config.shopify_queries import download_products_query
 

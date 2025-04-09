@@ -1,7 +1,7 @@
 from .products import ShoperProducts
-import config, json
-import pandas as pd
+import config
 from datetime import datetime
+
 
 class ShoperSpecialOffers:
     def __init__(self, client):

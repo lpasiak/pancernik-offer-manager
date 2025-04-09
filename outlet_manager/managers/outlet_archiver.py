@@ -4,8 +4,8 @@ from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 from connections.easystorage_data import EasyStorageData
 import config
-from datetime import datetime
 import pandas as pd
+
 
 class OutletArchiver:
     def __init__(self):

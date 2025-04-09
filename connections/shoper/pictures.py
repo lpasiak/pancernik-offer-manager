@@ -1,5 +1,6 @@
 import config, json
 
+
 class ShoperPictures:
 
     def __init__(self, client):
