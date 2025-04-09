@@ -3,7 +3,7 @@ from outlet_manager.managers.outlet_attributes import OutletAttributeManager
 from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
 from outlet_manager.managers.outlet_archiver import OutletArchiver
-from export_manager.export_manager import ExportManager
+from export_manager.export_manager import ExportManagerShoper
 from promo_manager.promo_manager import PromoManager
 from bundle_manager.bundle_manager import BundleManager
 
@@ -11,7 +11,7 @@ from bundle_manager.bundle_manager import BundleManager
 def context_menu():
     menu_text = """--------------------------------
 Z czym dziś chcesz pracować?
-XD. Pobrać informacje z Shopera
+0. Pobrać informacje o produktach
 1. Menedżer outletów
 2. Menedżer promocji
 3. Menedżer zestawów
@@ -55,6 +55,15 @@ Czy wyeksportowałeś i zapisałeś plik z EasyStorage? (y/n)
 Akcja: """
     return str(input(menu_text))
 
+def context_menu_export():
+    menu_text = """--------------------------------
+Skąd chcesz pobrać dane?
+1. Shoper
+2. Shopify
+q żeby wyjść.
+Akcja: """
+    return str(input(menu_text))
+
 def main():
 
     # Main program
@@ -62,11 +71,25 @@ def main():
         action = context_menu()
 
         # Export manager
-        if action == 'XD':
-            export_manager = ExportManager()
-            export_manager.connect()
-            export_manager.export_all_data()
+        if action == '0':
+            action = context_menu_export()
 
+            if action == '1':
+                export_manager = ExportManagerShoper()
+                export_manager.connect()
+                export_manager.export_all_data_from_shoper()
+
+            if action == '2':
+                export_manager = ExportManagerShoper()
+                export_manager.connect()
+
+            elif action.lower() == 'q':
+                print('Do zobaczenia!')
+                break
+        
+            else:
+                print('Nie ma takiego wyboru :/')
+                
         # Outlet manager
         if action == '1':
             action = context_menu_outlet()
@@ -125,25 +148,19 @@ def main():
         # Promo manager
         elif action == '2':
             action = context_menu_promo()
+            promo_manager = PromoManager()
+            promo_manager.connect()
 
             if action == '1':
-                promo_manager = PromoManager()
-                promo_manager.connect()
                 promo_manager.export_all_promo_products()
 
             if action == '2':
-                promo_manager = PromoManager()
-                promo_manager.connect()
                 promo_manager.import_promo_percent_from_gsheet()
 
             if action == '3':
-                promo_manager = PromoManager()
-                promo_manager.connect()
                 promo_manager.update_product_stock_from_gsheet()
     
             if action == '4':
-                promo_manager = PromoManager()
-                promo_manager.connect()
                 promo_manager.remove_promo_offers_from_gsheet()
 
             elif action.lower() == 'q':
@@ -157,10 +174,10 @@ def main():
         # Bundle manager
         elif action == '3':
             action = context_menu_bundle()
-
+            bundle_manager = BundleManager()
+            bundle_manager.connect()
+            
             if action == '1':
-                bundle_manager = BundleManager()
-                bundle_manager.connect()
                 bundle_manager.create_a_bundle('5904665389942', '5907339019107')
 
             elif action.lower() == 'q':
