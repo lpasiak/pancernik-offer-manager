@@ -40,6 +40,12 @@ SHOPIFY_API_VERSION = '2025-04'
 # Allegro SITE
 ALLEGRO_API_SECRET_SANDBOX = os.getenv('ALLEGRO_API_SECRET_SANDBOX')
 
+# Easystorage API
+EASYSTORAGE_CREDENTIALS = {
+    'username': os.getenv('EASYSTORAGE_LOGIN'),
+    'password': os.getenv('EASYSTORAGE_PASSWORD')
+}
+
 # PROMOTION MANAGER Google Sheets
 PROMO_SHEET_ID = os.getenv('PROMO_SHEET_ID')
 PROMO_SHEET_EXPORT_NAME = 'Eksport'
@@ -67,8 +73,6 @@ PRODUCT_TYPE = {
     'MAIN': {'id': '1370', 'group': '550'},
     'TEST': {'id': '28', 'group': '8'}
 }
-
-EASYSTORAGE_FILE_PATH = ROOT_DIR / 'sheets' / 'Easystorage.xlsx'
 
 # CLEANUP MANAGER Google Sheets
 CLEANUP_SHEET_ID = os.getenv('CLEANUP_SHEET_ID')

@@ -2,7 +2,7 @@ from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
-from connections.easystorage_data import EasyStorageData
+from connections.easystorage_connect import EasyStorageClient
 import config
 import pandas as pd
 
@@ -34,7 +34,7 @@ class OutletArchiver:
             )
             self.gsheets_client.connect()
             self.gsheets_worksheets = GsheetsWorksheets(self.gsheets_client)
-            self.easystorage_file = EasyStorageData(config.EASYSTORAGE_FILE_PATH)
+            self.easystorage_file = EasyStorageClient(config.EASYSTORAGE_FILE_PATH)
             self.easystorate_data = self.easystorage_file.outlet_products
             
             return True

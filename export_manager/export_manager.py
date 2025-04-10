@@ -4,6 +4,8 @@ from connections.shoper.pictures import ShoperPictures
 from connections.shoper.categories import ShoperCategories
 from connections.shopify_connect import ShopifyAPIClient
 from connections.shopify.products import ShopifyProducts
+from connections.easystorage_connect import EasyStorageClient
+from connections.easystorage.products import EasyStorageProducts
 import config
 import json
 import os
@@ -41,7 +43,7 @@ class ExportManagerShoper:
 
     def export_shoper_products(self):
         products = self.shoper_products.get_all_products_json()
-        output_file = os.path.join(config.DRIVE_EXPORT_DIR, 'shoper-api', 'products.json')
+        output_file = os.path.join(config.DRIVE_EXPORT_DIR, 'api-shoper', 'products.json')
         
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(products, f, ensure_ascii=False, indent=4)
@@ -50,7 +52,7 @@ class ExportManagerShoper:
 
     def export_shoper_categories(self):
         categories = self.shoper_categories.get_all_categories_json()
-        output_file = os.path.join(config.DRIVE_EXPORT_DIR, 'shoper-api', 'categories.json')
+        output_file = os.path.join(config.DRIVE_EXPORT_DIR, 'api-shoper', 'categories.json')
         
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(categories, f, ensure_ascii=False, indent=4)
@@ -83,7 +85,59 @@ class ExportManagerShopify:
     def export_shopify_products(self):
         all_products = self.shopify_products.get_all_products()
         
-        with open(f'{config.DRIVE_EXPORT_DIR}/shopify-api/products.json', 'w', encoding='utf-8') as f:
+        with open(f'{config.DRIVE_EXPORT_DIR}/api-shopify/products.json', 'w', encoding='utf-8') as f:
             json.dump(all_products, f, ensure_ascii=False, indent=4)
         
         print(f"Successfully downloaded {len(all_products)} products")
+
+    
+class ExpportManagerEasyStorage:
+    def __init__(self):
+        self.easystorage_client = None
+        self.easystorage_products = None
+
+    def connect(self):
+        """Initialize connection with EasyStorage"""
+        try:
+            self.easystorage_client = EasyStorageClient(config.EASYSTORAGE_CREDENTIALS)
+            self.easystorage_client.connect()
+            self.easystorage_products = EasyStorageProducts(self.easystorage_client)
+
+            return True
+
+        except Exception as e:
+            print(f"Error initializing EasyStorage connections: {e}")
+
+    def export_wms_pancernik_products(self):
+        
+        try:
+            products = self.easystorage_products.get_pancernik_products()
+
+            if products is None:
+                print('No products found')
+                return
+
+            output_file = os.path.join(config.DRIVE_EXPORT_DIR, 'api-easystorage', 'wms-pancernik-products.json')
+
+            with open(output_file, 'w', encoding='utf-8') as f:
+                json.dump(products, f, ensure_ascii=False, indent=4)
+
+        except Exception as e:
+            print(f"Error exporting Pancernik products: {e}")
+
+    def export_wms_bizon_products(self):
+
+        try:
+            products = self.easystorage_products.get_bizon_products()
+
+            if products is None:
+                print('No products found')
+                return
+
+            output_file = os.path.join(config.DRIVE_EXPORT_DIR, 'api-easystorage', 'wms-bizon-products.json')
+
+            with open(output_file, 'w', encoding='utf-8') as f:
+                json.dump(products, f, ensure_ascii=False, indent=4)
+
+        except Exception as e:
+            print(f"Error exporting Bizon products: {e}")

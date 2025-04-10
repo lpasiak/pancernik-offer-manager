@@ -3,7 +3,7 @@ from outlet_manager.managers.outlet_attributes import OutletAttributeManager
 from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
 from outlet_manager.managers.outlet_archiver import OutletArchiver
-from export_manager.export_manager import ExportManagerShoper, ExportManagerShopify
+from export_manager.export_manager import ExportManagerShoper, ExportManagerShopify, ExpportManagerEasyStorage
 from promo_manager.promo_manager import PromoManager
 from bundle_manager.bundle_manager import BundleManager
 
@@ -59,6 +59,8 @@ def context_menu_export():
 Skąd chcesz pobrać dane?
 1. Shoper
 2. Shopify
+3. EasyStorage Pancernik
+4. EasyStorage Bizon
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
@@ -84,6 +86,20 @@ def main():
                 shopify_export_manager.connect()
                 shopify_export_manager.export_shopify_products()
                 break
+
+            if action == '3':
+                easystorage_export_manager = ExpportManagerEasyStorage()
+                easystorage_export_manager.connect()
+                easystorage_export_manager.export_wms_pancernik_products()
+                break
+                
+
+            if action == '4':
+                easystorage_export_manager = ExpportManagerEasyStorage()
+                easystorage_export_manager.connect()
+                easystorage_export_manager.export_wms_bizon_products()
+                break
+
 
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
