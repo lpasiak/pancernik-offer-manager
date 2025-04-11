@@ -1,7 +1,5 @@
 import shopify
 import json
-import pandas as pd
-from . import ShopifyAPIClient
 import config
 
 class ShopifyProducts:
@@ -39,25 +37,3 @@ class ShopifyProducts:
         except Exception as e:
             print(f"❌ Request failed: {str(e)}")
             return str(e)
-
-class ShopifyClient:
-    def __init__(self):
-        self.shopify_client = None
-        self.shoper_products = None
-
-    def connect(self):
-        """Initialize connection with Shopify"""
-        try:
-            self.shopify_client = ShopifyAPIClient(
-                shop_url=config.SHOPIFY_CREDENTIALS['shop_url'],
-                api_version=config.SHOPIFY_API_VERSION,
-                api_token=config.SHOPIFY_CREDENTIALS['api_token']
-            )
-            self.shopify_client.connect()
-            self.shopify_products = ShopifyProducts(self.shopify_client)
-
-            return True
-
-        except Exception as e:
-            print(f"Error initializing Shopify connections: {e}")
-            return False

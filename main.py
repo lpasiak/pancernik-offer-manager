@@ -7,6 +7,7 @@ from export_manager.export_manager import ExportManagerShoper, ExportManagerShop
 from promo_manager.promo_manager import PromoManager
 from bundle_manager.bundle_manager import BundleManager
 from connections.shopify.products import ShopifyProducts
+from connections.shopify_connect import ShopifyAPIClient
 import config
 
 def main():
@@ -132,7 +133,15 @@ def main():
                 print('Nie ma takiego wyboru :/')
 
         elif action == '4':
-            print('do rana')
+            shopify_client = ShopifyAPIClient(
+                shop_url=config.SHOPIFY_CREDENTIALS['shop_url'],
+                api_version=config.SHOPIFY_API_VERSION,
+                api_token=config.SHOPIFY_CREDENTIALS['api_token'])
+            
+            shopify_client.connect()
+            shopify_products = ShopifyProducts(shopify_client)
+            x = shopify_products.get_all_products()
+            print(x)
 
         # Exit the program
         elif action.lower() == 'q':

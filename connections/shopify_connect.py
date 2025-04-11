@@ -1,7 +1,5 @@
-import requests, time
-from pathlib import Path
-import config
 import shopify
+
 
 class ShopifyAPIClient:
 
@@ -14,5 +12,3 @@ class ShopifyAPIClient:
 
     def connect(self):
         shopify.ShopifyResource.activate_session(self.session)
-        
-        
