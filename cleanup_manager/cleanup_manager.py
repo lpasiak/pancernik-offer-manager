@@ -3,8 +3,6 @@ from connections.shoper.products import ShoperProducts
 from connections.shoper.pictures import ShoperPictures
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
-from connections.easystorage_connect import EasyStorageClient
-from connections.easystorage.products import EasyStorageProducts
 import config
 
 
@@ -43,13 +41,3 @@ class CleanupManager:
         except Exception as e:
             print(f"Error initializing connections: {e}")
             return False
-        
-    # def create_a_bundle(self, bundle_id):
-    #     product = self.shoper_products.get_product_by_code(bundle_id)
-
-    #     product['code'] = 'TestowyProduktZestawBizon'
-    #     product['stock']['code'] = 'TestowyProduktZestawBizon'
-    #     product['translations']['pl_PL']['name'] = 'Testowy zestaw Bizon'
-    #     product['translations']['pl_PL']['seo_url'] = 'testowy-zestaw-bizon'
-        
-    #     self.shoper_products.create_product(product)
