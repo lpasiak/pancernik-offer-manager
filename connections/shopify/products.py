@@ -1,13 +1,14 @@
 import shopify
 import json
 import pandas as pd
-from config.shopify_queries import download_products_query
+from . import ShopifyAPIClient
+import config
 
 class ShopifyProducts:
     def __init__(self, client):
         """Initialize a Shoper Client"""
         self.client = client
-        self.download_products_query = download_products_query
+        self.query_product_download = config.query_product_download
         
     def get_all_products(self):
         """Get all products from Shopify and return them as JSON or None."""
@@ -17,7 +18,7 @@ class ShopifyProducts:
             cursor = None
             
             while has_next_page:
-                current_query = self.download_products_query.replace(
+                current_query = self.query_product_download.replace(
                     'after: null',
                     f'after: "{cursor}"' if cursor else 'after: null'
                 )
@@ -39,7 +40,7 @@ class ShopifyProducts:
             print(f"❌ Request failed: {str(e)}")
             return str(e)
 
-class ExportManagerShopify:
+class ShopifyClient:
     def __init__(self):
         self.shopify_client = None
         self.shoper_products = None

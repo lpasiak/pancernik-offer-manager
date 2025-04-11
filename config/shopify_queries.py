@@ -1,4 +1,4 @@
-download_products_query = """
+query_product_download = """
     {
         products(
             first: 250  # Maximum allowed per request
