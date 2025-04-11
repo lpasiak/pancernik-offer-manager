@@ -13,7 +13,6 @@ class PromoManager:
         self.gsheets_client = None
         self.shoper_products = None
         self.gsheets_worksheets = None
-        self.easystorage_data = None
         
     def connect(self):
         """Initialize all necessary connections"""

@@ -14,6 +14,7 @@ Z czym dziś chcesz pracować?
 1. Menedżer outletów
 2. Menedżer promocji
 3. Menedżer zestawów
+test. Test
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
@@ -48,11 +49,6 @@ q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
 
-def context_menu_easystorage():
-    menu_text = """--------------------------------
-Czy wyeksportowałeś i zapisałeś plik z EasyStorage? (y/n)
-Akcja: """
-    return str(input(menu_text))
 
 def context_menu_export():
     menu_text = """--------------------------------
@@ -131,24 +127,11 @@ def main():
                 out_discount_manager.create_discounts(products_to_discount)
 
             elif action == '3':
-                # Remove products that have been sold or haven't sold for 6 weeks
-                action = context_menu_easystorage()
-
-                if action == 'y':
-                    out_archiver = OutletArchiver()
-                    out_archiver.connect()
-                    products_sold_to_archive = out_archiver.select_sold_products()
-                    out_archiver.archive_sold_products(products_sold_to_archive)
-
-                elif action == 'n':
-                    print('Pobierz plik z EasyStorage i zapisz go jako Easystorage.xlsx w folderze "sheets"')
-
-                elif action.lower() == 'q':
-                    print('Do zobaczenia!')
-                    break
-            
-                else:
-                    print('Nie ma takiego wyboru :/')
+                # Remove products that have been sold
+                out_archiver = OutletArchiver()
+                out_archiver.connect()
+                products_sold_to_archive = out_archiver.select_sold_products()
+                out_archiver.archive_sold_products(products_sold_to_archive)
 
             elif action == '4':
                 # Update attribute groups
@@ -203,6 +186,10 @@ def main():
                 break
             else:
                 print('Nie ma takiego wyboru :/')
+
+        elif action.lower() == 'test':
+            outlet_archiver = OutletArchiver()
+            outlet_archiver.connect()
 
 if __name__ == '__main__':
     main()
