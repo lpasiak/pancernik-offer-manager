@@ -6,70 +6,18 @@ from outlet_manager.managers.outlet_archiver import OutletArchiver
 from export_manager.export_manager import ExportManagerShoper, ExportManagerShopify, ExpportManagerEasyStorage
 from promo_manager.promo_manager import PromoManager
 from bundle_manager.bundle_manager import BundleManager
-
-def context_menu():
-    menu_text = """--------------------------------
-Z czym dziś chcesz pracować?
-0. Pobrać informacje o produktach
-1. Menedżer outletów
-2. Menedżer promocji
-3. Menedżer zestawów
-test. Test
-q żeby wyjść.
-Akcja: """
-    return str(input(menu_text))
-
-def context_menu_outlet():
-    menu_text = """--------------------------------
-Co chcesz zrobić?
-1. Wystawić outlety
-2. Obniżki na outlety
-3. Przenieść sprzedane/archiwalne
-4. Atrybuty produktów
-q żeby wyjść.
-Akcja: """
-    return str(input(menu_text))
-
-def context_menu_promo():
-    menu_text = """--------------------------------
-Co chcesz zrobić?
-1. Pobrać promocje
-2. Zaimportować promocje
-3. Uaktualnić stany magazynowe
-4. Usunąć promocje
-q żeby wyjść.
-Akcja: """
-    return str(input(menu_text))
-
-def context_menu_bundle():
-    menu_text = """--------------------------------
-Co chcesz zrobić?
-1. Utworzyć zestaw
-q żeby wyjść.
-Akcja: """
-    return str(input(menu_text))
-
-
-def context_menu_export():
-    menu_text = """--------------------------------
-Skąd chcesz pobrać dane?
-1. Shoper
-2. Shopify
-3. EasyStorage Pancernik
-4. EasyStorage Bizon
-q żeby wyjść.
-Akcja: """
-    return str(input(menu_text))
+from connections.shopify.products import ShopifyProducts
+import config
 
 def main():
 
     # Main program
     while True:
-        action = context_menu()
+        action = config.context_menu()
 
         # Export manager
         if action == '0':
-            action = context_menu_export()
+            action = config.context_menu_export()
 
             if action == '1':
                 shoper_export_manager = ExportManagerShoper()
@@ -106,7 +54,7 @@ def main():
 
         # Outlet manager
         if action == '1':
-            action = context_menu_outlet()
+            action = config.context_menu_outlet()
             if action == '1':
                 # Create outlet offers
                 out_creator = OutletCreator()
@@ -148,7 +96,7 @@ def main():
 
         # Promo manager
         elif action == '2':
-            action = context_menu_promo()
+            action = config.context_menu_promo()
             promo_manager = PromoManager()
             promo_manager.connect()
 
@@ -167,14 +115,10 @@ def main():
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
                 break
-            
-        elif action.lower() == 'q':
-                print('Do zobaczenia!')
-                break
 
         # Bundle manager
         elif action == '3':
-            action = context_menu_bundle()
+            action = config.context_menu_bundle()
             bundle_manager = BundleManager()
             bundle_manager.connect()
             
@@ -186,6 +130,14 @@ def main():
                 break
             else:
                 print('Nie ma takiego wyboru :/')
+
+        elif action == '4':
+            print('do rana')
+
+        # Exit the program
+        elif action.lower() == 'q':
+            print('Do zobaczenia!')
+            break
 
 if __name__ == '__main__':
     main()
