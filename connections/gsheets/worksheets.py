@@ -109,7 +109,7 @@ class GsheetsWorksheets:
             # Perform the batch update to add rows to target worksheet
             try:
                 self.client._handle_request(target_worksheet.batch_update, batch_data)
-                print(f"✅ Successfully moved {len(values_to_append)} products to lacking products sheet.")
+                print(f"✅ Successfully moved {len(values_to_append)} products.")
             except Exception as e:
                 print(f"❌ Failed to move products to lacking products sheet: {str(e)}")
                 return

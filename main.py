@@ -187,9 +187,5 @@ def main():
             else:
                 print('Nie ma takiego wyboru :/')
 
-        elif action.lower() == 'test':
-            outlet_archiver = OutletArchiver()
-            outlet_archiver.connect()
-
 if __name__ == '__main__':
     main()

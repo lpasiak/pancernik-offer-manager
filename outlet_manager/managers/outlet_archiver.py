@@ -3,22 +3,25 @@ from connections.shoper.products import ShoperProducts
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 from connections.easystorage_connect import EasyStorageClient
+from connections.easystorage.products import EasyStorageProducts
 import config
 import pandas as pd
+from pprint import pprint
 
 
 class OutletArchiver:
     def __init__(self):
         self.shoper_client = None
         self.gsheets_client = None
+        self.easystorage_client = None
         self.shoper_products = None
         self.gsheets_worksheets = None
-        self.easystorage_data = None
-        
+        self.easystorage_products = None
+
     def connect(self):
         """Initialize all necessary connections"""
         try:
-            # Initialize Shoper connections
+            # Initialize Shoper connection
             self.shoper_client = ShoperAPIClient(
                 config.SHOPER_SITE_URL,
                 config.SHOPER_LOGIN,
@@ -34,8 +37,11 @@ class OutletArchiver:
             )
             self.gsheets_client.connect()
             self.gsheets_worksheets = GsheetsWorksheets(self.gsheets_client)
-            self.easystorage_file = EasyStorageClient(config.EASYSTORAGE_FILE_PATH)
-            self.easystorate_data = self.easystorage_file.outlet_products
+
+            # Initialize EasyStorage connection
+            self.easystorage_client = EasyStorageClient(config.EASYSTORAGE_CREDENTIALS)
+            self.easystorage_client.connect()
+            self.easystorage_products = EasyStorageProducts(self.easystorage_client)
             
             return True
             
@@ -50,8 +56,12 @@ class OutletArchiver:
         """
 
         try:
-            easy_storage_data = self.easystorate_data
-            easy_storage_sku_list = easy_storage_data['SKU'].tolist()
+            easy_storage_products = self.easystorage_products.get_pancernik_products()
+            
+            easy_storage_products_outlet_filtered = [product for product in easy_storage_products 
+                                            if 'OUT' in product.get('sku', '').upper() and product.get('stock_quantity', 0) != 0]
+            easy_storage_sku_list = [product.get('sku') for product in easy_storage_products_outlet_filtered]
+
             gsheets_data = self.gsheets_worksheets.get_data(sheet_name=config.OUTLET_SHEET_NAME, include_row_numbers=True)
 
             mask = (
@@ -71,7 +81,6 @@ class OutletArchiver:
 
             gsheets_length = len(gsheets_data)
 
-            print(f'{gsheets_length} products to analyze...')
             for index, row in gsheets_data.iterrows():
 
                 try:
@@ -117,17 +126,19 @@ class OutletArchiver:
         sold_products_len = len(sold_products_df)
         counter = 0
 
-        # Remove from Shoper
-        for index, row in sold_products_df.iterrows():
-            self.shoper_products.remove_product(row['ID Shoper'])
+        print(sold_products_df)
+        x = input('Continue? (y/n)')
+        if x == 'y':
+            # Remove from Shoper
+            for index, row in sold_products_df.iterrows():
+                self.shoper_products.remove_product(row['ID Shoper'])
             counter += 1
             print(f'Products: {counter}/{sold_products_len}')
 
-        # Move to archived sheet
-        offers_to_move = sold_products_df[['Row Number', 'EAN', 'SKU', 'Nazwa', 'Uszkodzenie', 'Data', 'Wystawione', 'Data wystawienia', 'Druga obniżka', 'Status', 'Zutylizowane']]
-        self.gsheets_worksheets.batch_move_products(
-            source_worksheet_name=config.OUTLET_SHEET_NAME,
-            target_worksheet_name=config.OUTLET_SHEET_ARCHIVED_NAME,
-            values_df=offers_to_move
-        )
-        
+            # Move to archived sheet
+            offers_to_move = sold_products_df[['Row Number', 'EAN', 'SKU', 'Nazwa', 'Uszkodzenie', 'Data', 'Wystawione', 'Data wystawienia', 'Druga obniżka', 'Status', 'Zutylizowane']]
+            self.gsheets_worksheets.batch_move_products(
+                source_worksheet_name=config.OUTLET_SHEET_NAME,
+                target_worksheet_name=config.OUTLET_SHEET_ARCHIVED_NAME,
+                values_df=offers_to_move
+            )
