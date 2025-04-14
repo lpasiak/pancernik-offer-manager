@@ -41,12 +41,12 @@ query_product_bizon = """
                     id
                     title
                     handle
+                    vendor
+                    descriptionHtml
                     variants(first: 2) {
                         edges {
                             node {
                                 sku
-                                barcode
-                                price
                             }
                         }
                     }

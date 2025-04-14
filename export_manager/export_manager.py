@@ -8,7 +8,6 @@ from connections.easystorage_connect import EasyStorageClient
 from connections.easystorage.products import EasyStorageProducts
 import config
 import json
-import os
 from datetime import datetime
 import shutil
 
@@ -115,11 +114,15 @@ class ExportManagerShopify:
         all_products = self.shopify_products.get_all_products_bizon()
         print(f"Successfully downloaded {len(all_products)} products")
 
+        file = f'{config.SHEETS_DIR}/api-exports/shopify-products-bizon.json'
+        print(f'Saving export to {file}...')
+        with open(file, 'w', encoding='utf-8') as f:
+            json.dump(all_products, f, ensure_ascii=False, indent=4)
+
         # Save to the main file
         main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/shopify-products-bizon.json'
-        print(f'Saving export to {main_file}...')
-        with open(main_file, 'w', encoding='utf-8') as f:
-            json.dump(all_products, f, ensure_ascii=False, indent=4)
+        print(f'Copying export to {main_file}...')
+        shutil.copy2(file, main_file)
             
         # Copy and save to the archived with timestamp
         archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/shopify-products-bizon--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
