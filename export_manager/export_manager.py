@@ -9,6 +9,8 @@ from connections.easystorage.products import EasyStorageProducts
 import config
 import json
 import os
+from datetime import datetime
+import shutil
 
 
 class ExportManagerShoper:
@@ -43,21 +45,33 @@ class ExportManagerShoper:
 
     def export_shoper_products(self):
         products = self.shoper_products.get_all_products_json()
-        output_file = os.path.join(config.DRIVE_EXPORT_DIR, 'api-shoper', 'products.json')
-        
-        with open(output_file, 'w', encoding='utf-8') as f:
+        print(f"Successfully downloaded {len(products)} products")
+
+        # Save to the main file
+        main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/shoper-products.json'
+        print(f'Saving export to {main_file}...')
+        with open(main_file, 'w', encoding='utf-8') as f:
             json.dump(products, f, ensure_ascii=False, indent=4)
             
-        print(f"Products exported successfully to {output_file}")
+        # Copy and save to the archived with timestamp
+        archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/shoper-products--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
+        print(f'Copying export to {archive_file}...')
+        shutil.copy2(main_file, archive_file)
 
     def export_shoper_categories(self):
         categories = self.shoper_categories.get_all_categories_json()
-        output_file = os.path.join(config.DRIVE_EXPORT_DIR, 'api-shoper', 'categories.json')
-        
-        with open(output_file, 'w', encoding='utf-8') as f:
+        print(f"Successfully downloaded {len(categories)} categories")
+
+        # Save to the main file
+        main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/shoper-categories.json'
+        print(f'Saving export to {main_file}...')
+        with open(main_file, 'w', encoding='utf-8') as f:
             json.dump(categories, f, ensure_ascii=False, indent=4)
             
-        print(f"Categories exported successfully to {output_file}")
+        # Copy and save to the archived with timestamp
+        archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/shoper-categories--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
+        print(f'Copying export to {archive_file}...')
+        shutil.copy2(main_file, archive_file)
 
 
 class ExportManagerShopify:
@@ -84,11 +98,18 @@ class ExportManagerShopify:
         
     def export_shopify_products(self):
         all_products = self.shopify_products.get_all_products()
-        
-        with open(f'{config.DRIVE_EXPORT_DIR}/api-shopify/products.json', 'w', encoding='utf-8') as f:
-            json.dump(all_products, f, ensure_ascii=False, indent=4)
-        
         print(f"Successfully downloaded {len(all_products)} products")
+
+        # Save to the main file
+        main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/shopify-products-light.json'
+        print(f'Saving export to {main_file}...')
+        with open(main_file, 'w', encoding='utf-8') as f:
+            json.dump(all_products, f, ensure_ascii=False, indent=4)
+            
+        # Copy and save to the archived with timestamp
+        archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/shopify-products-light--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
+        print(f'Copying export to {archive_file}...')
+        shutil.copy2(main_file, archive_file)
 
     
 class ExpportManagerEasyStorage:
@@ -117,10 +138,18 @@ class ExpportManagerEasyStorage:
                 print('No products found')
                 return
 
-            output_file = os.path.join(config.DRIVE_EXPORT_DIR, 'api-easystorage', 'wms-pancernik-products.json')
+            print(f"Successfully downloaded {len(products)} products")
 
-            with open(output_file, 'w', encoding='utf-8') as f:
+            # Save to the main file
+            main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/easystorage-pancernik-products.json'
+            print(f'Saving export to {main_file}...')
+            with open(main_file, 'w', encoding='utf-8') as f:
                 json.dump(products, f, ensure_ascii=False, indent=4)
+
+            # Copy and save to the archived with timestamp
+            archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/easystorage-pancernik-products--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
+            print(f'Copying export to {archive_file}...')
+            shutil.copy2(main_file, archive_file)
 
         except Exception as e:
             print(f"Error exporting Pancernik products: {e}")
@@ -134,10 +163,18 @@ class ExpportManagerEasyStorage:
                 print('No products found')
                 return
 
-            output_file = os.path.join(config.DRIVE_EXPORT_DIR, 'api-easystorage', 'wms-bizon-products.json')
+            print(f"Successfully downloaded {len(products)} products")
 
-            with open(output_file, 'w', encoding='utf-8') as f:
+            # Save to the main file
+            main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/easystorage-bizon-products.json'
+            print(f'Saving export to {main_file}...')
+            with open(main_file, 'w', encoding='utf-8') as f:
                 json.dump(products, f, ensure_ascii=False, indent=4)
+
+            # Copy and save to the archived with timestamp
+            archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/easystorage-bizon-products--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
+            print(f'Copying export to {archive_file}...')
+            shutil.copy2(main_file, archive_file)
 
         except Exception as e:
             print(f"Error exporting Bizon products: {e}")

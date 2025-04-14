@@ -25,7 +25,14 @@ class ShopifyProducts:
                 result = json.loads(result)
                 
                 products_data = result['data']['products']
-                all_products.extend([edge['node'] for edge in products_data['edges']])
+                for edge in products_data['edges']:
+                    product = edge['node']
+                    # Extract variants into a simpler list
+                    product['variants'] = [
+                        variant['node'] 
+                        for variant in product['variants']['edges']
+                    ]
+                    all_products.append(product)
                 
                 has_next_page = products_data['pageInfo']['hasNextPage']
                 cursor = products_data['pageInfo']['endCursor']
@@ -37,3 +44,11 @@ class ShopifyProducts:
         except Exception as e:
             print(f"❌ Request failed: {str(e)}")
             return str(e)
+
+    def update_a_product(self):
+        """Update a product in Shopify"""
+        mutation = config.get_product_update_mutation(product_id='gid://shopify/Product/839310392', new_title='Test Product')
+
+        result = shopify.GraphQL().execute(mutation)
+        result = json.loads(result)
+        print(result)

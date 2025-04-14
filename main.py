@@ -140,7 +140,7 @@ def main():
             
             shopify_client.connect()
             shopify_products = ShopifyProducts(shopify_client)
-            x = shopify_products.get_all_products()
+            x = shopify_products.update_a_product()
             print(x)
 
         # Exit the program
