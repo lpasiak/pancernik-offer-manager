@@ -3,6 +3,7 @@ import json
 import config
 import pandas as pd
 
+
 class ShopifyProducts:
     def __init__(self, client):
         """Initialize a Shoper Client"""
@@ -47,7 +48,6 @@ class ShopifyProducts:
             print(f"❌ Request failed: {str(e)}")
             return str(e)
         
-    # HERE IS BIZON
     def get_all_products_bizon(self):
         """Get all products from Shopify and return them as JSON or None."""
         try:
