@@ -97,7 +97,7 @@ class ExportManagerShopify:
             return False
         
     def export_shopify_products(self):
-        all_products = self.shopify_products.get_all_products()
+        all_products = self.shopify_products.get_all_products_light()
         print(f"Successfully downloaded {len(all_products)} products")
 
         # Save to the main file

@@ -1,6 +1,7 @@
 import shopify
 import json
 import config
+import pandas as pd
 
 class ShopifyProducts:
     def __init__(self, client):
@@ -8,7 +9,7 @@ class ShopifyProducts:
         self.client = client
         self.query_product_download = config.query_product_download
         
-    def get_all_products(self):
+    def get_all_products_light(self):
         """Get all products from Shopify and return them as JSON or None."""
         try:
             all_products = []
@@ -45,10 +46,31 @@ class ShopifyProducts:
             print(f"❌ Request failed: {str(e)}")
             return str(e)
 
-    def update_a_product(self):
+    def update_products_urls(self):
         """Update a product in Shopify"""
-        mutation = config.get_product_update_mutation(product_id='gid://shopify/Product/839310392', new_title='Test Product')
 
-        result = shopify.GraphQL().execute(mutation)
-        result = json.loads(result)
-        print(result)
+        products = pd.read_csv(f'{config.SHEETS_DIR}/handles-bizon.csv', delimiter=';')
+
+        product_dict = {}
+
+        for _, row in products.iterrows():
+            product_dict[row['id']] = row['handle']
+
+        for id, handle in product_dict.items():
+            mutation = config.mutation_product_update_url(product_id=id, new_url=handle)
+
+            result = shopify.GraphQL().execute(mutation)
+            result = json.loads(result)
+            
+            response_data = result.get('data', {}).get('productUpdate', {})
+            updated_product = response_data.get('product', {})
+            errors = response_data.get('userErrors', [])
+            
+            if errors:
+                print("❌ Errors occurred during update:")
+                for error in errors:
+                    print(f"- Field: {error.get('field')}, Message: {error.get('message')}")
+                return None
+                
+            print(f"✅ Product {updated_product.get('id')} updated successfully!")
+            print(f"New handle: {updated_product.get('handle')}")

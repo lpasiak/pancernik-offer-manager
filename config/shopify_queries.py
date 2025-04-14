@@ -29,16 +29,17 @@ query_product_download = """
     }
 """
 
-def get_product_update_mutation(product_id: str, new_title: str) -> str:
+def mutation_product_update_url(product_id: str, new_url: str) -> str:
     return f"""
     mutation {{
         productUpdate(input: {{
             id: "{product_id}",
-            title: "{new_title}"
+            handle: "{new_url}",
+            redirectNewHandle: true
         }}) {{
             product {{
                 id
-                title
+                handle
             }}
             userErrors {{
                 field
@@ -47,5 +48,3 @@ def get_product_update_mutation(product_id: str, new_title: str) -> str:
         }}
     }}
 """
-
-zapisze_se = 'Robuste Handyhülle für iPhone 14 Plus, Bizon Case Tur, Burgunderrot'

@@ -33,13 +33,18 @@ def main():
                 break
 
             if action == '3':
+                shopify_export_manager = ExportManagerShopify()
+                shopify_export_manager.connect()
+                shopify_export_manager.export_shopify_products()
+                break
+
+            if action == '4':
                 easystorage_export_manager = ExpportManagerEasyStorage()
                 easystorage_export_manager.connect()
                 easystorage_export_manager.export_wms_pancernik_products()
                 break
-                
 
-            if action == '4':
+            if action == '5':
                 easystorage_export_manager = ExpportManagerEasyStorage()
                 easystorage_export_manager.connect()
                 easystorage_export_manager.export_wms_bizon_products()
@@ -133,15 +138,23 @@ def main():
                 print('Nie ma takiego wyboru :/')
 
         elif action == '4':
-            shopify_client = ShopifyAPIClient(
-                shop_url=config.SHOPIFY_CREDENTIALS['shop_url'],
-                api_version=config.SHOPIFY_API_VERSION,
-                api_token=config.SHOPIFY_CREDENTIALS['api_token'])
+            action = config.context_menu_shopify()
+
+            if action == '1':
+                shopify_client = ShopifyAPIClient(
+                    shop_url=config.SHOPIFY_CREDENTIALS['shop_url'],
+                    api_version=config.SHOPIFY_API_VERSION,
+                    api_token=config.SHOPIFY_CREDENTIALS['api_token'])
             
-            shopify_client.connect()
-            shopify_products = ShopifyProducts(shopify_client)
-            x = shopify_products.update_a_product()
-            print(x)
+                shopify_client.connect()
+                shopify_products = ShopifyProducts(shopify_client)
+                x = shopify_products.update_products_urls()
+
+            elif action.lower() == 'q':
+                print('Do zobaczenia!')
+                break
+            else:
+                print('Nie ma takiego wyboru :/')
 
         # Exit the program
         elif action.lower() == 'q':
