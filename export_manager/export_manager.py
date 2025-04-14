@@ -8,6 +8,7 @@ from connections.easystorage_connect import EasyStorageClient
 from connections.easystorage.products import EasyStorageProducts
 import config
 import json
+import os
 from datetime import datetime
 import shutil
 
@@ -182,6 +183,10 @@ class ExpportManagerEasyStorage:
 
             print(f"Successfully downloaded {len(products)} products")
 
+            # Create exports directory if it doesn't exist
+            export_dir = f'{config.DRIVE_EXPORT_DIR}/api-exports'
+            os.makedirs(export_dir, exist_ok=True)
+            
             # Save to the main file
             main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/easystorage-bizon-products.json'
             print(f'Saving export to {main_file}...')
