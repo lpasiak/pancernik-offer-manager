@@ -29,13 +29,13 @@ def main():
             if action == '2':
                 shopify_export_manager = ExportManagerShopify()
                 shopify_export_manager.connect()
-                shopify_export_manager.export_shopify_products()
+                shopify_export_manager.export_shopify_products_light()
                 break
 
             if action == '3':
                 shopify_export_manager = ExportManagerShopify()
                 shopify_export_manager.connect()
-                shopify_export_manager.export_shopify_products()
+                shopify_export_manager.export_shopify_products_bizon()
                 break
 
             if action == '4':

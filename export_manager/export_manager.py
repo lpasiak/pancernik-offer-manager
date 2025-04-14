@@ -96,7 +96,7 @@ class ExportManagerShopify:
             print(f"Error initializing Shopify connections: {e}")
             return False
         
-    def export_shopify_products(self):
+    def export_shopify_products_light(self):
         all_products = self.shopify_products.get_all_products_light()
         print(f"Successfully downloaded {len(all_products)} products")
 
@@ -111,6 +111,20 @@ class ExportManagerShopify:
         print(f'Copying export to {archive_file}...')
         shutil.copy2(main_file, archive_file)
 
+    def export_shopify_products_bizon(self):
+        all_products = self.shopify_products.get_all_products_bizon()
+        print(f"Successfully downloaded {len(all_products)} products")
+
+        # Save to the main file
+        main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/shopify-products-bizon.json'
+        print(f'Saving export to {main_file}...')
+        with open(main_file, 'w', encoding='utf-8') as f:
+            json.dump(all_products, f, ensure_ascii=False, indent=4)
+            
+        # Copy and save to the archived with timestamp
+        archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/shopify-products-bizon--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
+        print(f'Copying export to {archive_file}...')
+        shutil.copy2(main_file, archive_file)
     
 class ExpportManagerEasyStorage:
     def __init__(self):

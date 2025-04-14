@@ -1,7 +1,39 @@
-query_product_download = """
+query_product_light = """
     {
         products(
             first: 250  # Maximum allowed per request
+            after: null  # Will be updated for pagination
+        ) {
+            edges {
+                node {
+                    id
+                    title
+                    handle
+                    variants(first: 2) {
+                        edges {
+                            node {
+                                sku
+                                barcode
+                                price
+                            }
+                        }
+                    }
+                }
+                cursor
+            }
+            pageInfo {
+                hasNextPage
+                endCursor
+            }
+        }
+    }
+"""
+
+query_product_bizon = """
+    {
+        products(
+            first: 250  # Maximum allowed per request
+            query: "vendor:Bizon"  # Filter by vendor
             after: null  # Will be updated for pagination
         ) {
             edges {
