@@ -55,7 +55,7 @@ Akcja: """
 def context_menu_shopify():
     menu_text = """--------------------------------
 Co chcesz zrobić?
-1. Podmienić URL-e z pliku CSV (sheets/handles-bizon.csv)
+1. Podmienić URL-e/tytuły/opis z pliku CSV (sheets/handles-bizon.csv)
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))

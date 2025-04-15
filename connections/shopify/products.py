@@ -87,29 +87,46 @@ class ShopifyProducts:
 
     def update_products_urls(self):
         """Update a product in Shopify"""
+        try:
+            products = pd.read_csv(f'{config.SHEETS_DIR}/handles-bizon.csv', delimiter=';')
+        except Exception as e:
+            print(f"❌ Error reading CSV file: {str(e)}")
+            return
 
-        products = pd.read_csv(f'{config.SHEETS_DIR}/handles-bizon.csv', delimiter=';')
-
-        product_dict = {}
-
-        for _, row in products.iterrows():
-            product_dict[row['id']] = row['handle']
-
-        for id, handle in product_dict.items():
-            mutation = config.mutation_product_update_url(product_id=id, new_url=handle)
-
-            result = shopify.GraphQL().execute(mutation)
-            result = json.loads(result)
-            
-            response_data = result.get('data', {}).get('productUpdate', {})
-            updated_product = response_data.get('product', {})
-            errors = response_data.get('userErrors', [])
-            
-            if errors:
-                print("❌ Errors occurred during update:")
-                for error in errors:
-                    print(f"- Field: {error.get('field')}, Message: {error.get('message')}")
-                return None
+        try:
+            for _, row in products.iterrows():
+                product_id = row['id']
+                product_handle = row['handle']
+                product_title = row['title']
+                product_description = row['descriptionHtml']
                 
-            print(f"✅ Product {updated_product.get('id')} updated successfully!")
-            print(f"New handle: {updated_product.get('handle')}")
+                mutation = config.mutation_product_update_url(
+                    product_id=product_id,
+                    handle=product_handle,
+                    title=product_title,
+                    descriptionHtml=product_description
+                )
+
+                result = shopify.GraphQL().execute(mutation)
+                result = json.loads(result)
+                
+                response_data = result.get('data', {}).get('productUpdate', {})
+                updated_product = response_data.get('product', {})
+                errors = response_data.get('userErrors', [])
+                
+                if errors:
+                    print("❌ Errors occurred during update:")
+                    for error in errors:
+                        print(f"- Field: {error.get('field')}, Message: {error.get('message')}")
+                    continue  # Continue with next product instead of returning
+                
+                if updated_product:
+                    print(f"✅ Product {updated_product.get('id')} updated successfully!")
+                    print(f"New handle: {updated_product.get('handle')}")
+                    print(f"New title: {updated_product.get('title')}")
+                else:
+                    print("❌ No product data in response")
+
+        except Exception as e:
+            print(f"❌ Error updating product: {str(e)}")
+            return
