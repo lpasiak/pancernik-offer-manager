@@ -15,6 +15,7 @@ query_product_light = """
                                 sku
                                 barcode
                                 price
+                                compareAtPrice
                             }
                         }
                     }
