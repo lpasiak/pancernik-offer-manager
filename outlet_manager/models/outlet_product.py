@@ -114,8 +114,13 @@ class OutletProduct:
         """Create the description for the outlet product by merging the outlet description and the source description."""
         outlet_description = config.outlet_info.damage_types_long[self.damage_type].replace('[SKU_OUTLET_CODE]', self.outlet_code)
         source_description = self.source_product["translations"]["pl_PL"]["description"]
+        description = outlet_description + source_description
         
-        return outlet_description + source_description
+        for key, value in config.formulas_to_remove:
+            if value in description:
+                description = description.replace(value, '')
+        
+        return description
 
     def _set_outlet_price(self):
         """
