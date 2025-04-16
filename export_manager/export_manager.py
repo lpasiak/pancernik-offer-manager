@@ -47,25 +47,40 @@ class ExportManagerShoper:
         print(f"Successfully downloaded {len(products)} products")
 
         # Save to the main file
-        main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/shoper-products.json'
-        print(f'Saving export to {main_file}...')
-        with open(main_file, 'w', encoding='utf-8') as f:
+        file = f'{config.SHEETS_DIR}/api-exports/shoper-products.json'
+        os.makedirs(os.path.dirname(file), exist_ok=True)
+
+        print(f'Saving export to {file}...')
+        with open(file, 'w', encoding='utf-8') as f:
             json.dump(products, f, ensure_ascii=False, indent=4)
+
+        # Copy and save to the main file
+        main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/shoper-products.json'
+        print(f'Copying export to {main_file}...')
+        shutil.copy2(file, main_file)    
             
         # Copy and save to the archived with timestamp
         archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/shoper-products--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
         print(f'Copying export to {archive_file}...')
-        shutil.copy2(main_file, archive_file)
+        shutil.copy2(main_file, archive_file)        
+
 
     def export_shoper_categories(self):
         categories = self.shoper_categories.get_all_categories_json()
         print(f"Successfully downloaded {len(categories)} categories")
 
         # Save to the main file
-        main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/shoper-categories.json'
-        print(f'Saving export to {main_file}...')
-        with open(main_file, 'w', encoding='utf-8') as f:
+        file = f'{config.SHEETS_DIR}/api-exports/shoper-categories.json'
+        os.makedirs(os.path.dirname(file), exist_ok=True)
+
+        print(f'Saving export to {file}...')
+        with open(file, 'w', encoding='utf-8') as f:
             json.dump(categories, f, ensure_ascii=False, indent=4)
+
+        # Copy and save to the main file
+        main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/shoper-categories.json'
+        print(f'Copying export to {main_file}...')
+        shutil.copy2(file, main_file)
             
         # Copy and save to the archived with timestamp
         archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/shoper-categories--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
@@ -100,10 +115,17 @@ class ExportManagerShopify:
         print(f"Successfully downloaded {len(all_products)} products")
 
         # Save to the main file
-        main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/shopify-products-light.json'
-        print(f'Saving export to {main_file}...')
-        with open(main_file, 'w', encoding='utf-8') as f:
+        file = f'{config.SHEETS_DIR}/api-exports/shopify-products-light.json'
+        os.makedirs(os.path.dirname(file), exist_ok=True)
+
+        print(f'Saving export to {file}...')
+        with open(file, 'w', encoding='utf-8') as f:
             json.dump(all_products, f, ensure_ascii=False, indent=4)
+
+        # Copy and save to the main file
+        main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/shopify-products-light.json'
+        print(f'Copying export to {main_file}...')
+        shutil.copy2(file, main_file)
             
         # Copy and save to the archived with timestamp
         archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/shopify-products-light--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
@@ -114,6 +136,7 @@ class ExportManagerShopify:
         all_products = self.shopify_products.get_all_products_bizon()
         print(f"Successfully downloaded {len(all_products)} products")
 
+        # Save to the main file
         file = f'{config.SHEETS_DIR}/api-exports/shopify-products-bizon.json'
         os.makedirs(os.path.dirname(file), exist_ok=True)
         
@@ -121,7 +144,7 @@ class ExportManagerShopify:
         with open(file, 'w', encoding='utf-8') as f:
             json.dump(all_products, f, ensure_ascii=False, indent=4)
 
-        # Save to the main file
+        # Copy and save to the main file
         main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/shopify-products-bizon.json'
         print(f'Copying export to {main_file}...')
         shutil.copy2(file, main_file)
@@ -130,7 +153,8 @@ class ExportManagerShopify:
         archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/shopify-products-bizon--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
         print(f'Copying export to {archive_file}...')
         shutil.copy2(main_file, archive_file)
-    
+
+
 class ExpportManagerEasyStorage:
     def __init__(self):
         self.easystorage_client = None
