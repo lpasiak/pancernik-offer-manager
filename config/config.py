@@ -16,6 +16,7 @@ DRIVE_EXPORT_DIR = r'H:\Pansernik\Eksporty'
 
 TODAY = datetime.today().strftime('%d-%m-%Y')
 
+REDIRECT_TARGET_OUTLET_URL = '/outlet'
 # Load environment variables from .env file
 load_dotenv(ENV_FILE)
 
