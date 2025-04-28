@@ -205,7 +205,6 @@ class OutletProduct:
         # Handle if attributes is a list
         if isinstance(src_product_attribute_dict, list):
             for attribute in src_product_attribute_dict:
-                print(f"Debug - Processing attribute: {attribute}")
                 if isinstance(attribute, dict):
                     for key, value in attribute.items():
                         attribute_dict[key] = value
@@ -215,7 +214,6 @@ class OutletProduct:
         # Handle if attributes is a dictionary
         elif isinstance(src_product_attribute_dict, dict):
             for group, attributes in src_product_attribute_dict.items():
-                print(f"Debug - Processing group: {group}, attributes: {attributes}")
                 if isinstance(attributes, dict):
                     for key, value in attributes.items():
                         attribute_dict[key] = value
@@ -227,7 +225,6 @@ class OutletProduct:
             attribute_dict['1402'] = ''     # _outlet
             attribute_dict['1538'] = 'Tak'  # Outlet
 
-        print(f"Debug - Final attribute dict: {attribute_dict}")
         return attribute_dict
     
     def set_outlet_pictures(self, new_product_id):
