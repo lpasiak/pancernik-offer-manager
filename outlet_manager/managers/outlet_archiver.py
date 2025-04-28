@@ -1,12 +1,13 @@
 from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts
+from connections.shoper.redirects import ShoperRedirects
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 from connections.easystorage_connect import EasyStorageClient
 from connections.easystorage.products import EasyStorageProducts
 import config
 import pandas as pd
-from pprint import pprint
+from datetime import datetime
 
 
 class OutletArchiver:
@@ -15,6 +16,7 @@ class OutletArchiver:
         self.gsheets_client = None
         self.easystorage_client = None
         self.shoper_products = None
+        self.shoper_redirects = None
         self.gsheets_worksheets = None
         self.easystorage_products = None
 
@@ -29,6 +31,7 @@ class OutletArchiver:
             )
             self.shoper_client.connect()
             self.shoper_products = ShoperProducts(self.shoper_client)
+            self.shoper_redirects = ShoperRedirects(self.shoper_client)
             
             # Initialize Google Sheets connections
             self.gsheets_client = GSheetsClient(
@@ -79,6 +82,9 @@ class OutletArchiver:
             gsheets_data = gsheets_data[mask]
             gsheets_data = gsheets_data[columns_to_keep]
 
+            # TESTOWE
+            gsheets_data = gsheets_data.head(100)
+
             gsheets_length = len(gsheets_data)
 
             for index, row in gsheets_data.iterrows():
@@ -93,6 +99,9 @@ class OutletArchiver:
                     # If product has 0 items on Shoper and it is not in easy storage warehouse
                     if product_stock != 0 or product_sku in easy_storage_sku_list:
                         gsheets_data = gsheets_data.drop(index)
+                    else:
+                        gsheets_data['URL'] = product_data['translations']['pl_PL']['seo_url']
+
                 except Exception as e:
                     print(f"Error: {e}")
                     gsheets_data = gsheets_data.drop(index)
@@ -111,6 +120,8 @@ class OutletArchiver:
         
     def archive_sold_products(self, sold_products_df):
 
+        date_removed = datetime.today().strftime('%Y-%m-%d')
+
         if sold_products_df is None or (isinstance(sold_products_df, pd.DataFrame) and sold_products_df.empty):
             return
         
@@ -120,7 +131,8 @@ class OutletArchiver:
         sold_products_df['Wystawione'] = True
         sold_products_df['Druga obniżka'] = sold_products_df['Druga obniżka'].map({'TRUE': True, 'FALSE': False})
         sold_products_df['SKU'] = sold_products_df['SKU'].astype('object')
-
+        sold_products_df['Data usunięcia'] = date_removed
+        sold_products_df['Komentarz'] = ''
         sold_products_df = sold_products_df.replace({float('nan'): None, 'nan': None})
 
         sold_products_len = len(sold_products_df)
@@ -129,14 +141,40 @@ class OutletArchiver:
         print(sold_products_df)
         x = input('Continue? (y/n)')
         if x == 'y':
-            # Remove from Shoper
+            # Remove from Shoper and create a redirection
             for index, row in sold_products_df.iterrows():
                 self.shoper_products.remove_product(row['ID Shoper'])
+
+                redirect_data = {
+                'redirected_url': row['URL'],
+                'target_url': config.REDIRECT_TARGET_OUTLET_URL
+                }
+
+                redirect_id = self.shoper_redirects.create_redirect(redirect_data)
+                sold_products_df.at[index, 'ID Przekierowania'] = redirect_id
+
             counter += 1
             print(f'Products: {counter}/{sold_products_len}')
 
             # Move to archived sheet
-            offers_to_move = sold_products_df[['Row Number', 'EAN', 'SKU', 'Nazwa', 'Uszkodzenie', 'Data', 'Wystawione', 'Data wystawienia', 'Druga obniżka', 'Status', 'Zutylizowane']]
+            offers_to_move = sold_products_df[[
+                'Row Number',
+                'EAN',
+                'SKU', 
+                'Nazwa',
+                'Uszkodzenie',
+                'Data',
+                'Wystawione',
+                'Data wystawienia',
+                'Druga obniżka',
+                'Status',
+                'Zutylizowane',
+                'Komentarz',
+                'Data usunięcia',
+                'URL',
+                'ID Przekierowania'
+            ]]
+
             self.gsheets_worksheets.batch_move_products(
                 source_worksheet_name=config.OUTLET_SHEET_NAME,
                 target_worksheet_name=config.OUTLET_SHEET_ARCHIVED_NAME,

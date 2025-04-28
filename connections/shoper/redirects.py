@@ -46,7 +46,7 @@ class ShoperRedirects:
         Args:
             identifier (int|str): Redirect id
         Returns:
-            bool: True if successful, False if failed
+            Redirect id if succesful, False if failed
         """
 
         try:
@@ -55,7 +55,7 @@ class ShoperRedirects:
 
             if response.status_code == 200:
                 print(f'✅ Special offer {identifier} removed successfully.')
-                return True
+                return response.json()
             else:
                 error_description = response.json()['error_description']
                 print(f'❌ API Error: {error_description}')

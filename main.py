@@ -94,6 +94,14 @@ def main():
                 out_attribute_manager.update_attribute_groups()
                 out_attribute_manager.update_main_products_attributes()
 
+            elif action == 'test':
+                # Remove products that have been sold
+                out_archiver = OutletArchiver()
+                out_archiver.connect()
+                products_sold_to_archive = out_archiver.select_sold_products()
+                print(products_sold_to_archive)
+                products_sold_to_archive.to_excel('testowy.xlsx')
+
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
                 break
