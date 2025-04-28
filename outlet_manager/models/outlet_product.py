@@ -11,6 +11,7 @@ class OutletProduct:
         damage_type (str): The damage type one of the ['USZ', 'ZAR', 'OBA']
     """
     def __init__(self, product_data, outlet_code, damage_type):
+        
         self._validate_input(product_data, damage_type)
         
         self.source_product = product_data
@@ -116,9 +117,10 @@ class OutletProduct:
         source_description = self.source_product["translations"]["pl_PL"]["description"]
         description = outlet_description + source_description
         
-        for key, value in config.formulas_to_remove:
-            if value in description:
-                description = description.replace(value, '')
+        # Remove formulas from description
+        for formula in config.outlet_info.formulas_to_remove.values():
+            if formula in description:
+                description = description.replace(formula, '')
         
         return description
 
@@ -203,21 +205,29 @@ class OutletProduct:
         # Handle if attributes is a list
         if isinstance(src_product_attribute_dict, list):
             for attribute in src_product_attribute_dict:
+                print(f"Debug - Processing attribute: {attribute}")
                 if isinstance(attribute, dict):
                     for key, value in attribute.items():
                         attribute_dict[key] = value
+                else:
+                    print(f"Warning: Skipping non-dict attribute: {attribute}")
                         
         # Handle if attributes is a dictionary
         elif isinstance(src_product_attribute_dict, dict):
             for group, attributes in src_product_attribute_dict.items():
+                print(f"Debug - Processing group: {group}, attributes: {attributes}")
                 if isinstance(attributes, dict):
                     for key, value in attributes.items():
                         attribute_dict[key] = value
+                else:
+                    print(f"Warning: Skipping non-dict attributes for group {group}: {attributes}")
 
+        # Add outlet attributes
         if config.SITE == 'MAIN':
             attribute_dict['1402'] = ''     # _outlet
             attribute_dict['1538'] = 'Tak'  # Outlet
 
+        print(f"Debug - Final attribute dict: {attribute_dict}")
         return attribute_dict
     
     def set_outlet_pictures(self, new_product_id):
