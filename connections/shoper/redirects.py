@@ -14,7 +14,7 @@ class ShoperRedirects:
                 target_url: string
 
         Returns:
-            int|None: Redirect ID if successful, None if failed
+            Redirect id if succesful, False if failed
         """
         try:
 
@@ -46,7 +46,7 @@ class ShoperRedirects:
         Args:
             identifier (int|str): Redirect id
         Returns:
-            Redirect id if succesful, False if failed
+            bool: True if succesful, False if failed
         """
 
         try:
@@ -54,8 +54,8 @@ class ShoperRedirects:
             response = self.client._handle_request('DELETE', url)
 
             if response.status_code == 200:
-                print(f'✅ Special offer {identifier} removed successfully.')
-                return response.json()
+                print(f'✅ Redirect {identifier} removed successfully.')
+                return True
             else:
                 error_description = response.json()['error_description']
                 print(f'❌ API Error: {error_description}')

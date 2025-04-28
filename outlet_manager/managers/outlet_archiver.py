@@ -82,9 +82,6 @@ class OutletArchiver:
             gsheets_data = gsheets_data[mask]
             gsheets_data = gsheets_data[columns_to_keep]
 
-            # TESTOWE
-            gsheets_data = gsheets_data.head(100)
-
             gsheets_length = len(gsheets_data)
 
             for index, row in gsheets_data.iterrows():
@@ -100,7 +97,7 @@ class OutletArchiver:
                     if product_stock != 0 or product_sku in easy_storage_sku_list:
                         gsheets_data = gsheets_data.drop(index)
                     else:
-                        gsheets_data['URL'] = product_data['translations']['pl_PL']['seo_url']
+                        gsheets_data.at[index, 'URL'] = product_data['translations']['pl_PL']['seo_url']
 
                 except Exception as e:
                     print(f"Error: {e}")
@@ -139,7 +136,7 @@ class OutletArchiver:
         counter = 0
 
         print(sold_products_df)
-        x = input('Continue? (y/n)')
+        x = input('Continue? (y/n)\n')
         if x == 'y':
             # Remove from Shoper and create a redirection
             for index, row in sold_products_df.iterrows():
@@ -153,8 +150,8 @@ class OutletArchiver:
                 redirect_id = self.shoper_redirects.create_redirect(redirect_data)
                 sold_products_df.at[index, 'ID Przekierowania'] = redirect_id
 
-            counter += 1
-            print(f'Products: {counter}/{sold_products_len}')
+                counter += 1
+                print(f'Products: {counter}/{sold_products_len}')
 
             # Move to archived sheet
             offers_to_move = sold_products_df[[
