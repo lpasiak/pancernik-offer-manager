@@ -30,3 +30,16 @@ class IdoSellProducts:
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
             return str(e)
+        
+    def add_stock_quantity(self):
+        payload = { "params": { "products": [
+            {
+                "productPurchasePrice": 9.43,
+                "productSizeCodeExternal": 'BCTPX9ALGY'
+            } ] } }
+        
+        url = f"{self.client.site}/api/admin/{config.IDOSELL_API_VERSION}/products/stockQuantity"
+        response = self.client.session.request('PUT', url, json=payload)
+        print(response)
+        print(response.text)
+        print(response.json)

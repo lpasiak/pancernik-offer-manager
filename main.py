@@ -173,7 +173,7 @@ def main():
                 idosell_client = IdoSellAPIClient(api_key=config.IDOSELL_API_KEY, site=config.IDOSELL_BIZON_B2B_SITE)
                 idosell_client.connect()
                 idosell_products = IdoSellProducts(idosell_client)
-                idosell_products.get_all_products()
+                idosell_products.add_stock_quantity()
 
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
