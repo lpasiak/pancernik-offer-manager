@@ -173,7 +173,7 @@ class ExpportManagerEasyStorage:
             print(f"Error initializing EasyStorage connections: {e}")
 
     def export_wms_pancernik_products(self):
-        
+
         try:
             products = self.easystorage_products.get_pancernik_products()
 
@@ -184,10 +184,16 @@ class ExpportManagerEasyStorage:
             print(f"Successfully downloaded {len(products)} products")
 
             # Save to the main file
-            main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/easystorage-pancernik-products.json'
-            print(f'Saving export to {main_file}...')
-            with open(main_file, 'w', encoding='utf-8') as f:
+            file = f'{config.SHEETS_DIR}/api-exports/easystorage-pancernik-products.json'
+            os.makedirs(os.path.dirname(file), exist_ok=True)
+            print(f'Saving export to {file}...')
+            with open(file, 'w', encoding='utf-8') as f:
                 json.dump(products, f, ensure_ascii=False, indent=4)
+
+            # Copy and save to the main file
+            main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/easystorage-pancernik-products.json'
+            print(f'Copying export to {main_file}...')
+            shutil.copy2(file, main_file)    
 
             # Copy and save to the archived with timestamp
             archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/easystorage-pancernik-products--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
@@ -209,10 +215,16 @@ class ExpportManagerEasyStorage:
             print(f"Successfully downloaded {len(products)} products")
 
             # Save to the main file
-            main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/easystorage-bizon-products.json'
-            print(f'Saving export to {main_file}...')
-            with open(main_file, 'w', encoding='utf-8') as f:
+            file = f'{config.SHEETS_DIR}/api-exports/easystorage-bizon-products.json'
+            os.makedirs(os.path.dirname(file), exist_ok=True)
+            print(f'Saving export to {file}...')
+            with open(file, 'w', encoding='utf-8') as f:
                 json.dump(products, f, ensure_ascii=False, indent=4)
+
+            # Copy and save to the main file
+            main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/easystorage-bizon-products.json'
+            print(f'Copying export to {main_file}...')
+            shutil.copy2(file, main_file)    
 
             # Copy and save to the archived with timestamp
             archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/easystorage-bizon-products--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
