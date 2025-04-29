@@ -6,7 +6,7 @@ import pandas as pd
 
 class ShopifyProducts:
     def __init__(self, client):
-        """Initialize a Shoper Client"""
+        """Initialize a Shopify Client"""
         self.client = client
         self.query_product_light = config.query_product_light
         self.query_product_bizon = config.query_product_bizon

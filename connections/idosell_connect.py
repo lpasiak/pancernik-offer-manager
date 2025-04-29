@@ -4,9 +4,10 @@ import config
 
 class IdoSellAPIClient:
 
-    def __init__(self, api_key):
+    def __init__(self, api_key, site):
 
         self.api_key = api_key
+        self.site = site
         self.session = requests.Session()
 
     def connect(self):

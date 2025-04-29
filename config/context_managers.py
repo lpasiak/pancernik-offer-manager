@@ -59,3 +59,11 @@ Co chcesz zrobić?
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
+
+def context_menu_idosell():
+    menu_text = """--------------------------------
+Co chcesz zrobić?
+1. Zabawa
+q żeby wyjść.
+Akcja: """
+    return str(input(menu_text))
