@@ -17,6 +17,7 @@ DRIVE_EXPORT_DIR = r'H:\Pansernik\Eksporty'
 TODAY = datetime.today().strftime('%d-%m-%Y')
 
 REDIRECT_TARGET_OUTLET_URL = '/outlet'
+
 # Load environment variables from .env file
 load_dotenv(ENV_FILE)
 
@@ -37,6 +38,12 @@ SHOPIFY_CREDENTIALS = {
     'shop_url': os.getenv('SHOPIFY_URL')
 }
 SHOPIFY_API_VERSION = '2025-04'
+
+# IDOSELL SITE
+IDOSELL_BIZON_RETAIL_SITE = os.getenv('IDOSELL_RETAIL_SITE')
+IDOSELL_BIZON_B2B_SITE = os.getenv('IDOSELL_B2B_SITE')
+IDOSELL_API_KEY = os.getenv('IDOSELL_API_KEY')
+IDOSELL_API_VERSION = 'v5'
 
 # Allegro SITE
 ALLEGRO_API_SECRET_SANDBOX = os.getenv('ALLEGRO_API_SECRET_SANDBOX')
