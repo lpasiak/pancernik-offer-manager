@@ -6,6 +6,7 @@ Z czym dziś chcesz pracować?
 2. Menedżer promocji
 3. Menedżer zestawów
 4. Podmiana Shopify
+5. Zabawa z IdoSell
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
