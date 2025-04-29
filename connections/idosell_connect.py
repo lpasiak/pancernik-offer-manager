@@ -1,5 +1,4 @@
 import requests
-import config
 
 
 class IdoSellAPIClient:
@@ -12,5 +11,4 @@ class IdoSellAPIClient:
 
     def connect(self):
         """Authenticate with the API"""
-        self.session.headers.update({'X-API-KEY': self.api_key})
-
+        self.session.headers.update({'X-API-KEY': self.api_key, 'Content-Type': 'application/json'})
