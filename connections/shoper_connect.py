@@ -11,9 +11,6 @@ class ShoperAPIClient:
         self.password = password
         self.session = requests.Session()
         self.token = None
-
-        self.sheets_dir = Path('sheets')
-        self.sheets_dir.mkdir(exist_ok=True)
         
     def _handle_request(self, method, url, **kwargs):
         """Handle API requests with automatic retry on 429 errors."""
