@@ -168,12 +168,16 @@ def main():
 
         elif action == '5':
             action = config.context_menu_idosell()
+            idosell_client = IdoSellAPIClient(api_key=config.IDOSELL_API_KEY, site=config.IDOSELL_BIZON_B2B_SITE)
+            idosell_client.connect()
+            idosell_products = IdoSellProducts(idosell_client)
 
             if action == '1':
-                idosell_client = IdoSellAPIClient(api_key=config.IDOSELL_API_KEY, site=config.IDOSELL_BIZON_B2B_SITE)
-                idosell_client.connect()
+                idosell_products.get_all_products()
+
+            if action == '2':
                 idosell_products = IdoSellProducts(idosell_client)
-                idosell_products.add_stock_quantity()
+                idosell_products.add_stock_price(price=9.44, external_code='BCTMG555GBK')
 
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
