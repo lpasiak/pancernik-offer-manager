@@ -128,6 +128,9 @@ def main():
             if action == '4':
                 promo_manager.remove_promo_offers_from_gsheet()
 
+            if action == '5':
+                promo_manager.import_promo_fixed_from_gsheet()
+
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
                 break

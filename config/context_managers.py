@@ -29,6 +29,7 @@ Co chcesz zrobić?
 2. Zaimportować promocje
 3. Uaktualnić stany magazynowe
 4. Usunąć promocje
+5. Zaimportować promocje dla Kuby
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))

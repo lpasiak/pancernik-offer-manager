@@ -16,6 +16,7 @@ class ShoperSpecialOffers:
                 product_id: integer,
                 discount: float,
                 discount_type: integer, (2 - fixed, 3 - percentage),
+                date_to: dd-mm-YYYY
 
         Returns:
             int|None: Special offer ID if successful, None if failed
@@ -28,7 +29,7 @@ class ShoperSpecialOffers:
                 'discount': discount_data['discount'],
                 'discount_type': discount_data['discount_type'],
                 'date_from': today,
-                'date_to': config.PROMO_TIME_END,
+                'date_to': discount_data['date_to'],
             }
             
             url = f'{config.SHOPER_SITE_URL}/webapi/rest/specialoffers'

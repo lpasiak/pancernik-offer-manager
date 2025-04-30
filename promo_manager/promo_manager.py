@@ -103,7 +103,8 @@ class PromoManager:
                 discount_data = {
                     'product_id': product_id,
                     'discount': row['Kwota promocji (%)'],
-                    'discount_type': 3
+                    'discount_type': 3,
+                    'date_to': config.PROMO_TIME_END
                 }
 
                 if product.get('special_offer') is not None:
@@ -231,4 +232,75 @@ class PromoManager:
             worksheet_name = config.PROMO_SHEET_TO_REMOVE,
             updates = updates,
             start_column = 'B',
+        )
+
+    def import_promo_fixed_from_gsheet(self):
+        """Create special offers and remove current ones if they exist, get data from google sheet"""
+
+        # Select data to import
+        df = self.gsheets_worksheets.get_data(config.PROMO_SHEET_KUBA, include_row_numbers=True)
+        mask = (
+            (~df['Komunikat'].str.contains('Promocja dodana', na=False)) &
+            (df['Cena promocyjna'].notna())
+        )
+        df = df[mask]
+
+        result_df = df.copy()
+        result_df['Komunikat'] = ''
+        result_df['Data końca promocji'] = pd.to_datetime(result_df['Data końca promocji'], dayfirst=True).dt.strftime('%Y-%m-%d')
+        result_df['Data rozpoczęcia promocji'] = pd.Timestamp.now().strftime('%Y-%m-%d')
+
+        counter_products = len(result_df)
+        counter = 0
+        # Import special offers
+        for id, row in result_df.iterrows():
+
+            try:
+                product = self.shoper_products.get_product_by_code(row['SKU'], use_code=True)
+                discount_amount = float(row['Cena produktu']) - float(row['Cena promocyjna']) 
+
+                product_id = product['product_id']
+                
+                discount_data = {
+                    'product_id': product_id,
+                    'discount': discount_amount,
+                    'discount_type': 2,
+                    'date_from': row['Data rozpoczęcia promocji'],
+                    'date_to': row['Data końca promocji'],
+                }
+
+                if product.get('special_offer') is not None:
+                    # Remove the special offer
+                    self.shoper_special_offers.remove_special_offer_from_product(product_id)
+
+                try:
+                    # Create the special offer
+                    response = self.shoper_special_offers.create_special_offer(discount_data)
+                    
+                    if isinstance(response, int):
+                        result_df.at[id, 'Komunikat'] = f'Promocja dodana dla {row["SKU"]}. Nr promocji: {response}'
+                        counter += 1
+                        print(f'Products: {counter}/{counter_products}')
+
+                except Exception as e:
+                    print(f'❌ Error: {e}')
+                    result_df.at[id, 'Komunikat'] = f'Błąd przy tworzeniu promocji: {str(e)}'
+
+            except Exception as e:
+                print(f'❌ Error: {e}')
+                result_df.at[id, 'Komunikat'] = f'Błąd przy pobieraniu produktu: {str(e)}'
+
+            # Prepare updates in correct format
+            updates = []
+            for _, row in result_df.iterrows():
+                updates.append([
+                    int(row['Row Number']),  # Make sure row number is an integer
+                    row['Komunikat']
+                ])
+
+        # Update the worksheet
+        self.gsheets_worksheets.batch_update_from_a_list(
+            worksheet_name = config.PROMO_SHEET_KUBA,
+            updates = updates,
+            start_column = 'E',
         )
