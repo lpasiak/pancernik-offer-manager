@@ -8,8 +8,7 @@ from promo_manager.promo_manager import PromoManager
 from bundle_manager.bundle_manager import BundleManager
 from connections.shopify.products import ShopifyProducts
 from connections.shopify_connect import ShopifyAPIClient
-from connections.idosell_connect import IdoSellAPIClient
-from connections.idosell.products import IdoSellProducts
+from idosell_manager.idosell_manager import IdoSellManager
 import config
 
 def main():
@@ -171,22 +170,22 @@ def main():
 
         elif action == '5':
             action = config.context_menu_idosell()
-            idosell_client = IdoSellAPIClient(api_key=config.IDOSELL_API_KEY, site=config.IDOSELL_BIZON_B2B_SITE)
-            idosell_client.connect()
-            idosell_products = IdoSellProducts(idosell_client)
+            idosell_manager = IdoSellManager()
+            idosell_manager.connect()
 
             if action == '1':
-                idosell_products.get_all_products()
+                idosell_manager.get_sheets_data()
 
-            if action == '2':
-                idosell_products = IdoSellProducts(idosell_client)
-                idosell_products.add_stock_price(price=9.44, external_code='BCTMG555GBK')
+            elif action == '2':
+                pass
+                # idosell_manager.add_stock_price(price=9.44, external_code='BCTMG555GBK')
 
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
                 break
             else:
                 print('Nie ma takiego wyboru :/')
+                
         # Exit the program
         elif action.lower() == 'q':
             print('Do zobaczenia!')
