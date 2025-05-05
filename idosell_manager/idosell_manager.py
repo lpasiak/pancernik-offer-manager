@@ -45,6 +45,11 @@ class IdoSellManager:
         print(selected_data)
         return selected_data
 
+    def get_idosell_data(self):
+        """"""
+        selected_data = self.idosell_products.get_all_products()
+        return selected_data
+
     def upload_product_information(self):
         """Update products with their Purchase Price, Weight and Dimensions"""
         pass

@@ -101,3 +101,17 @@ CLEANUP_ARCHIVED_NAME = 'Archiwum'
 
 BUNDLE_SHEET_ID = '15azOFBzVc4OrtI1HJ2qNWiDOi35hFLEwOTrnYZIe16w'
 BUNDLE_SHEET_NAME = 'do wystawienia'
+
+# Import / Export kategorii Shoper
+
+# category_id: integer,
+# name: string,
+# description: string,
+# description_bottom: string,
+# seo_title: string,
+# seo_description: string,
+# seo_url: string,
+# items: integer,
+# presentations: [
+# integer
+# ]

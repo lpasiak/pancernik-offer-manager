@@ -10,6 +10,8 @@ from connections.shopify.products import ShopifyProducts
 from connections.shopify_connect import ShopifyAPIClient
 from idosell_manager.idosell_manager import IdoSellManager
 import config
+import pandas as pd
+import json
 
 def main():
 
@@ -176,7 +178,15 @@ def main():
             if action == '1':
                 idosell_manager.get_sheets_data()
 
-            elif action == '2':
+            if action == '2':
+                x = idosell_manager.get_idosell_data()
+                df = pd.DataFrame([item for sublist in x for item in sublist])
+                df.to_excel('idosell_products.xlsx', index=False)
+
+                with open('xd.json', 'w') as f:
+                    json.dump(x, f)
+
+            elif action == '3':
                 pass
                 # idosell_manager.add_stock_price(price=9.44, external_code='BCTMG555GBK')
 
