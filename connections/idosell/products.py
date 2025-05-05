@@ -35,17 +35,13 @@ class IdoSellProducts:
                 data = response.json()['results']
                 print(f"{page + 1}/{number_of_pages}")
 
-                transformed_data = []
-
                 for product in data:
                     transformed_product = {
                         'product_id': product['productId'],
                         'product_code': product['productDisplayedCode'],
                         'product_external_code': product['productSizesAttributes'][0]['productSizeCodeExternal']
                     }
-                    transformed_data.append(transformed_product)
-
-                all_data.append(transformed_data)
+                    all_data.append(transformed_product)
 
             return all_data
 

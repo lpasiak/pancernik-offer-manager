@@ -179,12 +179,7 @@ def main():
                 idosell_manager.get_sheets_data()
 
             if action == '2':
-                x = idosell_manager.get_idosell_data()
-                df = pd.DataFrame([item for sublist in x for item in sublist])
-                df.to_excel('idosell_products.xlsx', index=False)
-
-                with open('xd.json', 'w') as f:
-                    json.dump(x, f)
+                idosell_manager.get_idosell_data()
 
             elif action == '3':
                 pass
