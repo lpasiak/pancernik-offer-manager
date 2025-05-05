@@ -31,7 +31,7 @@ class BundleManager:
             # Initialize Google Sheets connections
             self.gsheets_client = GSheetsClient(
                 config.GOOGLE_CREDENTIALS_FILE,
-                config.OUTLET_SHEET_ID
+                config.BUNDLE_SHEET_ID
             )
             self.gsheets_client.connect()
             self.gsheets_worksheets = GsheetsWorksheets(self.gsheets_client)
@@ -42,9 +42,71 @@ class BundleManager:
             print(f"Error initializing connections: {e}")
             return False
 
-    def create_a_bundle(self, product_1_sku, product_2_sku):
-        product_1 = self.shoper_products.get_product_by_code(product_1_sku, use_code=True, pictures=True)
-        product_2 = self.shoper_products.get_product_by_code(product_2_sku, use_code=True, pictures=True)
+    def download_bundled_case_images(self):
+        """Select EAN codes of an outlet and download their images"""
+        from pprint import pprint
 
-        bundled_product = BundledProduct(product_1, product_2)
-        print(bundled_product.categories)
+        df_sku = self.gsheets_worksheets.get_data(sheet_name=config.BUNDLE_SHEET_NAME, include_row_numbers=True)
+        df_sku['Case SKU'] = df_sku['SKU'].str.split('_').str[0]
+
+        gsheets_updates = []
+
+        for index, row in df_sku.iterrows():
+            try:
+                print(f'Getting images of a product {row["Case SKU"]} ')
+                product = self.shoper_products.get_product_by_code(identifier=row['Case SKU'], use_code=True, pictures=True)
+
+                if not product.get('img'):
+                    return []
+            
+                google_sheets_row = row['Row Number']
+
+                source_images = product['img']
+                final_images = []
+                
+                for image in source_images:
+                    image_id = f"{image['gfx_id']}.{image['extension']}"
+
+                    image_item = {
+                        'url': f"{config.SHOPER_SITE_URL}/userdata/public/gfx/{image_id}",
+                        'main': str(image['main']),
+                        'order': image['order'],
+                        'name': image['translations']['pl_PL']['name']
+                    }
+                    final_images.append(image_item)
+
+                final_images.sort(key=lambda x: x['order'])
+                final_images = final_images[:14] # Allegro takes up to 16 images, the bundle's first 2 are taken
+
+                image_links = ';'.join(image['url'] for image in final_images)
+
+                if google_sheets_row is not None:
+                    gsheets_updates.append([
+                        google_sheets_row,
+                        image_links, 
+                ])
+                else:
+                    print(f"Warning: SKU {row['Case SKU']} not found in Google Sheets!")
+
+            except Exception as e:
+                print(f'❌ Error creating outlet offer for product {product["SKU"]}: {e}')
+
+        try:
+            print("Uploading google sheets...")
+
+            self.gsheets_worksheets.batch_update_from_a_list(
+                worksheet_name=config.BUNDLE_SHEET_NAME,
+                updates=gsheets_updates,
+                start_column='P',
+                num_columns=1
+            )
+            
+        except Exception as e:
+            print(f'❌ Error updating')
+
+    # def create_a_bundle(self, product_1_sku, product_2_sku):
+    #     product_1 = self.shoper_products.get_product_by_code(product_1_sku, use_code=True, pictures=True)
+    #     product_2 = self.shoper_products.get_product_by_code(product_2_sku, use_code=True, pictures=True)
+
+    #     bundled_product = BundledProduct(product_1, product_2)
+    #     print(bundled_product.categories)

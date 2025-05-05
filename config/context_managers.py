@@ -37,7 +37,7 @@ Akcja: """
 def context_menu_bundle():
     menu_text = """--------------------------------
 Co chcesz zrobić?
-1. Utworzyć zestaw
+1. MaxExport zdjęć
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))

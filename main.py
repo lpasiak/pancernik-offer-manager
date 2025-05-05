@@ -141,7 +141,7 @@ def main():
             bundle_manager.connect()
             
             if action == '1':
-                bundle_manager.create_a_bundle('5904665389942', '5907339019107')
+                bundle_manager.download_bundled_case_images()
 
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
@@ -185,7 +185,7 @@ def main():
                 break
             else:
                 print('Nie ma takiego wyboru :/')
-                
+
         # Exit the program
         elif action.lower() == 'q':
             print('Do zobaczenia!')

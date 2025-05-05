@@ -98,3 +98,6 @@ MISSING_ALLEGRO_OFFERS_NAME = 'Uzupełnianie Allegro | sklep-pancernik'
 MISSING_SHOPIFY_OFFERS_NAME = 'Uzupełnianie Shopify'
 MISSING_ATTRIBUTES_NAME = 'Uzupełnianie Atrybuty'
 CLEANUP_ARCHIVED_NAME = 'Archiwum'
+
+BUNDLE_SHEET_ID = '15azOFBzVc4OrtI1HJ2qNWiDOi35hFLEwOTrnYZIe16w'
+BUNDLE_SHEET_NAME = 'do wystawienia'
