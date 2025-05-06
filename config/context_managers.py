@@ -66,8 +66,7 @@ def context_menu_idosell():
     menu_text = """--------------------------------
 Co chcesz zrobić?
 1. Wyeksportować produkty z Gsheets
-2. Wyeksportować produkty z IdoSell
-3. Dograć ceny ostatniej dostawy
+2. Dograć ceny ostatniej dostawy, wagi i wymiary produktom
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))

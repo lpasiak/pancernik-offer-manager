@@ -25,3 +25,5 @@ venv
 
 quick_script.py
 *.json
+*.xlsx
+*.csv

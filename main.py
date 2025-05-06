@@ -176,14 +176,10 @@ def main():
             idosell_manager.connect()
 
             if action == '1':
-                idosell_manager.get_sheets_data()
+                idosell_manager.select_products_to_update()
 
-            if action == '2':
-                idosell_manager.get_idosell_product_code()
-
-            elif action == '3':
-                pass
-                # idosell_manager.add_stock_price(price=9.44, external_code='BCTMG555GBK')
+            elif action == '2':
+                idosell_manager.upload_product_information()
 
             elif action.lower() == 'q':
                 print('Do zobaczenia!')

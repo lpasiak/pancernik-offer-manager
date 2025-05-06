@@ -7,9 +7,10 @@ class IdoSellProducts:
         """Initialize an IdoSell Client"""
         self.client = client
 
-    def get_all_products(self):
-        """Get all products from IdoSell and return them as JSON."""
+    def get_all_product_codes(self):
+        """Get all products' ids, codes and external codes from IdoSell and return them as JSON."""
 
+        print('Downloading IdoSell offer codes...')
         try:
             url = f"{self.client.site}/api/admin/v5/products/products/search"
             all_data = []
@@ -37,30 +38,50 @@ class IdoSellProducts:
 
                 for product in data:
                     transformed_product = {
-                        'product_id': product['productId'],
-                        'product_code': product['productDisplayedCode'],
-                        'product_external_code': product['productSizesAttributes'][0]['productSizeCodeExternal']
+                        'product_id': str(product['productId']),
+                        'product_code': str(product['productDisplayedCode']),
+                        'product_external_code': str(product['productSizesAttributes'][0]['productSizeCodeExternal'])
                     }
                     all_data.append(transformed_product)
 
             return all_data
 
         except Exception as e:
-            print(f'❌ Request failed: {str(e)}')
+            print(f'❌ Request failed: {str(e)} | in get_all_product_codes')
             return str(e)
         
-    def add_stock_price(self, price, external_code):
-        """Add """
+    def update_product_logistic_info(self, product_id, product_external_code, purchase_price_gross, weight, width, height, length):
+        """Update products with Last Delivery Prices, Weights and Dimensions"""
+
         try:
-            payload = { "params": { "products": [
-                {
-                    "productPurchasePrice": price,
-                    "productSizeCodeExternal": external_code
-                } ] } }
+            payload = { "params": {
+                            "settings": { "settingModificationType": "edit" },
+                            "products": [
+                                {
+                                    "productId": product_id,
+                                    "productSizes": [
+                                        {
+                                            "productPurchasePriceGrossLast": purchase_price_gross,
+                                            "productWeight": weight,
+                                            "sizeId": "uniw",
+                                            "productSizeCodeExternal": product_external_code
+                                        }
+                                    ],
+                                    "productDimensions": {
+                                        "productWidth": width / 10,
+                                        "productHeight": height / 10,
+                                        "productLength": length / 10
+                                    }
+                                }
+                            ]
+                        } }
             
-            url = f"{self.client.site}/api/admin/{config.IDOSELL_API_VERSION}/products/stockQuantity"
+            url = f'{self.client.site}/api/admin/{config.IDOSELL_API_VERSION}/products/products'
             response = self.client.session.request('PUT', url, json=payload)
+
+            return response
 
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
             return str(e)
+        
