@@ -53,7 +53,6 @@ def main():
                 easystorage_export_manager.export_wms_bizon_products()
                 break
 
-
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
                 break
@@ -97,14 +96,6 @@ def main():
                 out_attribute_manager.update_attribute_groups()
                 out_attribute_manager.update_main_products_attributes()
 
-            elif action == 'test':
-                # Remove products that have been sold
-                out_archiver = OutletArchiver()
-                out_archiver.connect()
-                products_sold_to_archive = out_archiver.select_sold_products()
-                print(products_sold_to_archive)
-                products_sold_to_archive.to_excel('testowy.xlsx')
-
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
                 break
@@ -122,14 +113,12 @@ def main():
 
             if action == '2':
                 promo_manager.import_promo_percent_from_gsheet()
-
-            if action == '3':
                 promo_manager.update_product_stock_from_gsheet()
     
-            if action == '4':
+            if action == '3':
                 promo_manager.remove_promo_offers_from_gsheet()
 
-            if action == '5':
+            if action == '4':
                 promo_manager.import_promo_fixed_from_gsheet()
 
             elif action.lower() == 'q':
@@ -176,11 +165,11 @@ def main():
             idosell_manager.connect()
 
             if action == '1':
-                idosell_manager.select_products_to_update()
-
-            elif action == '2':
                 idosell_manager.upload_product_information()
 
+            if action == 'test':
+                pass
+            
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
                 break

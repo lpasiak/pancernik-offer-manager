@@ -7,7 +7,7 @@ class IdoSellProducts:
         """Initialize an IdoSell Client"""
         self.client = client
 
-    def get_all_product_codes(self):
+    def get_all_products_logistic_info(self):
         """Get all products' ids, codes and external codes from IdoSell and return them as JSON."""
 
         print('Downloading IdoSell offer codes...')
@@ -24,6 +24,15 @@ class IdoSellProducts:
                     "resultsPage": 0
                 }
             }
+
+            # Add these params
+            # sizes
+            # sizes_attributes
+            # dimensions
+
+            # 1. Determine which products do not have complete information
+            # 2. Update only these
+
 
             response = self.client.session.request('POST', url, json=payload)
             data = response.json()
@@ -47,7 +56,7 @@ class IdoSellProducts:
             return all_data
 
         except Exception as e:
-            print(f'❌ Request failed: {str(e)} | in get_all_product_codes')
+            print(f'❌ Request failed: {str(e)} | in get_all_products_logistic_info')
             return str(e)
         
     def update_product_logistic_info(self, product_id, product_external_code, purchase_price_gross, weight, width, height, length):

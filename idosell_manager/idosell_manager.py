@@ -5,7 +5,6 @@ from connections.gsheets.worksheets import GsheetsWorksheets
 import config
 import pandas as pd
 
-
 class IdoSellManager:
     def __init__(self):
         self.idosell_client = None
@@ -37,15 +36,10 @@ class IdoSellManager:
         except Exception as e:
             print(f"Error initializing connections: {e}")
             return False
-        
-    def get_sheets_data(self):
-        """Download Product Info from Google Sheets as a DataFrame"""
-        selected_data = self.gsheets_worksheets.get_data(sheet_name=config.BIZON_PRODUCT_INFO)
-        return selected_data
 
     def get_idosell_product_codes(self):
         """Export all the products and its identifiers: id, product_code, external_code"""
-        selected_data = self.idosell_products.get_all_product_codes()
+        selected_data = self.idosell_products.get_all_products_logistic_info()
         return selected_data
 
     def select_products_to_update(self):
@@ -55,7 +49,7 @@ class IdoSellManager:
             - last delivery price
             - weight
         """
-        gsheets_data = self.get_sheets_data()
+        gsheets_data = self.gsheets_worksheets.get_data(sheet_name=config.BIZON_PRODUCT_INFO)
         idosell_data = pd.DataFrame(self.get_idosell_product_codes())
 
         merged_df = pd.merge(
@@ -77,9 +71,9 @@ class IdoSellManager:
         
         merged_df = merged_df[columns_to_keep]
 
+        
         merged_df.to_excel('test.xlsx', index=False)
         return merged_df
-
 
     def upload_product_information(self):
         """Update products with their Purchase Price, Weight and Dimensions"""
@@ -95,7 +89,7 @@ class IdoSellManager:
                     product_id=int(row['product_id']),
                     product_external_code=str(row['product_external_code']),
                     purchase_price_gross=product_price,
-                    weight=int(row['Waga brutto']),
+                    weight = int(round(float(row['Waga brutto']))),
                     width=float(row['Szerokość']),
                     height=float(row['Wysokość']),
                     length=float(row['Długość'])

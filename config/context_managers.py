@@ -27,9 +27,8 @@ def context_menu_promo():
 Co chcesz zrobić?
 1. Pobrać promocje
 2. Zaimportować promocje
-3. Uaktualnić stany magazynowe
-4. Usunąć promocje
-5. Zaimportować promocje dla Kuby
+3. Usunąć promocje
+4. Zaimportować promocje dla Kuby
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
@@ -65,8 +64,7 @@ Akcja: """
 def context_menu_idosell():
     menu_text = """--------------------------------
 Co chcesz zrobić?
-1. Wyeksportować produkty z Gsheets
-2. Dograć ceny ostatniej dostawy, wagi i wymiary produktom
+1. Dograć produktom ceny ostatniej dostawy, wagi i wymiary
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
