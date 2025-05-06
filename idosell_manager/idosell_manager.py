@@ -1,4 +1,3 @@
-import requests
 from connections.idosell_connect import IdoSellAPIClient
 from connections.idosell.products import IdoSellProducts
 from connections.gsheets_connect import GSheetsClient
@@ -45,9 +44,10 @@ class IdoSellManager:
         print(selected_data)
         return selected_data
 
-    def get_idosell_data(self):
-        """"""
+    def get_idosell_product_code(self):
+        """Export all the products and its identifiers: id, product_code, external_code"""
         selected_data = self.idosell_products.get_all_products()
+        
         return selected_data
 
     def upload_product_information(self):

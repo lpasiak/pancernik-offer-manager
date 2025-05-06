@@ -179,7 +179,7 @@ def main():
                 idosell_manager.get_sheets_data()
 
             if action == '2':
-                idosell_manager.get_idosell_data()
+                idosell_manager.get_idosell_product_code()
 
             elif action == '3':
                 pass
