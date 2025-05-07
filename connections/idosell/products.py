@@ -1,16 +1,17 @@
-import requests
 import config
-import json
+from tqdm import tqdm
+import time
+
 
 class IdoSellProducts:
     def __init__(self, client):
         """Initialize an IdoSell Client"""
         self.client = client
 
-    def get_all_products_logistic_info(self):
-        """Get all products' ids, codes and external codes from IdoSell and return them as JSON."""
+    def get_all_products_descriptions(self):
+        """Get all products' codes, descriptions and parameters."""
 
-        print('Downloading IdoSell offer codes...')
+        print('Downloading IdoSell products...')
         try:
             url = f"{self.client.site}/api/admin/v5/products/products/search"
             all_data = []
@@ -18,39 +19,83 @@ class IdoSellProducts:
 
             payload = {
                 'params': {
-                    "returnProducts": "active", 
-                    "returnElements": ["code", "sizes_attributes"],
-                    "resultsLimit": 100,
-                    "resultsPage": 0
+                    'returnProducts': 'active', 
+                    'returnElements': ['code', 'sizes_attributes', 'purchase_price_gross_last', 'sizes_attributes', 'dimensions'],
+                    'resultsLimit': 100,
+                    'resultsPage': 0
                 }
             }
-
-            # Add these params
-            # sizes
-            # sizes_attributes
-            # dimensions
-
-            # 1. Determine which products do not have complete information
-            # 2. Update only these
-
 
             response = self.client.session.request('POST', url, json=payload)
             data = response.json()
             number_of_pages = data['resultsNumberPage']
 
-            for page in range(number_of_pages):
+            for page in tqdm(range(number_of_pages), desc="Pages downloaded"):
                 payload['params']['resultsPage'] = page
 
                 response = self.client.session.request('POST', url, json=payload)
                 data = response.json()['results']
-                print(f"{page + 1}/{number_of_pages}")
-
+                
                 for product in data:
                     transformed_product = {
                         'product_id': str(product['productId']),
                         'product_code': str(product['productDisplayedCode']),
-                        'product_external_code': str(product['productSizesAttributes'][0]['productSizeCodeExternal'])
+                        'product_external_code': str(product['productSizesAttributes'][0]['productSizeCodeExternal']),
+                        'purchase_price_gross_last': product['productPurchasePriceGrossLast'],
+                        'weight': product['productSizesAttributes'][0]['productSizeWeight'],
+                        'length': product['productDimensions']['productLength'],
+                        'width': product['productDimensions']['productWidth'],
+                        'height': product['productDimensions']['productHeight']
                     }
+
+                    all_data.append(transformed_product)
+
+            return all_data
+        
+        except Exception as e:
+            print(f'❌ Request failed: {str(e)} | in get_all_products_descriptions')
+            return str(e)
+        
+    def get_all_products_logistic_info(self):
+        """Get all products' ids, codes and external codes from IdoSell and return them as JSON."""
+
+        print('Downloading IdoSell products...')
+        try:
+            url = f"{self.client.site}/api/admin/v5/products/products/search"
+            all_data = []
+            page = 0
+
+            payload = {
+                'params': {
+                    'returnProducts': 'active', 
+                    'returnElements': ['code', 'sizes_attributes', 'purchase_price_gross_last', 'sizes_attributes', 'dimensions'],
+                    'resultsLimit': 100,
+                    'resultsPage': 0
+                }
+            }
+
+            response = self.client.session.request('POST', url, json=payload)
+            data = response.json()
+            number_of_pages = data['resultsNumberPage']
+
+            for page in tqdm(range(number_of_pages), desc="Pages downloaded"):
+                payload['params']['resultsPage'] = page
+
+                response = self.client.session.request('POST', url, json=payload)
+                data = response.json()['results']
+                
+                for product in data:
+                    transformed_product = {
+                        'product_id': str(product['productId']),
+                        'product_code': str(product['productDisplayedCode']),
+                        'product_external_code': str(product['productSizesAttributes'][0]['productSizeCodeExternal']),
+                        'purchase_price_gross_last': product['productPurchasePriceGrossLast'],
+                        'weight': product['productSizesAttributes'][0]['productSizeWeight'],
+                        'length': product['productDimensions']['productLength'],
+                        'width': product['productDimensions']['productWidth'],
+                        'height': product['productDimensions']['productHeight']
+                    }
+
                     all_data.append(transformed_product)
 
             return all_data
@@ -92,5 +137,4 @@ class IdoSellProducts:
 
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
-            return str(e)
         

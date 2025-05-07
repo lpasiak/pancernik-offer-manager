@@ -3,12 +3,11 @@ from outlet_manager.managers.outlet_attributes import OutletAttributeManager
 from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
 from outlet_manager.managers.outlet_archiver import OutletArchiver
-from export_manager.export_manager import ExportManagerShoper, ExportManagerShopify, ExpportManagerEasyStorage
+from export_manager.export_manager import ExportManagerShoper, ExportManagerShopify, ExpportManagerEasyStorage, ExportManagerIdosell
 from promo_manager.promo_manager import PromoManager
 from bundle_manager.bundle_manager import BundleManager
 from connections.shopify.products import ShopifyProducts
 from connections.shopify_connect import ShopifyAPIClient
-from idosell_manager.idosell_manager import IdoSellManager
 import config
 import pandas as pd
 import json
@@ -51,6 +50,12 @@ def main():
                 easystorage_export_manager = ExpportManagerEasyStorage()
                 easystorage_export_manager.connect()
                 easystorage_export_manager.export_wms_bizon_products()
+                break
+
+            if action == '6':
+                idosell_export_manager = ExportManagerIdosell()
+                idosell_export_manager.connect()
+                idosell_export_manager.export_idosell_products_descriptions()
                 break
 
             elif action.lower() == 'q':
@@ -125,6 +130,9 @@ def main():
                 print('Do zobaczenia!')
                 break
 
+            else:
+                print('Nie ma takiego wyboru :/')
+
         # Bundle manager
         elif action == '3':
             action = config.context_menu_bundle()
@@ -137,6 +145,7 @@ def main():
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
                 break
+
             else:
                 print('Nie ma takiego wyboru :/')
 
@@ -156,6 +165,7 @@ def main():
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
                 break
+
             else:
                 print('Nie ma takiego wyboru :/')
 
@@ -166,13 +176,11 @@ def main():
 
             if action == '1':
                 idosell_manager.upload_product_information()
-
-            if action == 'test':
-                pass
             
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
                 break
+
             else:
                 print('Nie ma takiego wyboru :/')
 

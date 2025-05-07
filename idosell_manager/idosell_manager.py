@@ -4,6 +4,8 @@ from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 import config
 import pandas as pd
+import numpy as np
+
 
 class IdoSellManager:
     def __init__(self):
@@ -15,7 +17,7 @@ class IdoSellManager:
     def connect(self):
         """Initialize all necessary connections"""
         try:
-            # Initialize Shoper connections
+            # Initialize IdoSell connections
             self.idosell_client = IdoSellAPIClient(
                 api_key=config.IDOSELL_API_KEY,
                 site=config.IDOSELL_BIZON_B2B_SITE
@@ -37,11 +39,6 @@ class IdoSellManager:
             print(f"Error initializing connections: {e}")
             return False
 
-    def get_idosell_product_codes(self):
-        """Export all the products and its identifiers: id, product_code, external_code"""
-        selected_data = self.idosell_products.get_all_products_logistic_info()
-        return selected_data
-
     def select_products_to_update(self):
         """Creates a DataFrame of all the products exported from IdoSell and Gsheets
             - product_codes
@@ -50,10 +47,15 @@ class IdoSellManager:
             - weight
         """
         gsheets_data = self.gsheets_worksheets.get_data(sheet_name=config.BIZON_PRODUCT_INFO)
-        idosell_data = pd.DataFrame(self.get_idosell_product_codes())
+        idosell_json = self.idosell_products.get_all_products_logistic_info()
+        idosell_data = pd.DataFrame(idosell_json)
+
+        # Select products to update
+        columns_to_check = ['purchase_price_gross_last', 'weight', 'length', 'width', 'height']
+        filtered_idosell_data = idosell_data[(idosell_data[columns_to_check] == 0).any(axis=1)]
 
         merged_df = pd.merge(
-            idosell_data,
+            filtered_idosell_data,
             gsheets_data,
             left_on='product_code',
             right_on='EAN',
@@ -71,32 +73,54 @@ class IdoSellManager:
         
         merged_df = merged_df[columns_to_keep]
 
-        
-        merged_df.to_excel('test.xlsx', index=False)
+        merged_df = merged_df.apply(
+            lambda col: col.map(
+                lambda x: 0 if pd.isna(x) or str(x).strip().lower() in ['', 'nan', 'none', 'null'] else x
+            )
+        )
+
+        print(f'Selected {len(merged_df)} offers to update.')
         return merged_df
 
     def upload_product_information(self):
         """Update products with their Purchase Price, Weight and Dimensions"""
         products_to_update = self.select_products_to_update()
         products_length = len(products_to_update)
+        products_updated = 0
 
         for index, row in products_to_update.iterrows():
 
-            product_price = float(row['Koszt produkcji brutto'].replace(',', '.'))
-
             try:
+
+                product_price = float(row['Koszt produkcji brutto'].replace(',', '.'))
+                product_weight = int(round(float(str(row['Waga brutto']).replace(',', '.'))))
+
+                # If product weight is null, let's import 200 gram
+                if product_weight == 0:
+                    product_weight = 200
+
                 response = self.idosell_products.update_product_logistic_info(
                     product_id=int(row['product_id']),
                     product_external_code=str(row['product_external_code']),
                     purchase_price_gross=product_price,
-                    weight = int(round(float(row['Waga brutto']))),
+                    weight = product_weight,
                     width=float(row['Szerokość']),
                     height=float(row['Wysokość']),
                     length=float(row['Długość'])
                 )
 
-                print(f'Updated product {row['product_id']} with:\t\t|{index+1}/{products_length}')
-                print(f'Price: {product_price} | Weight: {row['Waga brutto']} | Dimensions: {row['Długość']}x{row["Szerokość"]}x{row["Szerokość"]}')
+                if response.status_code == 200 or response.status_code == 207:
+                    print(f'Updated product {row['product_id']} with:\t\t|{index+1}/{products_length}')
+                    print(f'Price: {product_price}')
+                    print(f'Weight: {product_weight}')
+                    print(f'Dimensions: {row['Długość']}x{row["Szerokość"]}x{row["Szerokość"]}')
+                    products_updated = products_updated + 1
+                    
+                else:
+                    print(f'Failed to update product {row['product_id']}')
 
             except Exception as e:
-                print(print(f'❌ Request failed: {str(e)}'))
+                print(f'Failed to update product {row['product_id']}')
+                print(f'❌ Request failed: {str(e)}')
+
+        print(f'Summary: Updated {products_updated}/{products_length} products.')

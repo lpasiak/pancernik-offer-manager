@@ -49,6 +49,7 @@ Skąd chcesz pobrać dane?
 3. Shopify Bizon
 4. EasyStorage Pancernik
 5. EasyStorage Bizon
+6. IdoSell
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
