@@ -1,6 +1,5 @@
 import config
 from tqdm import tqdm
-import time
 
 
 class IdoSellProducts:

@@ -10,8 +10,6 @@ from connections.shopify.products import ShopifyProducts
 from connections.shopify_connect import ShopifyAPIClient
 from idosell_manager.idosell_manager import IdoSellManager
 import config
-import pandas as pd
-import json
 
 def main():
 

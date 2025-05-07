@@ -1,5 +1,4 @@
 import gspread
-from pathlib import Path
 import time
 
 class GSheetsClient:

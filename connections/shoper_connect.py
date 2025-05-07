@@ -1,5 +1,4 @@
 import requests, time
-from pathlib import Path
 import config
 
 class ShoperAPIClient:

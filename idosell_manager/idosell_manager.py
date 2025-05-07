@@ -4,7 +4,6 @@ from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 import config
 import pandas as pd
-import numpy as np
 
 
 class IdoSellManager:
