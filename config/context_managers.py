@@ -11,6 +11,32 @@ q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
 
+def context_menu_export():
+    menu_text = """--------------------------------
+Skąd chcesz pobrać dane?
+1. Shoper
+2. Shopify Light
+3. Shopify Bizon
+4. EasyStorage Pancernik
+5. EasyStorage Bizon
+6. IdoSell
+wszycho. Wszystko powyżej
+q żeby wyjść.
+Akcja: """
+    return str(input(menu_text))
+
+def context_menu_outlet():
+    menu_text = """--------------------------------
+Co chcesz zrobić?
+1. Wystawić outlety
+2. Obniżki na outlety
+3. Przenieść sprzedane/archiwalne
+4. Atrybuty produktów
+wszycho. Wszystko powyżej
+q żeby wyjść.
+Akcja: """
+    return str(input(menu_text))
+
 def context_menu_promo():
     menu_text = """--------------------------------
 Co chcesz zrobić?
@@ -26,19 +52,6 @@ def context_menu_bundle():
     menu_text = """--------------------------------
 Co chcesz zrobić?
 1. MaxExport zdjęć
-q żeby wyjść.
-Akcja: """
-    return str(input(menu_text))
-
-def context_menu_export():
-    menu_text = """--------------------------------
-Skąd chcesz pobrać dane?
-1. Shoper
-2. Shopify Light
-3. Shopify Bizon
-4. EasyStorage Pancernik
-5. EasyStorage Bizon
-6. IdoSell
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))

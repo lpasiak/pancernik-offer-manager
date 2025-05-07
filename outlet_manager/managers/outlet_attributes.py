@@ -38,7 +38,7 @@ class OutletAttributeManager:
             return True
             
         except Exception as e:
-            print(f"Error initializing connections: {e}")
+            print(f"❌ Error initializing connections: {e}")
             return False
 
     def select_products_with_ids(self):
@@ -78,7 +78,7 @@ class OutletAttributeManager:
         response = self.shoper_attributes.update_attribute_group_categories(attribute_group_to_append, categories_to_import)
 
         if response:
-            print(f'✅ Attribute group {attribute_group_to_append} updated with {len(categories_to_import)} categories')
+            print(f'✅ Attribute group {attribute_group_to_append} updated with {len(categories_to_import)} categories\n')
         else:
             print(f'❌ Attribute group {attribute_group_to_append} update failed')
 
@@ -105,7 +105,7 @@ class OutletAttributeManager:
             if product_ids_list:
                 products[product_ean] = ', '.join(map(str, product_ids_list))
         
-        print(f'Updating {len(products)} main products attributes')
+        print(f'Updating {len(products)} main products attributes:\n')
 
         # Update the attribute of the product
         for product_ean, product_ids in products.items():

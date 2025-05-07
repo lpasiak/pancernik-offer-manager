@@ -38,7 +38,7 @@ class OutletDiscountManager:
             return True
             
         except Exception as e:
-            print(f"Error initializing connections: {e}")
+            print(f"❌ Error initializing connections: {e}")
             return False
         
     def select_products_to_discount(self):
@@ -68,9 +68,10 @@ class OutletDiscountManager:
         )
 
         df = df[mask]
-        
+
+        print(f'ℹ️  Selected products ready to discount: {len(df)}')
+
         if len(df) > 0:
-            print(f'ℹ️ Selected {len(df)} products ready to discount.')
             return df
         return None
     
@@ -82,7 +83,6 @@ class OutletDiscountManager:
         """
         
         if df_offers_to_discount is None or df_offers_to_discount.empty:
-            print("No offers to discount")
             return
         
         # Testing on 2 products
@@ -91,7 +91,6 @@ class OutletDiscountManager:
         product_discount_count = len(df_offers_to_discount)
         product_discount_counter = 0
         gsheets_updates = []
-        print(f'Discounting {product_discount_count} outlet offers')
         
         for _, product in df_offers_to_discount.iterrows():
 
@@ -105,7 +104,8 @@ class OutletDiscountManager:
                 product_data = {
                     'product_id': product_id,
                     'discount': config.OUTLET_DISCOUNT_PERCENTAGE,
-                    'discount_type': 3
+                    'discount_type': 3,
+                    'date_to': '2031-12-31'
                 }
                 
                 # TODO: Temporary solution. Come back to it and remove reduntant api calls.
@@ -114,19 +114,23 @@ class OutletDiscountManager:
                     self.shoper_special_offers.remove_special_offer_from_product(product_id)
 
                 # Create a new special offer
-                self.shoper_special_offers.create_special_offer(product_data)
+                response = self.shoper_special_offers.create_special_offer(product_data)
 
-                # Creating a list of updates to be made in gsheets
-                if google_sheets_row is not None:
-                    gsheets_updates.append([
-                        google_sheets_row,
-                        True
-                    ])
+                if type(response) == int:
+                    print(f'Set {config.OUTLET_DISCOUNT_PERCENTAGE}% discount for {product_code}')
+                    if google_sheets_row is not None:
+                        gsheets_updates.append([
+                            google_sheets_row,
+                            True
+                        ])
+                    else:
+                        print(f"Warning: SKU {product_code} not found in Google Sheets!")
+
                 else:
-                    print(f"Warning: SKU {product_code} not found in Google Sheets!")
-
+                    print(f'❌ Failed to set {config.OUTLET_DISCOUNT_PERCENTAGE}% discount for {product_code}')
+                    
                 product_discount_counter += 1
-                print(f'Set {config.OUTLET_DISCOUNT_PERCENTAGE}% discount for {product_code}')
+
                 print(f'Products discounted: {product_discount_counter}/{product_discount_count}')
                 print('-----------------------------------')
 
@@ -150,6 +154,5 @@ class OutletDiscountManager:
                 start_column='K',
                 num_columns=1
             )
-            print("✅ Successfully updated Google Sheets")
         except Exception as e:
             print(f"❌ Failed to update Google Sheets: {str(e)}")

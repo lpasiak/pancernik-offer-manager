@@ -37,7 +37,7 @@ class OutletLackingManager:
             return True
             
         except Exception as e:
-            print(f"Error initializing connections: {e}")
+            print(f"❌ Error initializing connections: {e}")
             return False
         
     def move_products_to_lacking(self):
@@ -64,7 +64,7 @@ class OutletLackingManager:
         
         # If there are no products to move, return
         if selected_offers.empty:
-            print('No products to move to the lacking sheet')
+            print('ℹ️  No products to move to the lacking sheet')
             return
 
         # Check if the products exist on Shoper
@@ -78,7 +78,7 @@ class OutletLackingManager:
                 print(f'Product {row["EAN"]} exists on Shoper.')
 
         if selected_offers.empty:
-            print('No products to move to the lacking sheet')
+            print('ℹ️  No products to move to the lacking sheet')
             return
 
         selected_offers = selected_offers[columns_to_keep]

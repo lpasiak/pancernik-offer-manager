@@ -60,7 +60,7 @@ class ExportManagerShoper:
             return True
             
         except Exception as e:
-            print(f"Error initializing Shoper connections: {e}")
+            print(f"❌ Error initializing Shoper connections: {e}")
             return False
 
     def export_all_data_from_shoper(self):
@@ -97,7 +97,7 @@ class ExportManagerShopify:
             return True
 
         except Exception as e:
-            print(f"Error initializing Shopify connections: {e}")
+            print(f"❌ Error initializing Shopify connections: {e}")
             return False
         
     def export_shopify_products_light(self):
@@ -126,7 +126,7 @@ class ExpportManagerEasyStorage:
             return True
 
         except Exception as e:
-            print(f"Error initializing EasyStorage connections: {e}")
+            print(f"❌ Error initializing EasyStorage connections: {e}")
 
     def export_wms_pancernik_products(self):
 
@@ -141,7 +141,7 @@ class ExpportManagerEasyStorage:
             save_to_files(items_to_save=products, file='easystorage-pancernik-products')
 
         except Exception as e:
-            print(f"Error exporting Pancernik products: {e}")
+            print(f"❌ Error exporting Pancernik products: {e}")
 
     def export_wms_bizon_products(self):
 
@@ -156,7 +156,7 @@ class ExpportManagerEasyStorage:
             save_to_files(items_to_save=products, file='easystorage-bizon-products')
 
         except Exception as e:
-            print(f"Error exporting Bizon products: {e}")
+            print(f"❌ Error exporting Bizon products: {e}")
 
 class ExportManagerIdosell:
     def __init__(self):
@@ -175,7 +175,7 @@ class ExportManagerIdosell:
             return True
             
         except Exception as e:
-            print(f"Error initializing IdoSell connections: {e}")
+            print(f"❌ Error initializing IdoSell connections: {e}")
             return False
 
     def export_idosell_products_descriptions(self):
@@ -191,4 +191,4 @@ class ExportManagerIdosell:
             save_to_files(items_to_save=products, file='idosell_products')
 
         except Exception as e:
-            print(f"Error exporting Bizon products: {e}")
+            print(f"❌ Error exporting Bizon products: {e}")

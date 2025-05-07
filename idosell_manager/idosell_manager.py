@@ -35,7 +35,7 @@ class IdoSellManager:
             return True
             
         except Exception as e:
-            print(f"Error initializing connections: {e}")
+            print(f"❌ Error initializing connections: {e}")
             return False
 
     def select_products_to_update(self):
@@ -78,7 +78,7 @@ class IdoSellManager:
             )
         )
 
-        print(f'Selected {len(merged_df)} offers to update.')
+        print(f'ℹ️  {len(merged_df)} offers to update.')
         return merged_df
 
     def upload_product_information(self):
@@ -109,7 +109,7 @@ class IdoSellManager:
                 )
 
                 if response.status_code == 200 or response.status_code == 207:
-                    print(f'Updated product {row['product_id']} with:\t\t|{index+1}/{products_length}')
+                    print(f'✅ Updated product {row['product_id']} with:\t\t|{index+1}/{products_length}')
                     print(f'Price: {product_price}')
                     print(f'Weight: {product_weight}')
                     print(f'Dimensions: {row['Długość']}x{row["Szerokość"]}x{row["Szerokość"]}')
@@ -119,7 +119,7 @@ class IdoSellManager:
                     print(f'Failed to update product {row['product_id']}')
 
             except Exception as e:
-                print(f'Failed to update product {row['product_id']}')
+                print(f'❌ Failed to update product {row['product_id']}')
                 print(f'❌ Request failed: {str(e)}')
 
         print(f'Summary: Updated {products_updated}/{products_length} products.')

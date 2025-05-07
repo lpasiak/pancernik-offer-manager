@@ -13,14 +13,10 @@ class EasyStorageProducts:
 
             print('Downloading Pancernik products from EasyStorage...')
             response = self.client.session.request(method='GET', url=self.products_endpoint, params=params, verify=False)
-            
-            if response.status_code == 200:
-                print('Products downloaded successfully.')
-
             return response.json()
         
         except Exception as e:
-            print(f"Error downloading Pancernik products from EasyStorage: {e}")
+            print(f"❌ Error downloading Pancernik products from EasyStorage: {e}")
             return None
     
     def get_bizon_products(self):
@@ -30,12 +26,8 @@ class EasyStorageProducts:
 
             print('Downloading Bizon products from EasyStorage...')
             response = self.client.session.request(method='GET', url=self.products_endpoint, params=params, verify=False)
-
-            if response.status_code == 200:
-                print('Products downloaded successfully.')
-
             return response.json()
         
         except Exception as e:
-            print(f"Error downloading Bizon products from EasyStorage: {e}")
+            print(f"❌ Error downloading Bizon products from EasyStorage: {e}")
             return None

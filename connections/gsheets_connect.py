@@ -45,7 +45,7 @@ class GSheetsClient:
             except Exception as e:
                 raise  # Re-raise any other exceptions
 
-        raise Exception(f"Failed after {max_retries} retries")
+        raise Exception(f"❌ Failed after {max_retries} retries")
 
     def connect(self):
         """Authenticate with Google Sheets."""
@@ -53,4 +53,3 @@ class GSheetsClient:
         self.gc = gspread.service_account(filename=self.credentials_path)
         self.sheet = self.gc.open_by_key(self.sheet_id)
 
-        print(f"Google Authentication successful.")

@@ -38,7 +38,7 @@ class PromoManager:
             return True
             
         except Exception as e:
-            print(f"Error initializing connections: {e}")
+            print(f"❌ Error initializing connections: {e}")
             return False
         
     def export_all_promo_products(self):

@@ -42,7 +42,7 @@ class OutletCreator:
             return True
             
         except Exception as e:
-            print(f"Error initializing connections: {e}")
+            print(f"❌ Error initializing connections: {e}")
             return False
 
     def get_offers_ready_to_publish(self):
@@ -65,10 +65,9 @@ class OutletCreator:
 
         df = df[mask]
 
-        print(f'Selected products ready to publish: {len(df)}')
+        print(f'ℹ️  Selected products ready to publish: {len(df)}')
 
         if len(df) > 0:
-            print(df[['EAN', 'SKU']])
             return df
         return None
 
@@ -79,7 +78,6 @@ class OutletCreator:
         """
 
         if df_offers is None or df_offers.empty:
-            print("No offers to create")
             return
         
         # Product counter and gsheets updates list
@@ -149,7 +147,7 @@ class OutletCreator:
                         stock_gfx = created_product['main_image']['gfx_id']
                         self.shoper_products.update_product_by_code(created_offer_id, stock={'gfx_id': stock_gfx})
                 except Exception as e:
-                    print(f"Error updating stock image: {e}")
+                    print(f"❌ Error updating stock image: {e}")
 
                 # Creating a list of updates to be made in gsheets
                 if google_sheets_row is not None:
@@ -188,4 +186,4 @@ class OutletCreator:
                 num_columns=5
             )
         except Exception as e:
-            print(f"Failed to update Google Sheets: {str(e)}")
+            print(f"❌ Failed to update Google Sheets: {str(e)}")

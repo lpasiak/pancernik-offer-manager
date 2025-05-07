@@ -8,7 +8,7 @@ from connections.easystorage.products import EasyStorageProducts
 import config
 import pandas as pd
 from datetime import datetime
-
+from tqdm import tqdm
 
 class OutletArchiver:
     def __init__(self):
@@ -49,72 +49,79 @@ class OutletArchiver:
             return True
             
         except Exception as e:
-            print(f"Error initializing connections: {e}")
+            print(f"❌ Error initializing connections: {e}")
             return False
-        
+
     def select_sold_products(self):
-        """Move products that have been sold
+        """Move products that have been sold.
         Returns:
-            A pandas DataFrame containing the products that were sold
+            A pandas DataFrame containing the products that were sold.
         """
-
         try:
+            # Get EasyStorage outlet products with non-zero stock
             easy_storage_products = self.easystorage_products.get_pancernik_products()
-            
-            easy_storage_products_outlet_filtered = [product for product in easy_storage_products 
-                                            if 'OUT' in product.get('sku', '').upper() and product.get('stock_quantity', 0) != 0]
-            easy_storage_sku_list = [product.get('sku') for product in easy_storage_products_outlet_filtered]
+            easy_storage_sku_list = {
+                product['sku']
+                for product in easy_storage_products
+                if 'OUT' in product.get('sku', '').upper() and product.get('stock_quantity', 0) != 0
+            }
 
-            gsheets_data = self.gsheets_worksheets.get_data(sheet_name=config.OUTLET_SHEET_NAME, include_row_numbers=True)
+            # Download GSheets product data
+            gsheets_data = self.gsheets_worksheets.get_data(
+                sheet_name=config.OUTLET_SHEET_NAME, include_row_numbers=True
+            )
 
+            if gsheets_data.empty:
+                print('Google Sheet is empty.')
+                return
+
+            # Filter rows with valid IDs and published status
             mask = (
                 (gsheets_data['Wystawione'] == 'TRUE') &
                 (gsheets_data['ID Shoper'].notna()) &
                 (gsheets_data['ID Shoper'] != '') &
                 (gsheets_data['ID Shoper'] != 0)
             )
+            columns_to_keep = [
+                'Row Number', 'EAN', 'SKU', 'Nazwa', 'Uszkodzenie', 'Data',
+                'Wystawione', 'Data wystawienia', 'Druga obniżka', 'ID Shoper'
+            ]
+            gsheets_data = gsheets_data.loc[mask, columns_to_keep].copy()
 
-            if gsheets_data.empty:
-                return
+            # Track rows to drop and URLs to update
+            rows_to_drop = []
+            urls_to_update = {}
 
-            columns_to_keep = ['Row Number', 'EAN', 'SKU', 'Nazwa', 'Uszkodzenie', 'Data', 'Wystawione', 'Data wystawienia', 'Druga obniżka', 'ID Shoper']
-
-            gsheets_data = gsheets_data[mask]
-            gsheets_data = gsheets_data[columns_to_keep]
-
-            gsheets_length = len(gsheets_data)
-
-            for index, row in gsheets_data.iterrows():
-
+            for index, row in tqdm(gsheets_data.iterrows(), total=len(gsheets_data), desc="Analyzing products", unit="product"):
                 try:
                     product_sku = row['SKU']
                     product_data = self.shoper_products.get_product_by_code(row['ID Shoper'])
                     product_stock = int(product_data['stock']['stock'])
 
-                    print(f'Analyzing product {product_sku} | {index + 1}/{gsheets_length}')
-                    
-                    # If product has 0 items on Shoper and it is not in easy storage warehouse
                     if product_stock != 0 or product_sku in easy_storage_sku_list:
-                        gsheets_data = gsheets_data.drop(index)
+                        rows_to_drop.append(index)
                     else:
-                        gsheets_data.at[index, 'URL'] = product_data['translations']['pl_PL']['seo_url']
+                        urls_to_update[index] = product_data['translations']['pl_PL'].get('seo_url', '')
 
                 except Exception as e:
-                    print(f"Error: {e}")
-                    gsheets_data = gsheets_data.drop(index)
-                    continue
+                    print(f"❌ Error for SKU {row['SKU']}: {e}")
+                    rows_to_drop.append(index)
+
+            # Apply changes
+            gsheets_data.drop(index=rows_to_drop, inplace=True)
+            for index, url in urls_to_update.items():
+                gsheets_data.at[index, 'URL'] = url
 
             if gsheets_data.empty:
                 print('No products sold.')
                 return
-            
-            print(f'{len(gsheets_data)} Products that were sold:')
-            print(gsheets_data[['SKU', 'Nazwa']])
+
+            print(f'ℹ️  Products identified as sold: {len(gsheets_data)}')
             return gsheets_data
-        
+
         except Exception as e:
-            print(f"Error selecting products to be cleaned: {e}")
-        
+            print(f"❌ Error selecting products to be cleaned: {e}")
+
     def archive_sold_products(self, sold_products_df):
 
         date_removed = datetime.today().strftime('%Y-%m-%d')
@@ -135,45 +142,42 @@ class OutletArchiver:
         sold_products_len = len(sold_products_df)
         counter = 0
 
-        print(sold_products_df)
-        x = input('Continue? (y/n)\n')
-        if x == 'y':
-            # Remove from Shoper and create a redirection
-            for index, row in sold_products_df.iterrows():
-                self.shoper_products.remove_product(row['ID Shoper'])
+        # Remove from Shoper and create a redirection
+        for index, row in sold_products_df.iterrows():
+            self.shoper_products.remove_product(row['ID Shoper'])
 
-                redirect_data = {
-                'redirected_url': row['URL'],
-                'target_url': config.REDIRECT_TARGET_OUTLET_URL
-                }
+            redirect_data = {
+            'redirected_url': row['URL'],
+            'target_url': config.REDIRECT_TARGET_OUTLET_URL
+            }
 
-                redirect_id = self.shoper_redirects.create_redirect(redirect_data)
-                sold_products_df.at[index, 'ID Przekierowania'] = redirect_id
+            redirect_id = self.shoper_redirects.create_redirect(redirect_data)
+            sold_products_df.at[index, 'ID Przekierowania'] = redirect_id
 
-                counter += 1
-                print(f'Products: {counter}/{sold_products_len}')
+            counter += 1
+            print(f'Products: {counter}/{sold_products_len}')
 
-            # Move to archived sheet
-            offers_to_move = sold_products_df[[
-                'Row Number',
-                'EAN',
-                'SKU', 
-                'Nazwa',
-                'Uszkodzenie',
-                'Data',
-                'Wystawione',
-                'Data wystawienia',
-                'Druga obniżka',
-                'Status',
-                'Zutylizowane',
-                'Komentarz',
-                'Data usunięcia',
-                'URL',
-                'ID Przekierowania'
-            ]]
+        # Move to archived sheet
+        offers_to_move = sold_products_df[[
+            'Row Number',
+            'EAN',
+            'SKU', 
+            'Nazwa',
+            'Uszkodzenie',
+            'Data',
+            'Wystawione',
+            'Data wystawienia',
+            'Druga obniżka',
+            'Status',
+            'Zutylizowane',
+            'Komentarz',
+            'Data usunięcia',
+            'URL',
+            'ID Przekierowania'
+        ]]
 
-            self.gsheets_worksheets.batch_move_products(
-                source_worksheet_name=config.OUTLET_SHEET_NAME,
-                target_worksheet_name=config.OUTLET_SHEET_ARCHIVED_NAME,
-                values_df=offers_to_move
-            )
+        self.gsheets_worksheets.batch_move_products(
+            source_worksheet_name=config.OUTLET_SHEET_NAME,
+            target_worksheet_name=config.OUTLET_SHEET_ARCHIVED_NAME,
+            values_df=offers_to_move
+        )

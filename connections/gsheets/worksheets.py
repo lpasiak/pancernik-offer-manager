@@ -16,6 +16,7 @@ class GsheetsWorksheets:
             A pandas DataFrame containing the data from the worksheet or None if an error occurs.
         """
         try:
+            print('Downloading all the data from Google Sheets...')
             self.client.worksheet = self.client._handle_request(
                 self.client.sheet.worksheet,
                 sheet_name
@@ -35,11 +36,10 @@ class GsheetsWorksheets:
             if include_row_numbers:
                 df.insert(0, 'Row Number', range(2, len(df) + 2)) # GSheets rows start at 2
 
-            print('Downloaded all the data from Google Sheets.')
             return df
         
         except Exception as e:
-            print(f"Error getting data from Google Sheets: {e}")
+            print(f"❌ Error getting data from Google Sheets: {e}")
             return None
 
     def batch_update_from_a_list(self, worksheet_name: str, updates: list, start_column: str = 'A', num_columns: int = 5):
@@ -68,10 +68,10 @@ class GsheetsWorksheets:
 
             if batch_data:
                 self.client._handle_request(worksheet.batch_update, batch_data)
-                print(f"✓ Successfully updated {len(updates)} rows in {worksheet_name}")
+                print(f"✅ Successfully updated {len(updates)} rows in {worksheet_name}")
             
         except Exception as e:
-            print(f"Failed to update worksheet: {str(e)}")
+            print(f"❌ Failed to update worksheet: {str(e)}")
             raise
 
     def batch_move_products(self, source_worksheet_name: str, target_worksheet_name: str, values_df: pd.DataFrame):
