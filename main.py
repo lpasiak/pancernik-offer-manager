@@ -8,6 +8,7 @@ from promo_manager.promo_manager import PromoManager
 from bundle_manager.bundle_manager import BundleManager
 from connections.shopify.products import ShopifyProducts
 from connections.shopify_connect import ShopifyAPIClient
+from idosell_manager.idosell_manager import IdoSellManager
 import config
 import pandas as pd
 import json
