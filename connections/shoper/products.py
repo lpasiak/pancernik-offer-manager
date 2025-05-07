@@ -1,7 +1,7 @@
 from .pictures import ShoperPictures
 import config, json
 import pandas as pd
-
+from tqdm import tqdm
 
 class ShoperProducts:
     def __init__(self, client):

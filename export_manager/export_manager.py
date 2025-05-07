@@ -20,18 +20,18 @@ def save_to_files(items_to_save, file):
     archive_file_path = f'{config.DRIVE_EXPORT_DIR}/api-archived/{file}--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
     os.makedirs(os.path.dirname(base_file_path), exist_ok=True)
 
-    print(f'Saving export to...')
+    print(f'ℹ️  Saving export to...')
     print(base_file_path)
 
     with open(base_file_path, 'w', encoding='utf-8') as f:
         json.dump(items_to_save, f, ensure_ascii=False, indent=4)
 
     # Copy and save to the main file
-    print(f'Copying export to...')
+    print(f'ℹ️  Copying export to...')
     print(main_file_path)
     shutil.copy2(base_file_path, main_file_path)
 
-    print(f'Creating a backup in...')
+    print(f'ℹ️  Creating a backup in...')
     print(archive_file_path)
     shutil.copy2(base_file_path, archive_file_path)
     
@@ -69,12 +69,12 @@ class ExportManagerShoper:
 
     def export_shoper_products(self):
         products = self.shoper_products.get_all_products_json()
-        print(f"Successfully downloaded {len(products)} products")
+        print(f"✅ Successfully downloaded {len(products)} products")
         save_to_files(items_to_save=products, file='shoper-products')
 
     def export_shoper_categories(self):
         categories = self.shoper_categories.get_all_categories_json()
-        print(f"Successfully downloaded {len(categories)} categories")
+        print(f"✅ Successfully downloaded {len(categories)} categories")
         save_to_files(items_to_save=categories, file='shoper-categories')
 
 
@@ -102,12 +102,12 @@ class ExportManagerShopify:
         
     def export_shopify_products_light(self):
         products = self.shopify_products.get_all_products_light()
-        print(f"Successfully downloaded {len(products)} products")
+        print(f"✅ Successfully downloaded {len(products)} products")
         save_to_files(items_to_save=products, file='shopify-products_light')
 
     def export_shopify_products_bizon(self):
         products = self.shopify_products.get_all_products_bizon()
-        print(f"Successfully downloaded {len(products)} products")
+        print(f"✅ Successfully downloaded {len(products)} products")
         save_to_files(items_to_save=products, file='shopify-products_bizon')
 
 
@@ -134,10 +134,10 @@ class ExpportManagerEasyStorage:
             products = self.easystorage_products.get_pancernik_products()
 
             if products is None:
-                print('No products found')
+                print('ℹ️  No products found')
                 return
 
-            print(f"Successfully downloaded {len(products)} products")
+            print(f"✅ Successfully downloaded {len(products)} products")
             save_to_files(items_to_save=products, file='easystorage-pancernik-products')
 
         except Exception as e:
@@ -149,10 +149,10 @@ class ExpportManagerEasyStorage:
             products = self.easystorage_products.get_bizon_products()
 
             if products is None:
-                print('No products found')
+                print('ℹ️  No products found')
                 return
 
-            print(f"Successfully downloaded {len(products)} products")
+            print(f"✅ Successfully downloaded {len(products)} products")
             save_to_files(items_to_save=products, file='easystorage-bizon-products')
 
         except Exception as e:
@@ -184,10 +184,10 @@ class ExportManagerIdosell:
             products = self.idosell_products.get_all_products_descriptions()
 
             if products is None:
-                print('No products found')
+                print('ℹ️  No products found')
                 return
 
-            print(f"Successfully downloaded {len(products)} products")
+            print(f"✅ Successfully downloaded {len(products)} products")
             save_to_files(items_to_save=products, file='idosell_products')
 
         except Exception as e:

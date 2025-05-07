@@ -149,11 +149,11 @@ class GsheetsWorksheets:
             data = df_string.values.tolist()
             all_values = [header] + data
 
-            print('Cleaning the worksheet...')
+            print('ℹ️  Cleaning the worksheet...')
             # Clear existing content
             source_worksheet.clear()
             # Update the worksheet with the new data
-            print('Saving the data...')
+            print('ℹ️  Saving the data...')
             source_worksheet.update(all_values)
             print(f"✅ Successfully saved data to {worksheet_name}")
 
