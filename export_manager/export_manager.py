@@ -6,6 +6,8 @@ from connections.shopify_connect import ShopifyAPIClient
 from connections.shopify.products import ShopifyProducts
 from connections.easystorage_connect import EasyStorageClient
 from connections.easystorage.products import EasyStorageProducts
+from connections.idosell_connect import IdoSellAPIClient
+from connections.idosell.products import IdoSellProducts
 import config
 import json
 from datetime import datetime
@@ -17,6 +19,7 @@ class ExportManagerShoper:
         self.shoper_client = None
         self.shoper_products = None
         self.shoper_pictures = None
+        self.idosell_client = None
         
     def connect(self):
         """Initialize all necessary connections with Shoper"""
@@ -228,6 +231,57 @@ class ExpportManagerEasyStorage:
 
             # Copy and save to the archived with timestamp
             archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/easystorage-bizon-products--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
+            print(f'Copying export to {archive_file}...')
+            shutil.copy2(main_file, archive_file)
+
+        except Exception as e:
+            print(f"Error exporting Bizon products: {e}")
+
+class ExportManagerIdosell:
+    def __init__(self):
+        self.idosell_client = None
+        self.idosell_products = None
+        
+    def connect(self):
+        """Initialize all necessary connections with IdoSell"""
+        try:
+            self.idosell_client = IdoSellAPIClient(
+                api_key=config.IDOSELL_API_KEY,
+                site=config.IDOSELL_BIZON_B2B_SITE
+            )
+            self.idosell_client.connect()
+            self.idosell_products = IdoSellProducts(self.idosell_client)
+            return True
+            
+        except Exception as e:
+            print(f"Error initializing IdoSell connections: {e}")
+            return False
+
+    def export_idosell_products_descriptions(self):
+
+        try:
+            products = self.idosell_products.get_all_products_descriptions()
+
+            if products is None:
+                print('No products found')
+                return
+
+            print(f"Successfully downloaded {len(products)} products")
+
+            # Save to the main file
+            file = f'{config.SHEETS_DIR}/api-exports/idosell-products.json'
+            os.makedirs(os.path.dirname(file), exist_ok=True)
+            print(f'Saving export to {file}...')
+            with open(file, 'w', encoding='utf-8') as f:
+                json.dump(products, f, ensure_ascii=False, indent=4)
+
+            # Copy and save to the main file
+            main_file = f'{config.DRIVE_EXPORT_DIR}/api-exports/idosell-products.json'
+            print(f'Copying export to {main_file}...')
+            shutil.copy2(file, main_file)    
+
+            # Copy and save to the archived with timestamp
+            archive_file = f'{config.DRIVE_EXPORT_DIR}/api-archived/idosell-products--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
             print(f'Copying export to {archive_file}...')
             shutil.copy2(main_file, archive_file)
 
