@@ -1,8 +1,4 @@
-from outlet_manager.managers.outlet_creator import OutletCreator
-from outlet_manager.managers.outlet_attributes import OutletAttributeManager
-from outlet_manager.managers.outlet_lacking import OutletLackingManager
-from outlet_manager.managers.outlet_discount import OutletDiscountManager
-from outlet_manager.managers.outlet_archiver import OutletArchiver
+from orchestrators.outlet_orchestrator import run_outlet_manager
 from export_manager.export_manager import ExportManagerShoper, ExportManagerShopify, ExpportManagerEasyStorage, ExportManagerIdosell
 from promo_manager.promo_manager import PromoManager
 from bundle_manager.bundle_manager import BundleManager
@@ -66,45 +62,7 @@ def main():
 
         # Outlet manager
         if action == '1':
-            action = config.context_menu_outlet()
-            if action == '1':
-                # Create outlet offers
-                out_creator = OutletCreator()
-                out_creator.connect()
-                products_to_publish = out_creator.get_offers_ready_to_publish()
-                out_creator.create_outlet_offers(products_to_publish)
-
-                # Move products to lacking
-                out_lacking_products_manager = OutletLackingManager()
-                out_lacking_products_manager.connect()
-                out_lacking_products_manager.move_products_to_lacking()
-
-            elif action == '2':
-                # Create discounts
-                out_discount_manager = OutletDiscountManager()
-                out_discount_manager.connect()
-                products_to_discount = out_discount_manager.select_products_to_discount()
-                out_discount_manager.create_discounts(products_to_discount)
-
-            elif action == '3':
-                # Remove products that have been sold
-                out_archiver = OutletArchiver()
-                out_archiver.connect()
-                products_sold_to_archive = out_archiver.select_sold_products()
-                out_archiver.archive_sold_products(products_sold_to_archive)
-
-            elif action == '4':
-                # Update attribute groups
-                out_attribute_manager = OutletAttributeManager()
-                out_attribute_manager.connect()
-                out_attribute_manager.update_attribute_groups()
-                out_attribute_manager.update_main_products_attributes()
-
-            elif action.lower() == 'q':
-                print('Do zobaczenia!')
-                break
-            else:
-                print('Nie ma takiego wyboru :/')
+            run_outlet_manager()
 
         # Promo manager
         elif action == '2':

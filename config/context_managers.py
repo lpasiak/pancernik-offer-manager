@@ -2,22 +2,11 @@ def context_menu():
     menu_text = """--------------------------------
 Z czym dziś chcesz pracować?
 0. Pobrać informacje o produktach
-1. Menedżer outletów
+1. Rozprawić się z outletami
 2. Menedżer promocji
 3. Menedżer zestawów
 4. Podmiana Shopify
 5. Zabawa z IdoSell
-q żeby wyjść.
-Akcja: """
-    return str(input(menu_text))
-
-def context_menu_outlet():
-    menu_text = """--------------------------------
-Co chcesz zrobić?
-1. Wystawić outlety
-2. Obniżki na outlety
-3. Przenieść sprzedane/archiwalne
-4. Atrybuty produktów
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
