@@ -122,4 +122,5 @@ class IdoSellManager:
                 print(f'❌ Failed to update product {row['product_id']}')
                 print(f'❌ Request failed: {str(e)}')
 
-        print(f'Summary: Updated {products_updated}/{products_length} products.')
+        if products_length > 0:
+            print(f'Summary: Updated {products_updated}/{products_length} products.')
