@@ -1,12 +1,12 @@
 def context_menu():
     menu_text = """--------------------------------
 Z czym dziś chcesz pracować?
-0. Pobrać informacje o produktach
+0. Eksportować produkty
 1. Rozprawić się z outletami
 2. Menedżer promocji
 3. Menedżer zestawów
-4. Podmiana Shopify
-5. Zabawa z IdoSell
+4. Shopify
+5. IdoSell
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
@@ -20,7 +20,7 @@ Skąd chcesz pobrać dane?
 4. EasyStorage Pancernik
 5. EasyStorage Bizon
 6. IdoSell
-wszycho. Wszystko powyżej
+all. Wszystko powyżej
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
@@ -32,7 +32,7 @@ Co chcesz zrobić?
 2. Obniżki na outlety
 3. Przenieść sprzedane/archiwalne
 4. Atrybuty produktów
-wszycho. Wszystko powyżej
+all. Wszystko powyżej
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
@@ -40,10 +40,10 @@ Akcja: """
 def context_menu_promo():
     menu_text = """--------------------------------
 Co chcesz zrobić?
-1. Pobrać promocje
-2. Zaimportować promocje
-3. Usunąć promocje
-4. Zaimportować promocje dla Kuby
+1. Usunąć promocje
+2. Zaimportować promocje procentowe i stany
+3. Zaimportować promocje stałe dla Kuby
+4. Eksportować promocje
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))

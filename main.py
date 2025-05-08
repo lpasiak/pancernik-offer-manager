@@ -1,7 +1,6 @@
 import orchestrators.outlet_orchestrator as outlet
 import orchestrators.export_orchestrator as export
-from export_manager.export_manager import ExportManagerShoper, ExportManagerShopify, ExpportManagerEasyStorage, ExportManagerIdosell
-from promo_manager.promo_manager import PromoManager
+import orchestrators.promo_orchestrator as promo
 from bundle_manager.bundle_manager import BundleManager
 from connections.shopify.products import ShopifyProducts
 from connections.shopify_connect import ShopifyAPIClient
@@ -41,7 +40,7 @@ def main():
                 # Export IdoSell products
                 export.run_idosell_exporter()
 
-            elif action == 'wszycho':
+            elif action == 'all':
                 # Do all the steps
                 export.run_massive_exporter()
 
@@ -74,7 +73,7 @@ def main():
                 # Update attribute groups
                 outlet.run_outlet_attributer()
 
-            elif action == 'wszycho':
+            elif action == 'all':
                 # Do all the steps
                 outlet.run_outlet_manager()
 
@@ -84,24 +83,25 @@ def main():
             else:
                 print('Nie ma takiego wyboru :/')
 
-        # Promo manager
+        # ----- Promo manager ------ #
         elif action == '2':
             action = config.context_menu_promo()
-            promo_manager = PromoManager()
-            promo_manager.connect()
 
             if action == '1':
-                promo_manager.export_all_promo_products()
+                # Remove promotions
+                promo.run_promo_remover()
 
             if action == '2':
-                promo_manager.import_promo_percent_from_gsheet()
-                promo_manager.update_product_stock_from_gsheet()
+                # Import promotions percent and stocks
+                promo.run_percent_promo_and_stock_importer()
     
             if action == '3':
-                promo_manager.remove_promo_offers_from_gsheet()
+                # Import promotions fixed
+                promo.run_fixed_promo_importer()
 
             if action == '4':
-                promo_manager.import_promo_fixed_from_gsheet()
+                # Export promotions
+                promo.run_promo_exporter()
 
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
@@ -110,7 +110,7 @@ def main():
             else:
                 print('Nie ma takiego wyboru :/')
 
-        # Bundle manager
+        # ----- Bundle manager ------ #
         elif action == '3':
             action = config.context_menu_bundle()
             bundle_manager = BundleManager()
@@ -126,6 +126,7 @@ def main():
             else:
                 print('Nie ma takiego wyboru :/')
 
+        # ----- Shopify manager ------ #
         elif action == '4':
             action = config.context_menu_shopify()
 
@@ -146,6 +147,7 @@ def main():
             else:
                 print('Nie ma takiego wyboru :/')
 
+        # ----- IdoSell manager ------ #
         elif action == '5':
             action = config.context_menu_idosell()
             idosell_manager = IdoSellManager()
