@@ -9,7 +9,7 @@ query_product_light = """
                     id
                     title
                     handle
-                    variants(first: 2) {
+                    variants(first: 1) {
                         edges {
                             node {
                                 sku
