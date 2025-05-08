@@ -86,7 +86,7 @@ class BundleManager:
                         image_links, 
                 ])
                 else:
-                    print(f"Warning: SKU {row['Case SKU']} not found in Google Sheets!")
+                    print(f"❌  Warning: SKU {row['Case SKU']} not found in Google Sheets!")
 
             except Exception as e:
                 print(f'❌ Error creating outlet offer for product {product["SKU"]}: {e}')

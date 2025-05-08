@@ -11,7 +11,7 @@ class ShoperCategories:
     def get_all_categories(self):
         """Get all categories from Shoper and return them as df or None"""
         try:
-            print("Downloading all categories.")
+            print("ℹ️  Downloading all categories...")
 
             categories = []
             page = 1
@@ -46,7 +46,7 @@ class ShoperCategories:
     def get_all_categories_json(self):
         """Get all categories from Shoper and return them as df or None"""
         try:
-            print("Downloading all categories.")
+            print("ℹ️  Downloading all categories...")
 
             categories = []
             page = 1

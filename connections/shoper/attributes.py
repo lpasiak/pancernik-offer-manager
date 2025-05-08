@@ -14,7 +14,7 @@ class ShoperAttributes:
         page = 1
         url = f'{self.client.site_url}/webapi/rest/attribute-groups'
 
-        print("Downloading all attribute groups.")
+        print("ℹ️  Downloading all attribute groups...")
         while True:
             params = {'limit': config.SHOPER_LIMIT, 'page': page}
             response = self.client._handle_request('GET', url, params=params)
@@ -44,7 +44,7 @@ class ShoperAttributes:
         page = 1
         url = f'{self.client.site_url}/webapi/rest/attributes'
 
-        print("Downloading all attributes.")
+        print("ℹ️  Downloading all attributes...")
         while True:
             params = {'limit': config.SHOPER_LIMIT, 'page': page}
             response = self.client._handle_request('GET', url, params=params)

@@ -11,7 +11,7 @@ class EasyStorageProducts:
         try:
             params = {'account_id': self.client.pancernik_account_id}
 
-            print('Downloading Pancernik products from EasyStorage...')
+            print('ℹ️  Downloading Pancernik products from EasyStorage...')
             response = self.client.session.request(method='GET', url=self.products_endpoint, params=params, verify=False)
             return response.json()
         
@@ -24,7 +24,7 @@ class EasyStorageProducts:
         try:
             params = {'account_id': self.client.bizon_account_id}
 
-            print('Downloading Bizon products from EasyStorage...')
+            print('ℹ️  Downloading Bizon products from EasyStorage...')
             response = self.client.session.request(method='GET', url=self.products_endpoint, params=params, verify=False)
             return response.json()
         

@@ -16,7 +16,7 @@ class GsheetsWorksheets:
             A pandas DataFrame containing the data from the worksheet or None if an error occurs.
         """
         try:
-            print('Downloading all the data from Google Sheets...')
+            print('ℹ️  Downloading all the data from Google Sheets...')
             self.client.worksheet = self.client._handle_request(
                 self.client.sheet.worksheet,
                 sheet_name

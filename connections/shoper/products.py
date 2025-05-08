@@ -147,11 +147,10 @@ class ShoperProducts:
             print(f'❌ Request failed: {str(e)}')
             return str(e)
 
-    # TO BE REBUILT in the future, so a user will be able to filter products
     def get_all_products(self):
         """Get all products from Shoper and return them as df or None."""
         try:
-            print("Downloading all products...")
+            print("ℹ️  Downloading all products...")
 
             products = []
             page = 1
@@ -186,7 +185,7 @@ class ShoperProducts:
     def get_all_products_json(self):
         """Get all products from Shoper and return them as df or None."""
         try:
-            print("Downloading all products...")
+            print("ℹ️  Downloading all products...")
 
             products = []
             page = 1

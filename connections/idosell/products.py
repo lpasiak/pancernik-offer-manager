@@ -10,7 +10,7 @@ class IdoSellProducts:
     def get_all_products_descriptions(self):
         """Get all products' codes, descriptions and parameters."""
 
-        print('Downloading IdoSell products...')
+        print('ℹ️  Downloading IdoSell products...')
         try:
             url = f"{self.client.site}/api/admin/v5/products/products/search"
             all_data = []
@@ -58,7 +58,7 @@ class IdoSellProducts:
     def get_all_products_logistic_info(self):
         """Get all products' ids, codes and external codes from IdoSell and return them as JSON."""
 
-        print('Downloading IdoSell products...')
+        print('ℹ️  Downloading IdoSell products...')
         try:
             url = f"{self.client.site}/api/admin/v5/products/products/search"
             all_data = []
