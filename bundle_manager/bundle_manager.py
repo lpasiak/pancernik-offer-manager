@@ -58,7 +58,7 @@ class BundleManager:
                 product = self.shoper_products.get_product_by_code(identifier=row['Case SKU'], use_code=True, pictures=True)
 
                 if not product.get('img'):
-                    return []
+                    continue
             
                 google_sheets_row = row['Row Number']
 
