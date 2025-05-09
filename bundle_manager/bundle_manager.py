@@ -5,6 +5,7 @@ from connections.shoper.pictures import ShoperPictures
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 import config
+from tqdm import tqdm
 
 
 class BundleManager:
@@ -44,16 +45,16 @@ class BundleManager:
 
     def download_bundled_case_images(self):
         """Select EAN codes of an outlet and download their images"""
-        from pprint import pprint
 
         df_sku = self.gsheets_worksheets.get_data(sheet_name=config.BUNDLE_SHEET_NAME, include_row_numbers=True)
         df_sku['Case SKU'] = df_sku['SKU'].str.split('_').str[0]
 
         gsheets_updates = []
 
-        for index, row in df_sku.iterrows():
+        number_of_products = len(df_sku)
+
+        for index, row in tqdm(df_sku.iterrows(), total=number_of_products, desc="Processing images", unit='Product'):
             try:
-                print(f'Getting images of a product {row["Case SKU"]} ')
                 product = self.shoper_products.get_product_by_code(identifier=row['Case SKU'], use_code=True, pictures=True)
 
                 if not product.get('img'):
