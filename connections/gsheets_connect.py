@@ -1,6 +1,7 @@
 import gspread
 import time
 
+
 class GSheetsClient:
 
     def __init__(self, credentials, sheet_id):

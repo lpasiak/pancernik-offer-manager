@@ -12,6 +12,8 @@ ENV_FILE = ROOT_DIR / 'credentials' / 'env'
 
 # Directory for .xlsx, .csv, .json files
 SHEETS_DIR = ROOT_DIR / 'sheets'
+LOGGING_DIR = ROOT_DIR / 'logging'
+
 DRIVE_EXPORT_DIR = r'H:\Pansernik\Eksporty'
 
 TODAY = datetime.today().strftime('%d-%m-%Y')

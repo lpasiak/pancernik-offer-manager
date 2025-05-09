@@ -3,6 +3,7 @@ from outlet_manager.managers.outlet_attributes import OutletAttributeManager
 from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
 from outlet_manager.managers.outlet_archiver import OutletArchiver
+from utils.logger import outlet_log_manager
 
 def run_outlet_creator():
     print('\n----- ℹ️  Creating outlet offers -----\n')
@@ -10,6 +11,7 @@ def run_outlet_creator():
     out_creator.connect()
     products_to_publish = out_creator.get_offers_ready_to_publish()
     out_creator.create_outlet_offers(products_to_publish)
+    outlet_log_manager.close()
 
 def run_outlet_empty_checker():
     print('\n----- ℹ️  Checking for offers not found on Shoper -----\n')

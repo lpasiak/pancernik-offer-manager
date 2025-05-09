@@ -2,6 +2,8 @@ from .pictures import ShoperPictures
 import config, json
 import pandas as pd
 from tqdm import tqdm
+from utils.logger import outlet_logger
+
 
 class ShoperProducts:
     def __init__(self, client):
@@ -28,6 +30,7 @@ class ShoperProducts:
 
                 if not product_list:
                     print(f'❌ Product {identifier} doesn\'t exist')
+                    outlet_logger.warning(f'❌ Product {identifier} doesn\'t exist')
                     return {'success': False, 'error': f'❌ Product {identifier} doesn\'t exist'}
 
                 product = product_list[0]
@@ -40,6 +43,7 @@ class ShoperProducts:
                 if response.status_code != 200:
                     error_description = response.json()['error_description']
                     print(f'❌ API Error: {error_description}')
+                    outlet_logger.critical(f'❌ API Error: {error_description}')
                     return {'success': False, 'error': error_description}
 
             # Get product pictures if requested
@@ -48,6 +52,7 @@ class ShoperProducts:
                     product['img'] = self.pictures.get_product_pictures(product['product_id'])
                 except Exception as e:
                     print(f'❌ Error fetching product images: {str(e)}')
+                    outlet_logger.warning(f'❌ Error fetching product images: {str(e)}')
                     # Continue without images if they fail to fetch
 
             return product
@@ -70,17 +75,19 @@ class ShoperProducts:
                 try:
                     product_id = response.json()
                     if isinstance(product_id, int):
-                        print(f'✅ Product {product_id} | {product_data["code"]} created successfully')
                         return product_id
                     else:
                         print(f'❌ Unexpected response format: {product_id}')
+                        outlet_logger.warning(f'❌ Unexpected response format: {product_id}')
                         return None
                 except ValueError as e:
                     print(f'❌ Invalid response format: {str(e)}')
+                    outlet_logger.warning(f'❌ Invalid response format: {str(e)}')
                     return None
                 
             error_description = response.json()['error_description']
             print(f'❌ API Error: {error_description}')
+            outlet_logger.warning(f'❌ API Error: {error_description}')
             return {'success': False, 'error': error_description}
             
         except Exception as e:
@@ -137,10 +144,12 @@ class ShoperProducts:
 
             if response.status_code == 200:
                 print(f'✅ Product {product_id} updated successfully with {list(parameters.keys())}')
+                outlet_logger.info(f'✅ Product {product_id} updated successfully with {list(parameters.keys())}')
                 return True
                 
             error_description = response.json()['error_description']
             print(f'❌ API Error: {error_description}')
+            outlet_logger.critical(f'❌ API Error: {error_description}')
             return {'success': False, 'error': error_description}
         
         except Exception as e:

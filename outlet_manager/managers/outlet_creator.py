@@ -4,6 +4,7 @@ from connections.shoper.products import ShoperProducts
 from connections.shoper.pictures import ShoperPictures
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
+from utils.logger import outlet_logger
 from datetime import datetime
 import pandas as pd
 import config
@@ -42,7 +43,8 @@ class OutletCreator:
             return True
             
         except Exception as e:
-            print(f"❌ Error initializing connections: {e}")
+            print(f'❌ Error initializing connections: {e}')
+            outlet_logger.critical('❌ Error initializing connections: {e}')
             return False
 
     def get_offers_ready_to_publish(self):
@@ -85,9 +87,10 @@ class OutletCreator:
         product_count = len(df_offers)
         product_counter = 0
         gsheet_updates = []
-        print(f'Creating {product_count} outlet offers')
+        print(f'ℹ️  Creating {product_count} outlet offers')
+        outlet_logger.info(f'ℹ️ Creating {product_count} outlet offers')
 
-        for _, product in df_offers.iterrows():
+        for index, product in df_offers.iterrows():
 
             try:
 
@@ -106,10 +109,12 @@ class OutletCreator:
                 
                 # If the product is not created, skip the rest of the current iteration and move to the next product
                 if created_offer_id is None:
-                    print(f"❌ Failed to create outlet offer for product {product['SKU']}")
+                    print(f'❌ Failed to create outlet offer for product {product['SKU']} | {product['EAN']}')
+                    outlet_logger.critical(f'❌ Failed to create outlet offer for product {product['SKU']} | {product['EAN']}')
                     continue
                     
-                print(f"✅ Created outlet product with ID: {created_offer_id}")
+                print(f'✅ Created outlet product with ID: {created_offer_id} | {product['SKU']} | {product['EAN']}')
+                outlet_logger.info(f'✅ Created outlet product with ID: {created_offer_id} | {product['SKU']} | {product['EAN']}')
                 
                 # Update product details
                 self.shoper_products.update_product_by_code(created_offer_id, ean=new_outlet.barcode)
@@ -135,9 +140,10 @@ class OutletCreator:
                         except Exception as e:
                             retry_count += 1
                             if retry_count == max_retries:
-                                print(f"❌ Failed to upload image after {max_retries} attempts: {e}")
+                                print(f'❌ Failed to upload image after {max_retries} attempts: {e}')
+                                outlet_logger.warning(f'❌ Failed to upload image after {max_retries} attempts: {e}')
                             else:
-                                print(f"⚠️ Image upload attempt {retry_count} failed, retrying...")
+                                print(f'⚠️ Image upload attempt {retry_count} failed, retrying...')
                                 time.sleep(1)  # Wait before retry
 
                 # Update stock image
@@ -147,7 +153,8 @@ class OutletCreator:
                         stock_gfx = created_product['main_image']['gfx_id']
                         self.shoper_products.update_product_by_code(created_offer_id, stock={'gfx_id': stock_gfx})
                 except Exception as e:
-                    print(f"❌ Error updating stock image: {e}")
+                    print(f'❌ Error updating stock image: {e}')
+                    outlet_logger.warning(f'❌ Error updating stock image: {e}')
 
                 # Creating a list of updates to be made in gsheets
                 if google_sheets_row is not None:
@@ -160,16 +167,20 @@ class OutletCreator:
                         product_category_id
                     ])
                 else:
-                    print(f"Warning: SKU {product_code} not found in Google Sheets!")
+                    print(f'❌ SKU {product_code} not found in Google Sheets!')
+                    outlet_logger.warning(f' SKU {product_code} not found in Google Sheets!')
 
                 product_counter += 1
-                print(f'Products created: {product_counter}/{product_count}')
+                print(f'ℹ️  Offers created: {product_counter}/{product_count}')
                 print('-----------------------------------')
                 
             except Exception as e:
                 print(f'❌ Error creating outlet offer for product {product["SKU"]}: {e}')
+                outlet_logger.critical(f'❌ Error creating outlet offer for product {product["SKU"]}: {e}')
 
         print(f'Created {product_counter} outlet offers')
+        outlet_logger.info(f'ℹ️ Offers created: {product_counter}/{product_count}')
+
         # Update Google Sheets
         self.batch_update_created_offers_gsheets(gsheet_updates)
 
@@ -186,4 +197,5 @@ class OutletCreator:
                 num_columns=5
             )
         except Exception as e:
-            print(f"❌ Failed to update Google Sheets: {str(e)}")
+            print(f'❌ Failed to update Google Sheets: {str(e)}')
+            outlet_logger.critical(f'❌ Failed to update Google Sheets: {str(e)}')
