@@ -6,7 +6,6 @@ from outlet_manager.managers.outlet_archiver import OutletArchiver
 from utils.logger import outlet_log_manager
 
 def run_outlet_creator():
-    print('\n----- ℹ️  Creating outlet offers -----\n')
     out_creator = OutletCreator()
     out_creator.connect()
     products_to_publish = out_creator.get_offers_ready_to_publish()

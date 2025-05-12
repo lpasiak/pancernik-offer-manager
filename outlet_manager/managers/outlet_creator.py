@@ -67,6 +67,9 @@ class OutletCreator:
 
         df = df[mask]
 
+        # DEBUG
+        df = df.head(3)
+
         print(f'ℹ️  Selected products ready to publish: {len(df)}')
 
         if len(df) > 0:
@@ -87,8 +90,12 @@ class OutletCreator:
         product_count = len(df_offers)
         product_counter = 0
         gsheet_updates = []
-        print(f'ℹ️  Creating {product_count} outlet offers')
+
+        print('\n----- ℹ️  Creating outlet offers -----\n')
+        outlet_logger.info('<br>----- ℹ️  Creating outlet offers -----<br>')
         outlet_logger.info(f'ℹ️ Creating {product_count} outlet offers')
+        print(f'ℹ️  Creating {product_count} outlet offers')
+
 
         for index, product in df_offers.iterrows():
 
@@ -110,7 +117,7 @@ class OutletCreator:
                 # If the product is not created, skip the rest of the current iteration and move to the next product
                 if created_offer_id is None:
                     print(f'❌ Failed to create outlet offer for product {product['SKU']} | {product['EAN']}')
-                    outlet_logger.critical(f'❌ Failed to create outlet offer for product {product['SKU']} | {product['EAN']}')
+                    outlet_logger.warning(f'❌ Failed to create outlet offer for product {product['SKU']} | {product['EAN']}')
                     continue
                     
                 print(f'✅ Created outlet product with ID: {created_offer_id} | {product['SKU']} | {product['EAN']}')
@@ -176,7 +183,7 @@ class OutletCreator:
                 
             except Exception as e:
                 print(f'❌ Error creating outlet offer for product {product["SKU"]}: {e}')
-                outlet_logger.critical(f'❌ Error creating outlet offer for product {product["SKU"]}: {e}')
+                outlet_logger.critical(f'❌ Error creating outlet offer for product {product["SKU"]}')
 
         print(f'Created {product_counter} outlet offers')
         outlet_logger.info(f'ℹ️ Offers created: {product_counter}/{product_count}')
