@@ -1,6 +1,6 @@
 import pandas as pd
 import config
-from utils.logger import outlet_logger
+from utils.logger import get_outlet_logger
 
 
 class GsheetsWorksheets:
@@ -8,6 +8,7 @@ class GsheetsWorksheets:
     def __init__(self, client):
         """Initialize a Shoper Client"""
         self.client = client
+        self.outlet_logger = get_outlet_logger()
 
     def get_data(self, sheet_name, include_row_numbers=False):
         """Get data from a Google Sheets worksheet as a pandas DataFrame.
@@ -42,7 +43,7 @@ class GsheetsWorksheets:
         
         except Exception as e:
             print(f'❌ Error getting data from Google Sheets: {e}')
-            outlet_logger.critical(f'❌ Error getting data from Google Sheets: {e}')
+            self.outlet_logger.critical(f'❌ Error getting data from Google Sheets: {e}')
             return None
 
     def batch_update_from_a_list(self, worksheet_name: str, updates: list, start_column: str = 'A', num_columns: int = 5):
@@ -72,11 +73,11 @@ class GsheetsWorksheets:
             if batch_data:
                 self.client._handle_request(worksheet.batch_update, batch_data)
                 print(f'✅ Successfully updated {len(updates)} rows in {worksheet_name}')
-                outlet_logger.info(f'✅ Successfully updated {len(updates)} rows in {worksheet_name}')
+                self.outlet_logger.info(f'✅ Successfully updated {len(updates)} rows in {worksheet_name}')
             
         except Exception as e:
             print(f'❌ Failed to update worksheet: {str(e)}')
-            outlet_logger.critical(f'❌ Failed to update worksheet: {str(e)}')
+            self.outlet_logger.critical(f'❌ Failed to update worksheet: {str(e)}')
             raise
 
     def batch_move_products(self, source_worksheet_name: str, target_worksheet_name: str, values_df: pd.DataFrame):

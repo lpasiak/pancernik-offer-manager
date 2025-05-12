@@ -43,5 +43,17 @@ class Logger:
     def get_logger(self):
         return self.logger
 
-outlet_log_manager = Logger(name='Outlet Manager', log_filename=f'Outlet_Manager_{datetime.now().strftime("%d-%m-%Y_%H-%M-%S")}.html')
-outlet_logger = outlet_log_manager.get_logger()
+_outlet_log_manager = None
+
+def get_outlet_logger():
+    global _outlet_log_manager
+    if _outlet_log_manager is None:
+        _outlet_log_manager = Logger(
+            name='Outlet Manager',
+            log_filename=f'Outlet_Manager_{datetime.now().strftime("%d-%m-%Y_%H-%M-%S")}.html'
+        )
+    return _outlet_log_manager.get_logger()
+
+def close_outlet_logger():
+    if _outlet_log_manager is not None:
+        _outlet_log_manager.close()

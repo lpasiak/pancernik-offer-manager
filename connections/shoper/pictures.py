@@ -1,5 +1,5 @@
 import config, json
-from utils.logger import outlet_logger
+from utils.logger import get_outlet_logger
 
 
 class ShoperPictures:
@@ -7,6 +7,7 @@ class ShoperPictures:
     def __init__(self, client):
         """Initialize a Shoper Client"""
         self.client = client
+        self.outlet_logger = get_outlet_logger()
 
     def get_product_pictures(self, product_id):
         """Get product images from Shoper
@@ -26,14 +27,14 @@ class ShoperPictures:
             if response.status_code != 200:
                 error_description = response.json()['error_description']
                 print(f'❌ API Error: {error_description}')
-                outlet_logger.critical(f'❌ API Error: {error_description}')
+                self.outlet_logger.critical(f'❌ API Error: {error_description}')
                 return {'success': False, 'error': error_description}
                 
             return response.json()['list']
         
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
-            outlet_logger.critical(f'❌ Request failed: {str(e)}')
+            self.outlet_logger.critical(f'❌ Request failed: {str(e)}')
             return str(e)
         
     def update_product_image(self, product_id, image_data):
@@ -50,15 +51,15 @@ class ShoperPictures:
             if response.status_code != 200:
                 error_description = response.json()['error_description']
                 print(f'❌ API Error: {error_description}')
-                outlet_logger.critical(f'❌ API Error: {error_description}')
+                self.outlet_logger.critical(f'❌ API Error: {error_description}')
                 return {'success': False, 'error': error_description}
             else:
                 print(f'✅ Uploaded image {image_data['order']}')
-                outlet_logger.info(f'✅ Uploaded image {image_data['order']}')
+                self.outlet_logger.info(f'✅ Uploaded image {image_data['order']}')
             
             return response.json()
         
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
-            outlet_logger.critical(f'❌ Request failed: {str(e)}')
+            self.outlet_logger.critical(f'❌ Request failed: {str(e)}')
             return str(e)
