@@ -54,6 +54,7 @@ def run_outlet_attributer(close_logger=True):
     out_attribute_manager = OutletAttributeManager()
     out_attribute_manager.connect()
     out_attribute_manager.update_attribute_groups()
+    out_attribute_manager.update_main_products_attributes()
 
     if close_logger:
         close_outlet_logger()

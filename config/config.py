@@ -10,6 +10,9 @@ ROOT_DIR = Path(__file__).parent.parent
 GOOGLE_CREDENTIALS_FILE = ROOT_DIR / 'credentials' / 'gsheets_credentials.json'
 ENV_FILE = ROOT_DIR / 'credentials' / 'env'
 
+GOOGLE_EMAIL_ADDRESS = os.getenv('GOOGLE_EMAIL_ADDRESS')
+GOOGLE_EMAIL_PASSWORD = os.getenv('GOOGLE_EMAIL_PASSWORD')
+
 # Directory for .xlsx, .csv, .json files
 SHEETS_DIR = ROOT_DIR / 'sheets'
 LOGGING_DIR = ROOT_DIR / 'logging'
