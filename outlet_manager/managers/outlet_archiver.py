@@ -9,6 +9,8 @@ import config
 import pandas as pd
 from datetime import datetime
 from tqdm import tqdm
+from utils.logger import get_outlet_logger
+
 
 class OutletArchiver:
     def __init__(self):
@@ -19,6 +21,7 @@ class OutletArchiver:
         self.shoper_redirects = None
         self.gsheets_worksheets = None
         self.easystorage_products = None
+        self.outlet_logger = get_outlet_logger()
 
     def connect(self):
         """Initialize all necessary connections"""
@@ -50,6 +53,7 @@ class OutletArchiver:
             
         except Exception as e:
             print(f"❌ Error initializing connections: {e}")
+            self.outlet_logger.warning(f"❌ Error initializing connections: {e}")
             return False
 
     def select_sold_products(self):
@@ -105,6 +109,7 @@ class OutletArchiver:
 
                 except Exception as e:
                     print(f"❌ Error for SKU {row['SKU']}: {e}")
+                    self.outlet_logger.warning(f"❌ Error for SKU {row['SKU']}: {e}")
                     rows_to_drop.append(index)
 
             # Apply changes
@@ -121,6 +126,7 @@ class OutletArchiver:
 
         except Exception as e:
             print(f"❌ Error selecting products to be cleaned: {e}")
+            self.outlet_logger.warning(f"❌ Error selecting products to be cleaned: {e}")
 
     def archive_sold_products(self, sold_products_df):
 

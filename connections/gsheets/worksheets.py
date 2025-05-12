@@ -116,8 +116,10 @@ class GsheetsWorksheets:
             try:
                 self.client._handle_request(target_worksheet.batch_update, batch_data)
                 print(f"✅ Successfully moved {len(values_to_append)} products.")
+                self.outlet_logger.info(f"✅ Successfully moved {len(values_to_append)} products.")
             except Exception as e:
                 print(f"❌ Failed to move products to lacking products sheet: {str(e)}")
+                self.outlet_logger.critical(f"❌ Failed to move products to lacking products sheet: {str(e)}")
                 return
 
             # Remove the products from the source worksheet from bottom to top
@@ -130,14 +132,18 @@ class GsheetsWorksheets:
                     self.client._handle_request(source_worksheet.delete_rows, int(row))
                     counter += 1
                     print(f"✅ Deleted row {row} from {source_worksheet_name} | {counter}/{counter_length}")
+                    self.outlet_logger.info(f"✅ Deleted row {row} from {source_worksheet_name} | {counter}/{counter_length}")
 
                 print(f"✅ Successfully removed {len(values_to_append)} products from the source worksheet.")
+                self.outlet_logger.info(f"✅ Successfully removed {len(values_to_append)} products from the source worksheet.")
 
             except Exception as e:
                 print(f"❌ Failed to remove products from the source worksheet: {str(e)}")
+                self.outlet_logger.critical(f"❌ Failed to remove products from the source worksheet: {str(e)}")
 
         except Exception as e:
             print(f"❌ Error moving products: {e}")
+            self.outlet_logger.critical(f"❌ Error moving products: {e}")
             raise
 
     def save_data(self, worksheet_name: str, df: pd.DataFrame):
@@ -162,7 +168,9 @@ class GsheetsWorksheets:
             print('ℹ️  Saving the data...')
             source_worksheet.update(all_values)
             print(f"✅ Successfully saved data to {worksheet_name}")
+            self.outlet_logger.infoprint(f"✅ Successfully saved data to {worksheet_name}")
 
         except Exception as e:
             print(f"❌ Error saving data to Google Sheets: {e}")
+            self.outlet_logger.critical(f"❌ Error saving data to Google Sheets: {e}")
             raise

@@ -5,6 +5,8 @@ from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 import config
 import pandas as pd
+from utils.logger import get_outlet_logger
+
 
 class OutletAttributeManager:
     def __init__(self):
@@ -13,6 +15,7 @@ class OutletAttributeManager:
         self.shoper_products = None
         self.shoper_attributes = None
         self.gsheets_worksheets = None
+        self.outlet_logger = get_outlet_logger()
         
     def connect(self):
         """Initialize all necessary connections"""
@@ -38,7 +41,8 @@ class OutletAttributeManager:
             return True
             
         except Exception as e:
-            print(f"❌ Error initializing connections: {e}")
+            print(f'❌ Error initializing connections: {e}')
+            self.outlet_logger.warning(f'❌ Error initializing connections: {e}')
             return False
 
     def select_products_with_ids(self):
@@ -79,8 +83,10 @@ class OutletAttributeManager:
 
         if response:
             print(f'✅ Attribute group {attribute_group_to_append} updated with {len(categories_to_import)} categories\n')
+            self.outlet_logger.info(f'✅ Attribute group {attribute_group_to_append} updated with {len(categories_to_import)} categories')
         else:
             print(f'❌ Attribute group {attribute_group_to_append} update failed')
+            self.outlet_logger.warning(f'❌ Attribute group {attribute_group_to_append} update failed')
 
     def update_main_products_attributes(self):
         """Update the attribute of a product"""
@@ -112,5 +118,7 @@ class OutletAttributeManager:
             params = {attribute_id: product_ids}
             self.shoper_products.update_product_by_code(product_ean, use_code=True, attributes=params)
             product_counter += 1
-            print(f'Products updated: {product_counter}/{len(products)}')
+            print(f'✅ Products updated: {product_counter}/{len(products)}')
+        
+        self.outlet_logger.info(f'✅ Product attributes updated: {product_counter}/{len(products)}')
 

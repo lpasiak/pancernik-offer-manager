@@ -93,6 +93,7 @@ class ShoperProducts:
             
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
+            self.outlet_logger.warning(f'❌ Request failed: {str(e)}')
             return str(e)
 
     # TO BE REBUILT in the future, so a user will also be able to remove a product by SKU
@@ -108,14 +109,17 @@ class ShoperProducts:
             
             if response.status_code == 200:
                 print(f'✅ Product {product_id} removed successfully')
+                self.outlet_logger.info(f'✅ Product {product_id} removed successfully')
                 return True
                 
             error_description = response.json()['error_description']
             print(f'❌ API Error: {error_description}')
+            self.outlet_logger.warning(f'❌ API Error: {error_description}')
             return {'success': False, 'error': error_description}
             
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
+            self.outlet_logger.warning(f'❌ Request failed: {str(e)}')
             return str(e)
         
     def update_product_by_code(self, identifier, use_code=False, **parameters):
@@ -150,11 +154,12 @@ class ShoperProducts:
                 
             error_description = response.json()['error_description']
             print(f'❌ API Error: {error_description}')
-            self.outlet_logger.critical(f'❌ API Error: {error_description}')
+            self.outlet_logger.warning(f'❌ API Error: {error_description}')
             return {'success': False, 'error': error_description}
         
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
+            self.outlet_logger.warning(f'❌ Request failed: {str(e)}')
             return str(e)
 
     def get_all_products(self):
@@ -170,6 +175,7 @@ class ShoperProducts:
             if initial_response.status_code != 200:
                 error_description = initial_response.json()['error_description']
                 print(f'❌ API Error: {error_description}')
+                self.outlet_logger.warning(f'❌ API Error: {error_description}')
                 return {'success': False, 'error': error_description}
 
             initial_data = initial_response.json()
@@ -183,6 +189,7 @@ class ShoperProducts:
 
                 if response.status_code != 200:
                     print(f"❌ Error on page {page}: {response.status_code}")
+                    self.outlet_logger.warning(f"❌ Error on page {page}: {response.status_code}")
                     continue
 
                 page_data = response.json().get('list', [])
@@ -196,6 +203,7 @@ class ShoperProducts:
 
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
+            self.outlet_logger.warning(f'❌ Request failed: {str(e)}')
             return str(e)
 
         
@@ -210,6 +218,7 @@ class ShoperProducts:
             if initial_response.status_code != 200:
                 error_description = initial_response.json()['error_description']
                 print(f'❌ API Error: {error_description}')
+                self.outlet_logger.warning(f'❌ API Error: {error_description}')
                 return {'success': False, 'error': error_description}
 
             initial_data = initial_response.json()
@@ -221,6 +230,7 @@ class ShoperProducts:
                 response = self.client._handle_request('GET', f'{self.client.site_url}/webapi/rest/products', params=params)
                 if response.status_code != 200:
                     print(f"❌ Error fetching page {page}")
+                    self.outlet_logger.warning(f"❌ Error fetching page {page}")
                     continue  # optionally handle differently
 
                 page_data = response.json().get('list', [])
@@ -234,5 +244,6 @@ class ShoperProducts:
 
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
+            self.outlet_logger.warning(f'❌ Request failed: {str(e)}')
             return str(e)
 

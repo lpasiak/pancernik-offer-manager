@@ -5,6 +5,7 @@ from connections.gsheets.worksheets import GsheetsWorksheets
 import config
 from datetime import datetime
 import pandas as pd
+from utils.logger import get_outlet_logger
 
 
 class OutletLackingManager:
@@ -13,6 +14,7 @@ class OutletLackingManager:
         self.gsheets_client = None
         self.shoper_products = None
         self.gsheets_worksheets = None
+        self.outlet_logger = get_outlet_logger()
         
     def connect(self):
         """Initialize all necessary connections"""
@@ -38,6 +40,7 @@ class OutletLackingManager:
             
         except Exception as e:
             print(f"❌ Error initializing connections: {e}")
+            self.outlet_logger.warning(f'❌ Error initializing connections: {e}')
             return False
         
     def move_products_to_lacking(self):
@@ -60,11 +63,12 @@ class OutletLackingManager:
 
         selected_offers = df_all_products[mask].copy()
 
-        print('Checking if all the products exist on Shoper...')
+        print('ℹ️  Checking if all the products exist on Shoper...')
         
         # If there are no products to move, return
         if selected_offers.empty:
             print('ℹ️  No products to move to the lacking sheet')
+            self.outlet_logger.info('ℹ️ No products to move to the lacking sheet')
             return
 
         # Check if the products exist on Shoper
@@ -79,6 +83,7 @@ class OutletLackingManager:
 
         if selected_offers.empty:
             print('ℹ️  No products to move to the lacking sheet')
+            self.outlet_logger.info('ℹ️ No products to move to the lacking sheet')
             return
 
         selected_offers = selected_offers[columns_to_keep]
@@ -90,4 +95,5 @@ class OutletLackingManager:
             values_df=selected_offers
         )
 
-        print('✅ Products moved to the lacking sheet')
+        print(f'✅ {len(selected_offers)} products moved to the lacking sheet')
+        self.outlet_logger.info(f'✅ {len(selected_offers)} products to move to the lacking sheet')
