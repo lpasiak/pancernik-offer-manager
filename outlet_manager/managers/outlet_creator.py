@@ -171,7 +171,7 @@ class OutletCreator:
                     ])
                 else:
                     print(f'❌ SKU {product_code} not found in Google Sheets!')
-                    self.outlet_logger.warning(f' SKU {product_code} not found in Google Sheets!')
+                    self.outlet_logger.warning(f'❌ SKU {product_code} not found in Google Sheets!')
 
                 product_counter += 1
                 print(f'ℹ️  Offers created: {product_counter}/{product_count}')
@@ -181,7 +181,7 @@ class OutletCreator:
                 print(f'❌ Error creating outlet offer for product {product["SKU"]}: {e}')
                 self.outlet_logger.critical(f'❌ Error creating outlet offer for product {product["SKU"]}')
 
-        print(f'Created {product_counter} outlet offers')
+        print(f'ℹ️  Created {product_counter} outlet offers')
         self.outlet_logger.info(f'ℹ️ Offers created: {product_counter}/{product_count}')
 
         # Update Google Sheets

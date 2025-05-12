@@ -1,6 +1,7 @@
 from .products import ShoperProducts
 import config
 from datetime import datetime
+from utils.logger import get_outlet_logger
 
 
 class ShoperSpecialOffers:
@@ -8,6 +9,7 @@ class ShoperSpecialOffers:
         """Initialize a Shoper Client"""
         self.client = client
         self.products = ShoperProducts(client)
+        self.outlet_logger = get_outlet_logger()
 
     def create_special_offer(self, discount_data):
         """Create a special offer for a product.
@@ -38,14 +40,17 @@ class ShoperSpecialOffers:
 
             if response.status_code == 200:
                 print(f'✅ Special offer for product ID {params['product_id']} created.')
+                self.outlet_logger.info(f'✅ Special offer for product ID {params['product_id']} created.')
                 return response.json()
             else:
                 error_description = response.json()['error_description']
                 print(f'❌ API Error: {error_description}')
+                self.outlet_logger.warning(f'❌ API Error: {error_description}')
                 return {'success': False, 'error': error_description}
             
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
+            self.outlet_logger.warning(f'❌ Request failed: {str(e)}')
             return str(e)
 
     def remove_special_offer_from_product(self, identifier, use_code=False):
@@ -71,12 +76,15 @@ class ShoperSpecialOffers:
 
                 if response.status_code == 200:
                     print(f'✅ Special offer {promo_id} removed successfully.')
+                    self.outlet_logger.info(f'✅ Special offer {promo_id} removed successfully.')
                     return True
                 else:
                     error_description = response.json()['error_description']
                     print(f'❌ API Error: {error_description}')
+                    self.outlet_logger.warning(f'❌ API Error: {error_description}')
                     return {'success': False, 'error': error_description}
                     
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')
+            self.outlet_logger.warning(f'❌ Request failed: {str(e)}')
             return str(e)
