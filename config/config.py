@@ -10,8 +10,16 @@ ROOT_DIR = Path(__file__).parent.parent
 GOOGLE_CREDENTIALS_FILE = ROOT_DIR / 'credentials' / 'gsheets_credentials.json'
 ENV_FILE = ROOT_DIR / 'credentials' / 'env'
 
-GOOGLE_EMAIL_ADDRESS = os.getenv('GOOGLE_EMAIL_ADDRESS')
+# Load environment variables from .env file
+load_dotenv(ENV_FILE)
+
+# Mailer
+GOOGLE_EMAIL_SENDER = os.getenv('GOOGLE_EMAIL_SENDER')
 GOOGLE_EMAIL_PASSWORD = os.getenv('GOOGLE_EMAIL_PASSWORD')
+
+# In order to add new recipients, we need to modify our environmental variable and add a new email after a comma
+OUTLET_MAIL_RECIPIENTS = os.getenv('OUTLET_MAIL_RECIPIENTS')
+OUTLET_MAIL_RECIPIENT_LIST = [email.strip() for email in OUTLET_MAIL_RECIPIENTS.split(',') if email.strip()]
 
 # Directory for .xlsx, .csv, .json files
 SHEETS_DIR = ROOT_DIR / 'sheets'
@@ -23,8 +31,6 @@ TODAY = datetime.today().strftime('%d-%m-%Y')
 
 REDIRECT_TARGET_OUTLET_URL = '/outlet'
 
-# Load environment variables from .env file
-load_dotenv(ENV_FILE)
 
 # Shoper SITE - can be either TEST (development) or MAIN (deployment)
 SITE = 'MAIN'
