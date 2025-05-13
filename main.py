@@ -91,15 +91,15 @@ def main():
                 # Remove promotions
                 promo.run_promo_remover()
 
-            if action == '2':
+            elif action == '2':
                 # Import promotions percent and stocks
                 promo.run_percent_promo_and_stock_importer()
     
-            if action == '3':
+            elif action == '3':
                 # Import promotions fixed
                 promo.run_fixed_promo_importer()
 
-            if action == '4':
+            elif action == '4':
                 # Export promotions
                 promo.run_promo_exporter()
 

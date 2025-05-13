@@ -65,3 +65,5 @@ def run_outlet_manager():
     run_outlet_discounter(close_logger=False)
     run_outlet_archiver(close_logger=False)
     run_outlet_attributer(close_logger=False)
+    
+    close_outlet_logger()
