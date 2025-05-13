@@ -8,7 +8,7 @@ class GsheetsWorksheets:
     def __init__(self, client):
         """Initialize a Shoper Client"""
         self.client = client
-        self.outlet_logger = get_outlet_logger()
+        self.outlet_logger = get_outlet_logger().get_logger()
 
     def get_data(self, sheet_name, include_row_numbers=False):
         """Get data from a Google Sheets worksheet as a pandas DataFrame.

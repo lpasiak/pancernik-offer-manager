@@ -21,7 +21,7 @@ class OutletArchiver:
         self.shoper_redirects = None
         self.gsheets_worksheets = None
         self.easystorage_products = None
-        self.outlet_logger = get_outlet_logger()
+        self.outlet_logger = get_outlet_logger().get_logger()
 
     def connect(self):
         """Initialize all necessary connections"""

@@ -2,6 +2,7 @@ import logging
 import os
 import config
 from datetime import datetime
+import io
 
 class HTMLFormatter(logging.Formatter):
     def format(self, record):
@@ -14,6 +15,10 @@ class Logger:
         self.log_dir = log_dir
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
+        self.log_stream = io.StringIO()
+        self.memory_handler = logging.StreamHandler(self.log_stream)
+        self.memory_handler.setFormatter(HTMLFormatter('%(asctime)s - %(levelname)s - %(message)s'))
+        self.logger.addHandler(self.memory_handler)
 
         os.makedirs(log_dir, exist_ok=True)
 
@@ -43,17 +48,21 @@ class Logger:
     def get_logger(self):
         return self.logger
 
-_outlet_log_manager = None
+    def get_log_as_string(self) -> str:
+        return self.log_stream.getvalue()
+
+outlet_log_manager = None
 
 def get_outlet_logger():
-    global _outlet_log_manager
-    if _outlet_log_manager is None:
-        _outlet_log_manager = Logger(
+    global outlet_log_manager
+    if outlet_log_manager is None:
+        outlet_log_manager = Logger(
             name='Outlet Manager',
             log_filename=f'Outlet_Manager_{datetime.now().strftime("%d-%m-%Y_%H-%M-%S")}.html'
         )
-    return _outlet_log_manager.get_logger()
+    return outlet_log_manager
 
 def close_outlet_logger():
-    if _outlet_log_manager is not None:
-        _outlet_log_manager.close()
+    global outlet_log_manager
+    if outlet_log_manager is not None:
+        outlet_log_manager.close()

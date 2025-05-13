@@ -6,7 +6,7 @@ class ShoperRedirects:
     def __init__(self, client):
         """Initialize a Shoper Client"""
         self.client = client
-        self.outlet_logger = get_outlet_logger()
+        self.outlet_logger = get_outlet_logger().get_logger()
 
     def create_redirect(self, redirect_data):
         """Create a redirect for a product.

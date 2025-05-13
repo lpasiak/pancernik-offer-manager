@@ -7,7 +7,7 @@ class ShoperPictures:
     def __init__(self, client):
         """Initialize a Shoper Client"""
         self.client = client
-        self.outlet_logger = get_outlet_logger()
+        self.outlet_logger = get_outlet_logger().get_logger()
 
     def get_product_pictures(self, product_id):
         """Get product images from Shoper

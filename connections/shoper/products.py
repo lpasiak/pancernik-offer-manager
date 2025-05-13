@@ -10,7 +10,7 @@ class ShoperProducts:
         """Initialize a Shoper Client"""
         self.client = client
         self.pictures = ShoperPictures(client)
-        self.outlet_logger = get_outlet_logger()
+        self.outlet_logger = get_outlet_logger().get_logger()
 
     def get_product_by_code(self, identifier, pictures=False, use_code=False):
         """Get a product from Shoper by either product ID or product code.

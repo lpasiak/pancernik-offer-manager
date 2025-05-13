@@ -4,17 +4,23 @@ from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
 from outlet_manager.managers.outlet_archiver import OutletArchiver
 from utils.logger import get_outlet_logger, close_outlet_logger
+from utils.mailer import OutletEmailSender
 
 def run_outlet_creator(close_logger=True):
     print('\n----- Creating outlet offers -----\n')
-    get_outlet_logger().info('<br>----- Creating outlet offers -----<br>')
+    outlet_log_manager = get_outlet_logger()
+    outlet_logger = outlet_log_manager.get_logger()
+    outlet_logger.info('<br>----- Creating outlet offers -----<br>')
     out_creator = OutletCreator()
     out_creator.connect()
     products_to_publish = out_creator.get_offers_ready_to_publish()
-    out_creator.create_outlet_offers(products_to_publish)
+    number_of_created = out_creator.create_outlet_offers(products_to_publish) or 0
 
     if close_logger:
         close_outlet_logger()
+        log_output = outlet_log_manager.get_log_as_string()
+        outlet_sender = OutletEmailSender(created_products=number_of_created, logs=log_output)
+        outlet_sender.send_emails()
 
 def run_outlet_empty_checker(close_logger=True):
     print('\n----- Checking for offers not found on Shoper -----\n')

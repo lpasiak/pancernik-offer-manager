@@ -9,7 +9,7 @@ class ShoperSpecialOffers:
         """Initialize a Shoper Client"""
         self.client = client
         self.products = ShoperProducts(client)
-        self.outlet_logger = get_outlet_logger()
+        self.outlet_logger = get_outlet_logger().get_logger()
 
     def create_special_offer(self, discount_data):
         """Create a special offer for a product.

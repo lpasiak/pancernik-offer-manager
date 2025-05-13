@@ -18,7 +18,7 @@ class OutletCreator:
         self.shoper_products = None
         self.shoper_pictures = None
         self.gsheets_worksheets = None
-        self.outlet_logger = get_outlet_logger()
+        self.outlet_logger = get_outlet_logger().get_logger()
         
     def connect(self):
         """Initialize all necessary connections"""
@@ -69,6 +69,8 @@ class OutletCreator:
         df = df[mask]
 
         print(f'ℹ️  Selected products ready to publish: {len(df)}')
+        self.outlet_logger.info(f'ℹ️  Selected products ready to publish: {len(df)}')
+
 
         if len(df) > 0:
             return df
@@ -78,6 +80,8 @@ class OutletCreator:
         """Create outlet offers for the given products
         Args:
             df_offers_to_be_published (df): A pandas DataFrame containing the products to create with ['EAN'] column.
+        Returns:
+            number of created offers (int)
         """
 
         if df_offers is None or df_offers.empty:
@@ -93,7 +97,7 @@ class OutletCreator:
         print(f'ℹ️  Creating {product_count} outlet offers')
 
 
-        for index, product in df_offers.iterrows():
+        for _, product in df_offers.iterrows():
 
             try:
 
@@ -186,6 +190,9 @@ class OutletCreator:
 
         # Update Google Sheets
         self.batch_update_created_offers_gsheets(gsheet_updates)
+
+        return product_counter
+
 
     def batch_update_created_offers_gsheets(self, gsheets_updates):
         """Save created offers to Google Sheets

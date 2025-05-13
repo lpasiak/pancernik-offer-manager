@@ -14,7 +14,7 @@ class OutletLackingManager:
         self.gsheets_client = None
         self.shoper_products = None
         self.gsheets_worksheets = None
-        self.outlet_logger = get_outlet_logger()
+        self.outlet_logger = get_outlet_logger().get_logger()
         
     def connect(self):
         """Initialize all necessary connections"""
