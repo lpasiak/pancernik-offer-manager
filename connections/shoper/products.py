@@ -148,7 +148,6 @@ class ShoperProducts:
             response = self.client._handle_request('PUT', f'{self.client.site_url}/webapi/rest/products/{product_id}', json=params)
 
             if response.status_code == 200:
-                print(f'✅ Product {product_id} updated successfully with {list(parameters.keys())}')
                 self.outlet_logger.info(f'✅ Product {product_id} updated successfully with {list(parameters.keys())}')
                 return True
                 

@@ -39,7 +39,6 @@ class ShoperSpecialOffers:
             response = self.client._handle_request('POST', url, json=params)
 
             if response.status_code == 200:
-                print(f'✅ Special offer for product ID {params['product_id']} created.')
                 self.outlet_logger.info(f'✅ Special offer for product ID {params['product_id']} created.')
                 return response.json()
             else:
@@ -75,7 +74,6 @@ class ShoperSpecialOffers:
                 response = self.client._handle_request('DELETE', url)
 
                 if response.status_code == 200:
-                    print(f'✅ Special offer {promo_id} removed successfully.')
                     self.outlet_logger.info(f'✅ Special offer {promo_id} removed successfully.')
                     return True
                 else:

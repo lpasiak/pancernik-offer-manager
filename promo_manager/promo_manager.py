@@ -5,6 +5,7 @@ from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
 import config
 import pandas as pd
+from tqdm import tqdm
 
 
 class PromoManager:
@@ -93,13 +94,11 @@ class PromoManager:
         counter_products = len(result_df)
         counter = 0
         # Import special offers
-        for id, row in result_df.iterrows():
-
+        for id, row in tqdm(result_df.iterrows(), total=counter_products, desc="🔁 Creating promotions"):
             try:
                 product = self.shoper_products.get_product_by_code(row['SKU'], use_code=True)
-
                 product_id = product['product_id']
-                
+
                 discount_data = {
                     'product_id': product_id,
                     'discount': row['Kwota promocji (%)'],
@@ -108,33 +107,30 @@ class PromoManager:
                 }
 
                 if product.get('special_offer') is not None:
-                    # Remove the special offer
                     self.shoper_special_offers.remove_special_offer_from_product(product_id)
 
                 try:
-                    # Create the special offer
                     response = self.shoper_special_offers.create_special_offer(discount_data)
-                    
+
                     if isinstance(response, int):
                         result_df.at[id, 'Komunikat promocji'] = f'Promocja dodana dla {row["SKU"]}. Nr promocji: {response}'
                         counter += 1
-                        print(f'Products: {counter}/{counter_products}')
 
                 except Exception as e:
-                    print(f'❌ Error: {e}')
+                    print(f'❌ Error (create offer): {e}')
                     result_df.at[id, 'Komunikat promocji'] = f'Błąd przy tworzeniu promocji: {str(e)}'
 
             except Exception as e:
-                print(f'❌ Error: {e}')
+                print(f'❌ Error (get product): {e}')
                 result_df.at[id, 'Komunikat promocji'] = f'Błąd przy pobieraniu produktu: {str(e)}'
 
-            # Prepare updates in correct format
-            updates = []
-            for _, row in result_df.iterrows():
-                updates.append([
-                    int(row['Row Number']),  # Make sure row number is an integer
-                    row['Komunikat promocji']
-                ])
+        # Prepare updates in correct format
+        updates = []
+        for _, row in result_df.iterrows():
+            updates.append([
+                int(row['Row Number']),  # Make sure row number is an integer
+                row['Komunikat promocji']
+            ])
 
         # Update the worksheet
         self.gsheets_worksheets.batch_update_from_a_list(
@@ -160,15 +156,18 @@ class PromoManager:
         counter_products = len(result_df)
         counter = 0
         # Import special offers
-        for id, row in result_df.iterrows():
+        for id, row in tqdm(result_df.iterrows(), total=counter_products, desc="📦 Updating stock"):
             try:
-                # Create the special offer
-                response = self.shoper_products.update_product_by_code(row['SKU'], use_code=True, stock={'stock': row['Stan']})
-                
+                # Update product stock by code
+                response = self.shoper_products.update_product_by_code(
+                    row['SKU'],
+                    use_code=True,
+                    stock={'stock': row['Stan']}
+                )
+
                 if isinstance(response, int):
                     result_df.at[id, 'Komunikat Stan'] = f'Stan zaktualizowany dla {row["SKU"]}. Stan: {row["Stan"]}'
                     counter += 1
-                    print(f'Products: {counter}/{counter_products}')
 
             except Exception as e:
                 print(f'❌ Error: {e}')
