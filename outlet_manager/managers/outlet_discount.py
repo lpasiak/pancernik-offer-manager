@@ -71,8 +71,9 @@ class OutletDiscountManager:
         )
 
         df = df[mask]
-
+        
         print(f'ℹ️  Selected products ready to discount: {len(df)}')
+        self.outlet_logger.info(f'ℹ️ Selected products ready to discount: {len(df)}')
 
         if len(df) > 0:
             return df
@@ -87,9 +88,6 @@ class OutletDiscountManager:
         
         if df_offers_to_discount is None or df_offers_to_discount.empty:
             return
-        
-        # Testing on 2 products
-        # df_offers_to_discount = df_offers_to_discount.head(2)
         
         product_discount_count = len(df_offers_to_discount)
         product_discount_counter = 0
@@ -147,10 +145,12 @@ class OutletDiscountManager:
                 continue
 
             print(f'ℹ️  Products discounted: {product_discount_counter}/{product_discount_count}')
-            self.outlet_logger.info(f'ℹ️ Products discounted: {product_discount_counter}/{product_discount_count}')
 
         if gsheets_updates:
             self.batch_update_discounted_offers_gsheets(gsheets_updates)
+        
+        self.outlet_logger.info(f'ℹ️ Products discounted: {product_discount_counter}/{product_discount_count}')
+        return product_discount_counter
         
     def batch_update_discounted_offers_gsheets(self, gsheets_updates):
         """Save discounted offers' info to Google Sheets

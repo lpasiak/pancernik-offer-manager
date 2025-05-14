@@ -84,9 +84,13 @@ class OutletAttributeManager:
         if response:
             print(f'✅ Attribute group {attribute_group_to_append} updated with {len(categories_to_import)} categories\n')
             self.outlet_logger.info(f'✅ Attribute group {attribute_group_to_append} updated with {len(categories_to_import)} categories')
+        
+            return len(categories_to_import)
         else:
             print(f'❌ Attribute group {attribute_group_to_append} update failed')
             self.outlet_logger.warning(f'❌ Attribute group {attribute_group_to_append} update failed')
+
+            return 0
 
     def update_main_products_attributes(self):
         """Update the attribute of a product"""
@@ -118,7 +122,9 @@ class OutletAttributeManager:
             params = {attribute_id: product_ids}
             self.shoper_products.update_product_by_code(product_ean, use_code=True, attributes=params)
             product_counter += 1
-            print(f'✅ Products updated: {product_counter}/{len(products)}')
+            print(f'✅ Product {product_ean} attributes updated.')
+            self.outlet_logger.info(f'✅ Product {product_ean} attributes updated.')
         
-        self.outlet_logger.info(f'✅ Product attributes updated: {product_counter}/{len(products)}')
+        self.outlet_logger.info(f'ℹ️ Product attributes updated: {product_counter}/{len(products)}')
 
+        return len(products)

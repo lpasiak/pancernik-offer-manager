@@ -187,3 +187,5 @@ class OutletArchiver:
             target_worksheet_name=config.OUTLET_SHEET_ARCHIVED_NAME,
             values_df=offers_to_move
         )
+
+        return sold_products_len

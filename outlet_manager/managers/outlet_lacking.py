@@ -77,6 +77,7 @@ class OutletLackingManager:
             
             if response is None or (isinstance(response, dict) and response.get('success') is False):
                 print(f'Product {row["EAN"]} does not exist on Shoper.')
+                self.outlet_logger.info(f'ℹ️ Product {row["EAN"]} does not exist on Shoper.')
             else:
                 selected_offers = selected_offers.drop(index)
                 print(f'Product {row["EAN"]} exists on Shoper.')
@@ -97,3 +98,5 @@ class OutletLackingManager:
 
         print(f'✅ {len(selected_offers)} products moved to the lacking sheet')
         self.outlet_logger.info(f'✅ {len(selected_offers)} products to move to the lacking sheet')
+
+        return len(selected_offers)
