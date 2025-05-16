@@ -223,12 +223,7 @@ class OutletArchiver:
                 return 0
             
             for _, row in products_to_activate_df.iterrows():
-                self.shoper_products.update_product(row['ID Shoper'], {
-                    'stock': {
-                        'stock': 1,
-                        'active': 1
-                    }
-                })
+                self.shoper_products.update_product_by_code(row['ID Shoper'], stock={'stock': 1}, translations={'pl_PL': {'active': 1}})
 
             return len(products_to_activate_df)
                     
@@ -244,12 +239,7 @@ class OutletArchiver:
                 return 0
             
             for _, row in products_to_deactivate_df.iterrows():
-                self.shoper_products.update_product(row['ID Shoper'], {
-                    'stock': {
-                        'stock': 0,
-                        'active': 0
-                    }
-                })
+                self.shoper_products.update_product_by_code(row['ID Shoper'], stock={'stock': 0}, translations={'pl_PL': {'active': 0}})
 
             return len(products_to_deactivate_df)
 
