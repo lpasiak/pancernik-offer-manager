@@ -151,66 +151,73 @@ class OutletArchiver:
             self.outlet_logger.warning(f"❌ Error selecting products to be cleaned: {e}")
 
     def archive_sold_products(self, sold_products_df):
-
+            
         date_removed = datetime.today().strftime('%Y-%m-%d')
 
         if sold_products_df is None or (isinstance(sold_products_df, pd.DataFrame) and sold_products_df.empty):
             return
         
-        # Add necessary columns and format them (so it uploads correctly to Google Sheets)
-        sold_products_df['Status'] = 'Sprzedane'
-        sold_products_df['Zutylizowane'] = True
-        sold_products_df['Wystawione'] = True
-        sold_products_df['Druga obniżka'] = sold_products_df['Druga obniżka'].map({'TRUE': True, 'FALSE': False})
-        sold_products_df['SKU'] = sold_products_df['SKU'].astype('object')
-        sold_products_df['Data usunięcia'] = date_removed
-        sold_products_df['Komentarz'] = ''
-        sold_products_df = sold_products_df.replace({float('nan'): None, 'nan': None})
+        try:
+ 
+            # Add necessary columns and format them (so it uploads correctly to Google Sheets)
+            sold_products_df['Status'] = 'Sprzedane'
+            sold_products_df['Zutylizowane'] = True
+            sold_products_df['Wystawione'] = True
+            sold_products_df['Druga obniżka'] = sold_products_df['Druga obniżka'].map({'TRUE': True, 'FALSE': False})
+            sold_products_df['SKU'] = sold_products_df['SKU'].astype('object')
+            sold_products_df['Data usunięcia'] = date_removed
+            sold_products_df['Komentarz'] = ''
+            sold_products_df = sold_products_df.replace({float('nan'): None, 'nan': None})
 
-        sold_products_len = len(sold_products_df)
-        counter = 0
+            sold_products_len = len(sold_products_df)
+            counter = 0
 
-        # Remove from Shoper and create a redirection
-        for index, row in sold_products_df.iterrows():
-            self.shoper_products.remove_product(row['ID Shoper'])
+            # Remove from Shoper and create a redirection
+            for index, row in sold_products_df.iterrows():
+                self.shoper_products.remove_product(row['ID Shoper'])
 
-            redirect_data = {
-            'redirected_url': row['URL'],
-            'target_url': config.REDIRECT_TARGET_OUTLET_URL
-            }
+                redirect_data = {
+                'redirected_url': row['URL'],
+                'target_url': config.REDIRECT_TARGET_OUTLET_URL
+                }
 
-            redirect_id = self.shoper_redirects.create_redirect(redirect_data)
-            sold_products_df.at[index, 'ID Przekierowania'] = redirect_id
+                redirect_id = self.shoper_redirects.create_redirect(redirect_data)
+                sold_products_df.at[index, 'ID Przekierowania'] = redirect_id
 
-            counter += 1
-            print(f'Products: {counter}/{sold_products_len}')
+                counter += 1
+                print(f'Products: {counter}/{sold_products_len}')
 
-        # Move to archived sheet
-        offers_to_move = sold_products_df[[
-            'Row Number',
-            'EAN',
-            'SKU', 
-            'Nazwa',
-            'Uszkodzenie',
-            'Data',
-            'Wystawione',
-            'Data wystawienia',
-            'Druga obniżka',
-            'Status',
-            'Zutylizowane',
-            'Komentarz',
-            'Data usunięcia',
-            'URL',
-            'ID Przekierowania'
-        ]]
+            # Move to archived sheet
+            offers_to_move = sold_products_df[[
+                'Row Number',
+                'EAN',
+                'SKU', 
+                'Nazwa',
+                'Uszkodzenie',
+                'Data',
+                'Wystawione',
+                'Data wystawienia',
+                'Druga obniżka',
+                'Status',
+                'Zutylizowane',
+                'Komentarz',
+                'Data usunięcia',
+                'URL',
+                'ID Przekierowania'
+            ]]
 
-        self.gsheets_worksheets.batch_move_products(
-            source_worksheet_name=config.OUTLET_SHEET_NAME,
-            target_worksheet_name=config.OUTLET_SHEET_ARCHIVED_NAME,
-            values_df=offers_to_move
-        )
+            self.gsheets_worksheets.batch_move_products(
+                source_worksheet_name=config.OUTLET_SHEET_NAME,
+                target_worksheet_name=config.OUTLET_SHEET_ARCHIVED_NAME,
+                values_df=offers_to_move
+            )
 
-        return sold_products_len
+            return sold_products_len
+        
+        except Exception as e:
+            print(f'❌ Error archiving products: {e}')
+            self.outlet_logger.warning(f'❌ Error archiving products: {e}')
+            return 0
     
     def reactivate_products(self, products_to_activate_df):
         """Reactivate products on Shoper"""
