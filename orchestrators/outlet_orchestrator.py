@@ -13,8 +13,7 @@ def run_outlet_creator(close_logger=True):
     outlet_logger.info('<br>----- Creating outlet offers -----<br>')
     out_creator = OutletCreator()
     out_creator.connect()
-    products_to_publish = out_creator.get_offers_ready_to_publish()
-    number_of_created = out_creator.create_outlet_offers(products_to_publish) or 0
+    number_of_created = out_creator.create_outlet_offers() or 0
 
     if close_logger:
         log_output = outlet_log_manager.get_log_as_string()
@@ -54,8 +53,7 @@ def run_outlet_discounter(close_logger=True):
     outlet_logger.info('<br>----- Setting outlet discounts -----<br>')
     out_discount_manager = OutletDiscountManager()
     out_discount_manager.connect()
-    products_to_discount = out_discount_manager.select_products_to_discount()
-    number_of_discounts = out_discount_manager.create_discounts(products_to_discount) or 0
+    number_of_discounts = out_discount_manager.create_discounts() or 0
 
     if close_logger:
         log_output = log_output = outlet_log_manager.get_log_as_string()
@@ -75,7 +73,7 @@ def run_outlet_archiver(close_logger=True):
     outlet_logger.info('<br>----- Deleting and moving sold products to archived -----<br>')
     out_archiver = OutletArchiver()
     out_archiver.connect()
-    products_sold_to_archive = out_archiver.select_sold_products()
+    products_sold_to_archive = out_archiver.categorize_products()
     number_of_archived = out_archiver.archive_sold_products(products_sold_to_archive) or 0
 
     if close_logger:
@@ -116,6 +114,7 @@ def run_outlet_manager():
 
     outlet_log_manager = get_outlet_logger()
     outlet_logger = outlet_log_manager.get_logger()
+    outlet_logger.info('<br>----- Outlet Manager -----<br>')
 
     created_offers = run_outlet_creator(close_logger=False)
     lacking_offers = run_outlet_empty_checker(close_logger=False)

@@ -71,18 +71,16 @@ class OutletCreator:
         print(f'ℹ️  Selected products ready to publish: {len(df)}')
         self.outlet_logger.info(f'ℹ️  Selected products ready to publish: {len(df)}')
 
-
         if len(df) > 0:
             return df
         return None
 
-    def create_outlet_offers(self, df_offers):
+    def create_outlet_offers(self):
         """Create outlet offers for the given products
-        Args:
-            df_offers_to_be_published (df): A pandas DataFrame containing the products to create with ['EAN'] column.
         Returns:
             number of created offers (int)
         """
+        df_offers = self.get_offers_ready_to_publish()
 
         if df_offers is None or df_offers.empty:
             return

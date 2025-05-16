@@ -79,13 +79,15 @@ class OutletDiscountManager:
             return df
         return None
     
-    def create_discounts(self, df_offers_to_discount):
+    def create_discounts(self):
         """Create discounts for products that have been in outlet for more than configured days.
         Note: If there is an existent discounts, it removes it and creates a new one.
-        Args:
-            df_offers_to_discount (df): A pandas DataFrame containing the products to create with ['EAN'] column.
-        """
         
+        Returns:
+            number of discounted offers (int)
+        """
+        df_offers_to_discount = self.select_products_to_discount()
+
         if df_offers_to_discount is None or df_offers_to_discount.empty:
             return
         
