@@ -19,11 +19,12 @@ class IdoSellProducts:
             payload = {
                 'params': {
                     'returnProducts': 'active', 
-                    'returnElements': ['code', 'sizes_attributes', 'purchase_price_gross_last', 'sizes_attributes', 'dimensions'],
+                    'returnElements': ['code', 'sizes_attributes', 'lang_data', 'parameters'],
                     'resultsLimit': 100,
                     'resultsPage': 0
                 }
             }
+
 
             response = self.client.session.request('POST', url, json=payload)
             data = response.json()
@@ -36,18 +37,18 @@ class IdoSellProducts:
                 data = response.json()['results']
                 
                 for product in data:
-                    transformed_product = {
-                        'product_id': str(product['productId']),
-                        'product_code': str(product['productDisplayedCode']),
-                        'product_external_code': str(product['productSizesAttributes'][0]['productSizeCodeExternal']),
-                        'purchase_price_gross_last': product['productPurchasePriceGrossLast'],
-                        'weight': product['productSizesAttributes'][0]['productSizeWeight'],
-                        'length': product['productDimensions']['productLength'],
-                        'width': product['productDimensions']['productWidth'],
-                        'height': product['productDimensions']['productHeight']
-                    }
+                    # transformed_product = {
+                    #     'product_id': str(product['productId']),
+                    #     'product_code': str(product['productDisplayedCode']),
+                    #     'product_external_code': str(product['productSizesAttributes'][0]['productSizeCodeExternal']),
+                    #     'purchase_price_gross_last': product['productPurchasePriceGrossLast'],
+                    #     'weight': product['productSizesAttributes'][0]['productSizeWeight'],
+                    #     'length': product['productDimensions']['productLength'],
+                    #     'width': product['productDimensions']['productWidth'],
+                    #     'height': product['productDimensions']['productHeight']
+                    # }
 
-                    all_data.append(transformed_product)
+                    all_data.append(product)
 
             return all_data
         
@@ -67,7 +68,7 @@ class IdoSellProducts:
             payload = {
                 'params': {
                     'returnProducts': 'active', 
-                    'returnElements': ['code', 'sizes_attributes', 'purchase_price_gross_last', 'sizes_attributes', 'dimensions'],
+                    'returnElements': ['code', 'sizes_attributes', 'purchase_price_gross_last', 'dimensions'],
                     'resultsLimit': 100,
                     'resultsPage': 0
                 }
