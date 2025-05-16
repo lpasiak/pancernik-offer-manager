@@ -1,5 +1,6 @@
 from connections.shoper_connect import ShoperAPIClient
 from connections.shoper.products import ShoperProducts
+from connections.shoper.orders import ShoperOrders
 from connections.shoper.redirects import ShoperRedirects
 from connections.gsheets_connect import GSheetsClient
 from connections.gsheets.worksheets import GsheetsWorksheets
@@ -18,6 +19,7 @@ class OutletArchiver:
         self.gsheets_client = None
         self.easystorage_client = None
         self.shoper_products = None
+        self.shoper_orders = None
         self.shoper_redirects = None
         self.gsheets_worksheets = None
         self.easystorage_products = None
@@ -35,6 +37,7 @@ class OutletArchiver:
             self.shoper_client.connect()
             self.shoper_products = ShoperProducts(self.shoper_client)
             self.shoper_redirects = ShoperRedirects(self.shoper_client)
+            self.shoper_orders = ShoperOrders(self.shoper_client)
             
             # Initialize Google Sheets connections
             self.gsheets_client = GSheetsClient(
