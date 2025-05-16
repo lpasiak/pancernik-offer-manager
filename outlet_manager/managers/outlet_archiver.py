@@ -115,7 +115,6 @@ class OutletArchiver:
                     product_sku = row['SKU']
                     product_data = self.shoper_products.get_product_by_code(row['ID Shoper'])
                     product_stock = int(product_data['stock']['stock'])
-                    product_active = int(product_data['stock']['active'])
 
                     # All the options:
                     # 1. Product was sold - 0 on Shoper, 0 in EasyStorage - TO BE REMOVED
@@ -129,13 +128,11 @@ class OutletArchiver:
                         }
                     elif product_stock == 0 and product_sku in easy_storage_sku_list and product_sku not in bought_products_list:
                         products_to_activate[index] = {
-                            'sku': product_sku,
-                            'active': product_active
+                            'sku': product_sku
                         }
                     elif product_stock == 0 and product_sku in easy_storage_sku_list and product_sku in bought_products_list:
                         products_to_deactivate[index] = {
-                            'sku': product_sku,
-                            'active': product_active
+                            'sku': product_sku
                         }
 
                 except Exception as e:
