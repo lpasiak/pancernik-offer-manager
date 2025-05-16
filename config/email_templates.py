@@ -5,6 +5,8 @@ def render_outlet_email_template(
         lacking=0,
         discounted=0,
         archived=0,
+        activated=0,
+        deactivated=0,
         attributes=0,
         category_attributes=0,
         errors=0,
@@ -66,8 +68,10 @@ def render_outlet_email_template(
         <p>🔁 <strong>Przeniesione</strong> produkty: <strong>{lacking}</strong> - <em>wymagają one wystawienia ręcznego.</em></p>
         <p>🏷️ <strong>Przecenione</strong> produkty: <strong>{discounted}</strong></p>
         <p>📎 <strong>Zarchiwizowane</strong> i usunięte z Shopera: <strong>{archived}</strong></p>
+        <p>😇 <strong>Aktywowane</strong> na Shoperze: <strong>{activated}</strong></p>
+        <p>💩 <strong>Deaktywowane</strong> na Shoperze: <strong>{deactivated}</strong></p>
         <p>📜 Liczba głównych produktów z <strong>podpiętymi atrybutami</strong> outletowymi: <strong>{attributes}</strong></p>
-        <p>🗃️ Liczba kategorii z <strong>podpiętymi grupami atrybutów: {category_attributes}</strong></p>
+        <p>🗃️ Liczba kategorii z <strong>podpiętymi grupami atrybutów</strong>: <strong>{category_attributes}</strong></p>
         <p><strong>Liczba znalezionych błędów: {errors}</strong></p>
         <div class="footer">
           <em>Poniżej znajdują się logi operacji. Polecam w nie zajrzeć i zobaczyć, czy wszystko przebiegło pomyślnie, czy wystąpiły błędy.</em>

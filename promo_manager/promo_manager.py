@@ -39,7 +39,7 @@ class PromoManager:
             return True
             
         except Exception as e:
-            print(f"❌ Error initializing connections: {e}")
+            print(f'❌ Error initializing connections: {e}')
             return False
         
     def export_all_promo_products(self):
@@ -59,7 +59,7 @@ class PromoManager:
         df['discount_type'] = df['discount_type'].apply(lambda x: 'stały' if x == '2' else 'procentowy' if x == '3' else 'stały' if x == '1' else x)
         df['discount_amount'] = df['special_offer'].apply(lambda x: x['discount'])
         
-        # Filter out products that contain "OUT" in code
+        # Filter out products that contain 'OUT' in code
         df = df[~df['code'].str.contains('OUT', case=False, na=False)]
 
         new_df = pd.DataFrame({
@@ -94,7 +94,7 @@ class PromoManager:
         counter_products = len(result_df)
         counter = 0
         # Import special offers
-        for id, row in tqdm(result_df.iterrows(), total=counter_products, desc="🔁 Creating promotions"):
+        for id, row in tqdm(result_df.iterrows(), total=counter_products, desc='🔁 Creating promotions', unit=' product'):
             try:
                 product = self.shoper_products.get_product_by_code(row['SKU'], use_code=True)
                 product_id = product['product_id']
@@ -113,7 +113,7 @@ class PromoManager:
                     response = self.shoper_special_offers.create_special_offer(discount_data)
 
                     if isinstance(response, int):
-                        result_df.at[id, 'Komunikat promocji'] = f'Promocja dodana dla {row["SKU"]}. Nr promocji: {response}'
+                        result_df.at[id, 'Komunikat promocji'] = f'Promocja dodana dla {row['SKU']}. Nr promocji: {response}'
                         counter += 1
 
                 except Exception as e:
@@ -156,7 +156,7 @@ class PromoManager:
         counter_products = len(result_df)
         counter = 0
         # Import special offers
-        for id, row in tqdm(result_df.iterrows(), total=counter_products, desc="📦 Updating stock"):
+        for id, row in tqdm(result_df.iterrows(), total=counter_products, desc='📦 Updating stock', unit=' product'):
             try:
                 # Update product stock by code
                 response = self.shoper_products.update_product_by_code(
@@ -166,7 +166,7 @@ class PromoManager:
                 )
 
                 if isinstance(response, int):
-                    result_df.at[id, 'Komunikat Stan'] = f'Stan zaktualizowany dla {row["SKU"]}. Stan: {row["Stan"]}'
+                    result_df.at[id, 'Komunikat Stan'] = f'Stan zaktualizowany dla {row['SKU']}. Stan: {row['Stan']}'
                     counter += 1
 
             except Exception as e:
@@ -210,11 +210,11 @@ class PromoManager:
                     # Remove the special offer
                     self.shoper_special_offers.remove_special_offer_from_product(product_id)
 
-                    result_df.at[id, 'Komunikat'] = f'Oferta usunięta - {row["SKU"]}'
+                    result_df.at[id, 'Komunikat'] = f'Oferta usunięta - {row['SKU']}'
                     counter += 1
                     print(f'Products: {counter}/{counter_products}')
                 else:
-                        result_df.at[id, 'Komunikat'] = f'Błąd  {row["SKU"]}'
+                        result_df.at[id, 'Komunikat'] = f'Błąd  {row['SKU']}'
                 
             except Exception as e:
                 print(f'❌ Error: {e}')
@@ -277,7 +277,7 @@ class PromoManager:
                     response = self.shoper_special_offers.create_special_offer(discount_data)
                     
                     if isinstance(response, int):
-                        result_df.at[id, 'Komunikat'] = f'Promocja dodana dla {row["SKU"]}. Nr promocji: {response}'
+                        result_df.at[id, 'Komunikat'] = f'Promocja dodana dla {row['SKU']}. Nr promocji: {response}'
                         counter += 1
                         print(f'Products: {counter}/{counter_products}')
 

@@ -32,7 +32,7 @@ class ShoperCategories:
             categories.extend(page_data)
 
             # Initialize tqdm progress bar
-            pbar = tqdm(total=number_of_pages, desc="Downloading category pages")
+            pbar = tqdm(total=number_of_pages, desc="Downloading categories", unit=' page')
             pbar.update(1)
 
             # Continue fetching remaining pages
@@ -82,7 +82,7 @@ class ShoperCategories:
             categories.extend(page_data)
 
             # Initialize tqdm
-            pbar = tqdm(total=number_of_pages, desc="Downloading category pages")
+            pbar = tqdm(total=number_of_pages, desc="Downloading categories", unit=' page')
             pbar.update(1)
 
             # Remaining pages

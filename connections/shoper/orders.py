@@ -30,7 +30,7 @@ class ShoperOrders:
             start_page = number_of_pages
             end_page = max(1, number_of_pages - pages_to_fetch)
 
-            for page in tqdm(range(start_page, end_page - 1, -1), desc="Downloading pages"):
+            for page in tqdm(range(start_page, end_page - 1, -1), desc="Downloading pages", unit=' page'):
                 params['page'] = page
                 response = self.client._handle_request('GET', f'{self.client.site_url}/webapi/rest/order-products', params=params)
                 data = response.json()['list']

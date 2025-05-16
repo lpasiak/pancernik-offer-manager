@@ -53,7 +53,7 @@ class BundleManager:
 
         number_of_products = len(df_sku)
 
-        for index, row in tqdm(df_sku.iterrows(), total=number_of_products, desc="Processing images", unit='Product'):
+        for index, row in tqdm(df_sku.iterrows(), total=number_of_products, desc="Processing images", unit=' image'):
             try:
                 product = self.shoper_products.get_product_by_code(identifier=row['Case SKU'], use_code=True, pictures=True)
 

@@ -12,7 +12,7 @@ class IdoSellProducts:
 
         print('ℹ️  Downloading IdoSell products...')
         try:
-            url = f"{self.client.site}/api/admin/v5/products/products/search"
+            url = f'{self.client.site}/api/admin/v5/products/products/search'
             all_data = []
             page = 0
 
@@ -30,7 +30,7 @@ class IdoSellProducts:
             data = response.json()
             number_of_pages = data['resultsNumberPage']
 
-            for page in tqdm(range(number_of_pages), desc="Pages downloaded"):
+            for page in tqdm(range(number_of_pages), desc='Downloading pages', unit=' page'):
                 payload['params']['resultsPage'] = page
 
                 response = self.client.session.request('POST', url, json=payload)
@@ -61,7 +61,7 @@ class IdoSellProducts:
 
         print('ℹ️  Downloading IdoSell products...')
         try:
-            url = f"{self.client.site}/api/admin/v5/products/products/search"
+            url = f'{self.client.site}/api/admin/v5/products/products/search'
             all_data = []
             page = 0
 
@@ -78,7 +78,7 @@ class IdoSellProducts:
             data = response.json()
             number_of_pages = data['resultsNumberPage']
 
-            for page in tqdm(range(number_of_pages), desc="Pages downloaded"):
+            for page in tqdm(range(number_of_pages), desc='Downloading pages', unit=' page'):
                 payload['params']['resultsPage'] = page
 
                 response = self.client.session.request('POST', url, json=payload)

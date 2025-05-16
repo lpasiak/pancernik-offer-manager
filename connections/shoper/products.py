@@ -182,7 +182,7 @@ class ShoperProducts:
             products.extend(initial_data.get('list', []))
 
             # Use tqdm for the rest of the pages
-            for page in tqdm(range(2, number_of_pages + 1), desc="Downloading pages", unit="page"):
+            for page in tqdm(range(2, number_of_pages + 1), desc="Downloading pages", unit=" page"):
                 params = {'limit': config.SHOPER_LIMIT, 'page': page}
                 response = self.client._handle_request('GET', f'{self.client.site_url}/webapi/rest/products', params=params)
 
@@ -224,7 +224,7 @@ class ShoperProducts:
             number_of_pages = initial_data['pages']
             products = initial_data.get('list', [])
 
-            for page in tqdm(range(2, number_of_pages + 1), desc="Downloading pages", unit="page"):
+            for page in tqdm(range(2, number_of_pages + 1), desc="Downloading pages", unit=" page"):
                 params = {'limit': config.SHOPER_LIMIT, 'page': page}
                 response = self.client._handle_request('GET', f'{self.client.site_url}/webapi/rest/products', params=params)
                 if response.status_code != 200:

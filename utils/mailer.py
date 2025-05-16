@@ -11,10 +11,13 @@ class OutletEmailSender:
                  lacking=0,
                  discounted=0,
                  archived=0,
+                 activated=0,
+                 deactivated=0,
                  attributes=0,
                  category_attributes=0,
                  errors=0,
                  operation_logs=''):
+        
         self.sender = config.GOOGLE_EMAIL_SENDER
         self.passwod = config.GOOGLE_EMAIL_PASSWORD
         self.receivers = config.OUTLET_MAIL_RECIPIENT_LIST
@@ -22,6 +25,8 @@ class OutletEmailSender:
         self.lacking_products = lacking
         self.discounted_products = discounted
         self.archived_products = archived
+        self.activated_products = activated
+        self.deactivated_products = deactivated
         self.attributes = attributes
         self.category_attributes = category_attributes
         self.errors = errors
@@ -47,6 +52,8 @@ class OutletEmailSender:
                     lacking=self.lacking_products,
                     discounted = self.discounted_products,
                     archived = self.archived_products,
+                    activated = self.activated_products,
+                    deactivated = self.deactivated_products,
                     attributes = self.attributes,
                     category_attributes = self.category_attributes,
                     errors = self.errors,

@@ -59,28 +59,38 @@ class OutletArchiver:
             self.outlet_logger.warning(f"❌ Error initializing connections: {e}")
             return False
 
-    def select_sold_products(self):
-        """Move products that have been sold.
-        Returns:
-            A pandas DataFrame containing the products that were sold.
-        """
+    def _generate_ready_df(self, gsheets_data, products, type):
+        rows_to_drop = [idx for idx in gsheets_data.index if idx not in products]
+        products_df = gsheets_data.drop(rows_to_drop).copy()
+
+        if type == 'archive':
+            products_df['URL'] = [products[idx]['URL'] for idx in products_df.index]
+
+        print(f'ℹ️  Products to {type}: {len(products_df)}')
+        self.outlet_logger.info(f'ℹ️ Products to {type}: {len(products_df)}')
+        products_df.to_excel(f'products_to_{type}.xlsx', index=False)
+
+        return products_df
+            
+    def categorize_products(self):
+        """Determine which products are sold and should be archived. Show products that should be activated back on Shoper."""
         try:
             # Get EasyStorage outlet products with non-zero stock
             easy_storage_products = self.easystorage_products.get_pancernik_products()
             easy_storage_sku_list = {
                 product['sku']
                 for product in easy_storage_products
-                if 'OUT' in product.get('sku', '').upper() and product.get('stock_quantity', 0) != 0
+                if 'OUT' in product.get('sku', '').upper() and product.get('available_quantity', 0) != 0
             }
+
+            # Get latest order products from Shoper (to check if they were sold lately)
+            bought_products_json = self.shoper_orders.get_latest_order_products(pages_to_fetch=20)
+            bought_products_list = list(set([product['code'] for product in bought_products_json]))
 
             # Download GSheets product data
             gsheets_data = self.gsheets_worksheets.get_data(
                 sheet_name=config.OUTLET_SHEET_NAME, include_row_numbers=True
             )
-
-            if gsheets_data.empty:
-                print('Google Sheet is empty.')
-                return
 
             # Filter rows with valid IDs and published status
             mask = (
@@ -95,37 +105,49 @@ class OutletArchiver:
             ]
             gsheets_data = gsheets_data.loc[mask, columns_to_keep].copy()
 
-            # Track rows to drop and URLs to update
-            rows_to_drop = []
-            urls_to_update = {}
+            # Track products to archive and their URLs
+            products_to_archive = {}
+            products_to_activate = {}
+            products_to_deactivate = {}
 
-            for index, row in tqdm(gsheets_data.iterrows(), total=len(gsheets_data), desc="Analyzing products", unit="product"):
+            for index, row in tqdm(gsheets_data.iterrows(), total=len(gsheets_data), desc="Analyzing products", unit=" product"):
                 try:
                     product_sku = row['SKU']
                     product_data = self.shoper_products.get_product_by_code(row['ID Shoper'])
                     product_stock = int(product_data['stock']['stock'])
+                    product_active = int(product_data['stock']['active'])
 
-                    if product_stock != 0 or product_sku in easy_storage_sku_list:
-                        rows_to_drop.append(index)
-                    else:
-                        urls_to_update[index] = product_data['translations']['pl_PL'].get('seo_url', '')
+                    # All the options:
+                    # 1. Product was sold - 0 on Shoper, 0 in EasyStorage - TO BE REMOVED
+                    # 2. Product was not sold - 0 on Shoper, 1 in EasyStorage and not bought recently - TO BE ACTIVATED
+                    # 3. Product was probably sold - 0 on Shoper, 1 in EasyStorage and bought recently - TO BE 0 stock 0 active
+
+                    if product_stock == 0 and product_sku not in easy_storage_sku_list:
+                        products_to_archive[index] = {
+                            'URL': product_data['translations']['pl_PL'].get('seo_url', ''),
+                            'sku': product_sku
+                        }
+                    elif product_stock == 0 and product_sku in easy_storage_sku_list and product_sku not in bought_products_list:
+                        products_to_activate[index] = {
+                            'sku': product_sku,
+                            'active': product_active
+                        }
+                    elif product_stock == 0 and product_sku in easy_storage_sku_list and product_sku in bought_products_list:
+                        products_to_deactivate[index] = {
+                            'sku': product_sku,
+                            'active': product_active
+                        }
 
                 except Exception as e:
                     print(f"❌ Error for SKU {row['SKU']}: {e}")
                     self.outlet_logger.warning(f"❌ Error for SKU {row['SKU']}: {e}")
-                    rows_to_drop.append(index)
+            
+            # Generate DataFrames for each product category
+            products_to_archive_df = self._generate_ready_df(gsheets_data, products_to_archive, 'archive')
+            products_to_activate_df = self._generate_ready_df(gsheets_data, products_to_activate, 'activate')
+            products_to_deactivate_df = self._generate_ready_df(gsheets_data, products_to_deactivate, 'deactivate')
 
-            # Apply changes
-            gsheets_data.drop(index=rows_to_drop, inplace=True)
-            for index, url in urls_to_update.items():
-                gsheets_data.at[index, 'URL'] = url
-
-            if gsheets_data.empty:
-                print('No products sold.')
-                return
-
-            print(f'ℹ️  Products identified as sold: {len(gsheets_data)}')
-            return gsheets_data
+            return products_to_archive_df, products_to_activate_df, products_to_deactivate_df
 
         except Exception as e:
             print(f"❌ Error selecting products to be cleaned: {e}")
@@ -192,3 +214,47 @@ class OutletArchiver:
         )
 
         return sold_products_len
+    
+    def reactivate_products(self, products_to_activate_df):
+        """Reactivate products on Shoper"""
+        try:
+
+            if products_to_activate_df is None or products_to_activate_df.empty:
+                return 0
+            
+            for _, row in products_to_activate_df.iterrows():
+                self.shoper_products.update_product(row['ID Shoper'], {
+                    'stock': {
+                        'stock': 1,
+                        'active': 1
+                    }
+                })
+
+            return len(products_to_activate_df)
+                    
+        except Exception as e:
+            print(f"❌ Error reactivating products: {e}")
+            self.outlet_logger.warning(f"❌ Error reactivating products: {e}")
+            return 0
+
+    def deactivate_products(self, products_to_deactivate_df):
+        """Deactivate products on Shoper"""
+        try:
+            if products_to_deactivate_df is None or products_to_deactivate_df.empty:
+                return 0
+            
+            for _, row in products_to_deactivate_df.iterrows():
+                self.shoper_products.update_product(row['ID Shoper'], {
+                    'stock': {
+                        'stock': 0,
+                        'active': 0
+                    }
+                })
+
+            return len(products_to_deactivate_df)
+
+        except Exception as e:
+            print(f"❌ Error deactivating products: {e}")
+            self.outlet_logger.warning(f"❌ Error deactivating products: {e}")
+            return 0
+

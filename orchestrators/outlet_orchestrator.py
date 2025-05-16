@@ -73,19 +73,24 @@ def run_outlet_archiver(close_logger=True):
     outlet_logger.info('<br>----- Deleting and moving sold products to archived -----<br>')
     out_archiver = OutletArchiver()
     out_archiver.connect()
-    products_sold_to_archive = out_archiver.categorize_products()
+    products_sold_to_archive, products_to_activate, products_to_deactivate = out_archiver.categorize_products()
+
     number_of_archived = out_archiver.archive_sold_products(products_sold_to_archive) or 0
+    number_of_activated = out_archiver.reactivate_products(products_to_activate) or 0
+    number_of_deactivated = out_archiver.deactivate_products(products_to_deactivate) or 0
 
     if close_logger:
         log_output = outlet_log_manager.get_log_as_string()
         errors = log_output.count('❌')
         outlet_sender = OutletEmailSender(archived=number_of_archived,
+                                          activated=number_of_activated,
+                                          deactivated=number_of_deactivated,
                                           errors=errors,
                                           operation_logs=log_output)
         outlet_sender.send_emails()
         close_outlet_logger()
 
-    return number_of_archived
+    return number_of_archived, number_of_activated, number_of_deactivated
 
 def run_outlet_attributer(close_logger=True):
     print('\n----- Updating outlet attributes -----\n')
@@ -119,7 +124,7 @@ def run_outlet_manager():
     created_offers = run_outlet_creator(close_logger=False)
     lacking_offers = run_outlet_empty_checker(close_logger=False)
     discounted_offers = run_outlet_discounter(close_logger=False)
-    archived_offers = run_outlet_archiver(close_logger=False)
+    archived_offers, activated_offers, deactivated_offers = run_outlet_archiver(close_logger=False)
     attribute_groups, attribute_main = run_outlet_attributer(close_logger=False)
     
     log_output = outlet_log_manager.get_log_as_string()
@@ -128,6 +133,8 @@ def run_outlet_manager():
                                       lacking=lacking_offers,
                                       discounted=discounted_offers,
                                       archived=archived_offers,
+                                      activated=activated_offers,
+                                      deactivated=deactivated_offers,
                                       category_attributes=attribute_groups,
                                       attributes=attribute_main,
                                       errors=errors,
