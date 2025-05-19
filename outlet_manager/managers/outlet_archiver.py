@@ -84,7 +84,7 @@ class OutletArchiver:
             }
 
             # Get latest order products from Shoper (to check if they were sold lately)
-            bought_products_json = self.shoper_orders.get_latest_order_products(pages_to_fetch=20)
+            bought_products_json = self.shoper_orders.get_latest_order_products(pages_to_fetch=100)
             bought_products_list = list(set([product['code'] for product in bought_products_json]))
 
             # Download GSheets product data
@@ -149,12 +149,14 @@ class OutletArchiver:
         except Exception as e:
             print(f"❌ Error selecting products to be cleaned: {e}")
             self.outlet_logger.warning(f"❌ Error selecting products to be cleaned: {e}")
+            return None, None, None
 
     def archive_sold_products(self, sold_products_df):
             
         date_removed = datetime.today().strftime('%Y-%m-%d')
 
         if sold_products_df is None or (isinstance(sold_products_df, pd.DataFrame) and sold_products_df.empty):
+            self.outlet_logger.info(f'❌ Nothing to archive.')
             return
         
         try:

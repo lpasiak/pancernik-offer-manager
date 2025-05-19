@@ -114,9 +114,7 @@ def run_outlet_attributer(close_logger=True):
 
     return number_of_attribute_groups, number_of_attributes_main
         
-
 def run_outlet_manager():
-
     outlet_log_manager = get_outlet_logger()
     outlet_logger = outlet_log_manager.get_logger()
     outlet_logger.info('<br>----- Outlet Manager -----<br>')

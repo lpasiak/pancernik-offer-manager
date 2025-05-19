@@ -122,8 +122,6 @@ class OutletAttributeManager:
             params = {attribute_id: product_ids}
             self.shoper_products.update_product_by_code(product_ean, use_code=True, attributes=params)
             product_counter += 1
-            print(f'✅ Product {product_ean} attributes updated.')
-            self.outlet_logger.info(f'✅ Product {product_ean} attributes updated.')
         
         self.outlet_logger.info(f'ℹ️ Product attributes updated: {product_counter}/{len(products)}')
 
