@@ -9,6 +9,7 @@ query_product_light = """
                     id
                     title
                     handle
+                    descriptionHtml
                     variants(first: 1) {
                         edges {
                             node {
