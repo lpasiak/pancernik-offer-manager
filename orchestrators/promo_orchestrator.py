@@ -1,5 +1,6 @@
 from promo_manager.promo_manager import PromoManager
 from utils.logger import get_promo_logger, close_promo_logger
+from utils.mailer import PromoEmailSender
 import config
 
 
@@ -20,9 +21,24 @@ def run_fixed_promo_importer(close_logger=True):
     promo_manager.import_promo_fixed_from_gsheet()
 
 def run_allegro_discount_comparator(close_logger=True):
+    promo_log_manager = get_promo_logger()
+    promo_logger = promo_log_manager.get_logger()
+
+    print('\n----- Creating discounts -----\n')
+    promo_logger.info('<br>----- Creating discounts -----<br>')
+
     promo_manager = PromoManager(sheet_id=config.ALLEGRO_PROMO_SHEET_ID)
     promo_manager.connect()
     promo_manager.test_func()
+
+    if close_logger:
+        log_output = promo_log_manager.get_log_as_string()
+        errors = log_output.count('❌')
+        promo_sender = PromoEmailSender(created_promo_allegro=0,
+                                          errors=errors,
+                                          operation_logs=log_output)
+        promo_sender.send_emails()
+        close_promo_logger()
 
 def run_promo_exporter(close_logger=True):
     promo_manager = PromoManager(sheet_id=config.PROMO_SHEET_ID)

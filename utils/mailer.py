@@ -99,7 +99,7 @@ class PromoEmailSender:
 
             try:
                 print(f'ℹ️  Sending email to {email}...')
-                self.outlet_logger.info(f'ℹ️ Sending email to {email}...')
+                self.promo_logger.info(f'ℹ️ Sending email to {email}...')
 
                 msg = EmailMessage()
                 msg['Subject'] = f'Promocje {datetime.now().strftime("%d/%m/%Y, %H:%M")}'
@@ -107,7 +107,7 @@ class PromoEmailSender:
                 msg['To'] = email
                 msg.set_content(f"Created {self.created_promo_allegro} promo offers.")
 
-                html_content = config.render_outlet_email_template(
+                html_content = config.render_promo_email_template(
                     created_promo_allegro=self.created_promo_allegro,
                     ommited_promo_allegro=self.ommited_promo_allegro,
                     removed_promo_allegro = self.removed_promo_allegro,

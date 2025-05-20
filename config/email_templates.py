@@ -74,7 +74,7 @@ def render_outlet_email_template(
         <p>🗃️ Liczba kategorii z <strong>podpiętymi grupami atrybutów</strong>: <strong>{category_attributes}</strong></p>
         <p><strong>Liczba znalezionych błędów: {errors}</strong></p>
         <div class="footer">
-          <em>Poniżej znajdują się logi operacji. Polecam w nie zajrzeć i zobaczyć, czy wszystko przebiegło pomyślnie, czy wystąpiły błędy.</em>
+          <em>Poniżej znajdują się logi operacji. Polecam w nie zajrzeć jeżeli wystąpiły błędy.</em>
         </div>
       </div>
       <div class="logs">
@@ -144,14 +144,14 @@ def render_promo_email_template(
     </head>
     <body>
       <div class="container">
-        <h1>Outlety {datetime.now().strftime("%d/%m/%Y, %H:%M")}</h1>
+        <h1>Promocje {datetime.now().strftime("%d/%m/%Y, %H:%M")}</h1>
         <p>🎖️ <strong>Zaimportowane</strong> promocje: <strong>{created_promo_allegro}</strong></p>
         <p>🔁 <strong>Pominięte</strong> promocje: <strong>{ommited_promo_allegro}</strong> - <em>produkt już posiada promocję.</em></p>
         <p>📅 <strong>Pominięte</strong> promocje: <strong>{ommited_promo_allegro_early}</strong> - <em>za wcześnie na promocję.</em></p>
         <p>🏷️ <strong>Usunięte</strong> promocje: <strong>{removed_promo_allegro}</strong></p>
         <p><strong>Liczba znalezionych błędów: {errors}</strong></p>
         <div class="footer">
-          <em>Poniżej znajdują się logi operacji. Polecam w nie zajrzeć i zobaczyć, czy wszystko przebiegło pomyślnie, czy wystąpiły błędy.</em>
+          <em>Poniżej znajdują się logi operacji. Polecam w nie zajrzeć jeżeli wystąpiły błędy</em>
         </div>
       </div>
       <div class="logs">
