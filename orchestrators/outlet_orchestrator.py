@@ -76,7 +76,9 @@ def run_outlet_archiver(close_logger=True):
     products_sold_to_archive, products_to_activate, products_to_deactivate = out_archiver.categorize_products()
 
     number_of_archived = out_archiver.archive_sold_products(products_sold_to_archive) or 0
-    number_of_activated = out_archiver.reactivate_products(products_to_activate) or 0
+    # Disabled for now (need to figure out how to ameliorate the function, it doesn't make sense rn)
+    # number_of_activated = out_archiver.reactivate_products(products_to_activate) or 0
+    number_of_activated = 0
     number_of_deactivated = out_archiver.deactivate_products(products_to_deactivate) or 0
 
     if close_logger:
