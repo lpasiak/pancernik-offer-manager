@@ -66,3 +66,19 @@ def close_outlet_logger():
     global outlet_log_manager
     if outlet_log_manager is not None:
         outlet_log_manager.close()
+
+promo_log_manager = None
+
+def get_promo_logger():
+    global promo_log_manager
+    if promo_log_manager is None:
+        promo_log_manager = Logger(
+            name='Promo Manager',
+            log_filename=f'Promo_Manager_{datetime.now().strftime("%d-%m-%Y_%H-%M-%S")}.html'
+        )
+    return promo_log_manager
+
+def close_promo_logger():
+    global promo_log_manager
+    if promo_log_manager is not None:
+        promo_log_manager.close()

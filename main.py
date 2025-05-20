@@ -100,6 +100,10 @@ def main():
                 promo.run_fixed_promo_importer()
 
             elif action == '4':
+                # Manage promotions, comparing them to the existent Allegro discounts
+                promo.run_allegro_discount_comparator()
+
+            elif action == '5':
                 # Export promotions
                 promo.run_promo_exporter()
 

@@ -43,7 +43,8 @@ Co chcesz zrobić?
 1. Usunąć promocje
 2. Zaimportować promocje procentowe i stany
 3. Zaimportować promocje stałe dla Kuby
-4. Eksportować promocje
+4. Zaimportować promocje zgodne z AlleObniżki dla Maćka
+5. Eksportować promocje
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))

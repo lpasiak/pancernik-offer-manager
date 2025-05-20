@@ -9,7 +9,8 @@ from tqdm import tqdm
 
 
 class PromoManager:
-    def __init__(self):
+    def __init__(self, sheet_id):
+        self.sheet_id = sheet_id
         self.shoper_client = None
         self.gsheets_client = None
         self.shoper_products = None
@@ -31,7 +32,7 @@ class PromoManager:
             # Initialize Google Sheets connections
             self.gsheets_client = GSheetsClient(
                 config.GOOGLE_CREDENTIALS_FILE,
-                config.PROMO_SHEET_ID
+                self.sheet_id
             )
             self.gsheets_client.connect()
             self.gsheets_worksheets = GsheetsWorksheets(self.gsheets_client)
@@ -303,3 +304,11 @@ class PromoManager:
             updates = updates,
             start_column = 'E',
         )
+
+    def test_func(self):
+
+        df = self.gsheets_worksheets.get_data(sheet_name=config.ALLEGRO_PROMO_SHEET_NAME, include_row_numbers=True)
+        df = df[df['EAN'] != '#N/A']
+        print(df)
+
+        df.to_excel('promo_test.xlsx')
