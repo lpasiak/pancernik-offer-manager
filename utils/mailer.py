@@ -19,7 +19,7 @@ class OutletEmailSender:
                  operation_logs=''):
         
         self.sender = config.GOOGLE_EMAIL_SENDER
-        self.passwod = config.GOOGLE_EMAIL_PASSWORD
+        self.password = config.GOOGLE_EMAIL_PASSWORD
         self.receivers = config.OUTLET_MAIL_RECIPIENT_LIST
         self.created_products = created
         self.lacking_products = lacking
@@ -43,7 +43,7 @@ class OutletEmailSender:
 
                 msg = EmailMessage()
                 msg['Subject'] = f'Outlety {datetime.now().strftime("%d/%m/%Y, %H:%M")}'
-                msg['From'] = config.GOOGLE_EMAIL_SENDER
+                msg['From'] = self.sender
                 msg['To'] = email
                 msg.set_content(f"Created {self.created_products} outlet offers")
 
@@ -66,7 +66,7 @@ class OutletEmailSender:
                     smtp.ehlo()
                     smtp.starttls()
                     smtp.ehlo()
-                    smtp.login(config.GOOGLE_EMAIL_SENDER, config.GOOGLE_EMAIL_PASSWORD)
+                    smtp.login(self.sender, self.password)
                     smtp.send_message(msg)
 
             except Exception as e:
@@ -83,7 +83,7 @@ class PromoEmailSender:
                  operation_logs=''):
         
         self.sender = config.GOOGLE_EMAIL_SENDER
-        self.passwod = config.GOOGLE_EMAIL_PASSWORD
+        self.password = config.GOOGLE_EMAIL_PASSWORD
         self.receivers = config.PROMO_MAIL_RECIPIENT_LIST
         self.created_promo_allegro = created_promo_allegro
         self.ommited_promo_allegro = ommited_promo_allegro
@@ -103,7 +103,7 @@ class PromoEmailSender:
 
                 msg = EmailMessage()
                 msg['Subject'] = f'Promocje {datetime.now().strftime("%d/%m/%Y, %H:%M")}'
-                msg['From'] = config.GOOGLE_EMAIL_SENDER
+                msg['From'] = self.sender
                 msg['To'] = email
                 msg.set_content(f"Created {self.created_promo_allegro} promo offers.")
 
@@ -122,7 +122,7 @@ class PromoEmailSender:
                     smtp.ehlo()
                     smtp.starttls()
                     smtp.ehlo()
-                    smtp.login(config.GOOGLE_EMAIL_SENDER, config.GOOGLE_EMAIL_PASSWORD)
+                    smtp.login(self.sender, self.password)
                     smtp.send_message(msg)
 
             except Exception as e:
