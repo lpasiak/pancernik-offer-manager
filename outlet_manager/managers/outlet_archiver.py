@@ -84,7 +84,7 @@ class OutletArchiver:
             }
 
             # Get latest order products from Shoper (to check if they were sold lately)
-            bought_products_json = self.shoper_orders.get_latest_order_products(pages_to_fetch=100)
+            bought_products_json = self.shoper_orders.get_latest_order_products(pages_to_fetch=200)
             bought_products_list = list(set([product['code'] for product in bought_products_json]))
 
             # Download GSheets product data
