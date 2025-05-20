@@ -21,6 +21,9 @@ GOOGLE_EMAIL_PASSWORD = os.getenv('GOOGLE_EMAIL_PASSWORD')
 OUTLET_MAIL_RECIPIENTS = os.getenv('OUTLET_MAIL_RECIPIENTS')
 OUTLET_MAIL_RECIPIENT_LIST = [email.strip() for email in OUTLET_MAIL_RECIPIENTS.split(',') if email.strip()]
 
+PROMO_MAIL_RECIPIENTS = os.getenv('PROMO_MAIL_RECIPIENTS')
+PROMO_MAIL_RECIPIENT_LIST = [email.strip() for email in PROMO_MAIL_RECIPIENTS.split(',') if email.strip()]
+
 # Directory for .xlsx, .csv, .json files
 SHEETS_DIR = ROOT_DIR / 'sheets'
 LOGGING_DIR = ROOT_DIR / 'logging'

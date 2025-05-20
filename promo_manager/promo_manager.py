@@ -6,6 +6,7 @@ from connections.gsheets.worksheets import GsheetsWorksheets
 import config
 import pandas as pd
 from tqdm import tqdm
+from utils.logger import get_promo_logger
 
 
 class PromoManager:
@@ -15,6 +16,7 @@ class PromoManager:
         self.gsheets_client = None
         self.shoper_products = None
         self.gsheets_worksheets = None
+        self.outlet_logger = get_promo_logger().get_logger()
         
     def connect(self):
         """Initialize all necessary connections"""
