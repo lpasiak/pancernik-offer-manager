@@ -1,5 +1,53 @@
 from datetime import datetime
 
+EMAIL_STYLING = """
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f9f9f9;
+          padding: 20px;
+        }
+        .container {
+          background-color: white;
+          border-radius: 8px;
+          padding: 30px;
+          max-width: 600px;
+          margin: auto;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+          color: #333;
+          border-bottom: 1px solid #cccccc;
+        }
+        h2 {
+          color: #333;
+          border-bottom: 1px solid #cccccc;
+        }
+        .container p {
+          color: #555;
+          font-size: 16px;
+        }
+        .footer {
+          margin-top: 20px;
+          font-size: 14px;
+          color: #999;
+        }
+        .logs p {
+          font-family: monospace;
+          font-size: 12px;
+          margin: 0.5rem 0;
+        }
+        .logs {
+          background-color: white;
+          border-radius: 8px;
+          padding: 30px;
+          max-width: 800px;
+          margin: auto;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+      </style>
+"""
+
 def render_outlet_email_template(
         created=0,
         lacking=0,
@@ -15,51 +63,7 @@ def render_outlet_email_template(
     <!DOCTYPE html>
     <html>
     <head>
-      <style>
-        body {{
-          font-family: Arial, sans-serif;
-          background-color: #f9f9f9;
-          padding: 20px;
-        }}
-        .container {{
-          background-color: white;
-          border-radius: 8px;
-          padding: 30px;
-          max-width: 600px;
-          margin: auto;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }}
-        h1 {{
-          color: #333;
-          border-bottom: 1px solid #cccccc;
-        }}
-        h2 {{
-          color: #333;
-          border-bottom: 1px solid #cccccc;
-        }}
-        .container p {{
-          color: #555;
-          font-size: 16px;
-        }}
-        .footer {{
-          margin-top: 20px;
-          font-size: 14px;
-          color: #999;
-        }}
-        .logs p {{
-          font-family: monospace;
-          font-size: 12px;
-          margin: 0.5rem 0;
-        }}
-        .logs {{
-          background-color: white;
-          border-radius: 8px;
-          padding: 30px;
-          max-width: 800px;
-          margin: auto;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }}
-      </style>
+      {EMAIL_STYLING}
     </head>
     <body>
       <div class="container">
@@ -96,51 +100,7 @@ def render_promo_email_template(
     <!DOCTYPE html>
     <html>
     <head>
-      <style>
-        body {{
-          font-family: Arial, sans-serif;
-          background-color: #f9f9f9;
-          padding: 20px;
-        }}
-        .container {{
-          background-color: white;
-          border-radius: 8px;
-          padding: 30px;
-          max-width: 600px;
-          margin: auto;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }}
-        h1 {{
-          color: #333;
-          border-bottom: 1px solid #cccccc;
-        }}
-        h2 {{
-          color: #333;
-          border-bottom: 1px solid #cccccc;
-        }}
-        .container p {{
-          color: #555;
-          font-size: 16px;
-        }}
-        .footer {{
-          margin-top: 20px;
-          font-size: 14px;
-          color: #999;
-        }}
-        .logs p {{
-          font-family: monospace;
-          font-size: 12px;
-          margin: 0.5rem 0;
-        }}
-        .logs {{
-          background-color: white;
-          border-radius: 8px;
-          padding: 30px;
-          max-width: 800px;
-          margin: auto;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }}
-      </style>
+      {EMAIL_STYLING}
     </head>
     <body>
       <div class="container">
