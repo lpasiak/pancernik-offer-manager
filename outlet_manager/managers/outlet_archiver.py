@@ -68,7 +68,7 @@ class OutletArchiver:
 
         print(f'ℹ️  Products to {type}: {len(products_df)}')
         self.outlet_logger.info(f'ℹ️ Products to {type}: {len(products_df)}')
-        products_df.to_excel(f'products_to_{type}.xlsx', index=False)
+        products_df.to_excel(config.SHEETS_DIR / f'products_to_{type}.xlsx', index=False)
 
         return products_df
             
