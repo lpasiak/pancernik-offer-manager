@@ -15,9 +15,6 @@ damage_types_short = {
 }
 
 formulas_to_remove = {
-    'bewood': r'''<p class="p-beta" style="text-align: center; color: #003087;">ℹ️ <strong>Ponieważ etui Bewood tworzone jest specjalnie na zamówienie, przy zakupie pokrowca termin realizacji całego zamówienia może wynosić do 3 dni.</strong></p>''',
-    'grizz': r'''<div class="product-info">
-<p class="p-beta" style="text-align: center; color: #003087;">ℹ️ <strong>Ponieważ folia Grizz wycinana jest specjalnie na zamówienie, przy zakupie folii termin realizacji całego zamówienia może wynosić do 3 dni.</strong></p>
-</div>''',
-    'grizz_shorter': r'''<p class="p-beta" style="text-align: center; color: #003087;">ℹ️ <strong>Ponieważ folia Grizz wycinana jest specjalnie na zamówienie, przy zakupie folii termin realizacji całego zamówienia może wynosić do 3 dni.</strong></p>'''
+    'bewood': r'''<p class="p-center p-info">ℹ️ Ponieważ etui Bewood tworzone jest specjalnie na zamówienie, przy zakupie pokrowca termin realizacji całego zamówienia może wynosić do 3 dni.</p>''',
+    'grizz': r'''<p class="p-center p-info">ℹ️ Ponieważ folia Grizz wycinana jest specjalnie na zamówienie, przy zakupie folii termin realizacji całego zamówienia może wynosić do 3 dni.</p>'''
 }
