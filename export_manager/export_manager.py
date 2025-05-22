@@ -20,21 +20,27 @@ def save_to_files(items_to_save, file):
     archive_file_path = f'{config.DRIVE_EXPORT_DIR}/api-archived/{file}--{datetime.now().strftime("%d-%m-%Y--%H-%M-%S")}.json'
     os.makedirs(os.path.dirname(base_file_path), exist_ok=True)
 
-    print(f'ℹ️  Saving export to...')
-    print(base_file_path)
+    try:
+        print(f'ℹ️  Saving export to...')
+        print(base_file_path)
+        with open(base_file_path, 'w', encoding='utf-8') as f:
+            json.dump(items_to_save, f, ensure_ascii=False, indent=4)
+    except Exception as e:
+        print(f'❌ Error saving export.')
 
-    with open(base_file_path, 'w', encoding='utf-8') as f:
-        json.dump(items_to_save, f, ensure_ascii=False, indent=4)
+    try:
+        print(f'ℹ️  Copying export to...')
+        print(main_file_path)
+        shutil.copy2(base_file_path, main_file_path)
+    except Exception as e:
+        print(f'❌ Error copying export.')
 
-    # Copy and save to the main file
-    print(f'ℹ️  Copying export to...')
-    print(main_file_path)
-    shutil.copy2(base_file_path, main_file_path)
-
-    print(f'ℹ️  Creating a backup in...')
-    print(archive_file_path)
-    shutil.copy2(base_file_path, archive_file_path)
-    
+    try:
+        print(f'ℹ️  Creating a backup in...')
+        print(archive_file_path)
+        shutil.copy2(base_file_path, archive_file_path)
+    except Exception as e:
+        print(f'❌ Error copying export.')
 
 class ExportManagerShoper:
     def __init__(self):
