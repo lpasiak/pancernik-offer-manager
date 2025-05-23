@@ -46,6 +46,7 @@ class OutletDiscountManager:
         
     def select_products_to_discount(self):
         """Get all products that have been created more than 14 days ago.
+
         Returns:
             A pandas DataFrame containing the products that need discounting or None if no products are found.
         """
@@ -81,7 +82,7 @@ class OutletDiscountManager:
     
     def create_discounts(self):
         """Create discounts for products that have been in outlet for more than configured days.
-        Note: If there is an existent discounts, it removes it and creates a new one.
+        Note: If there is an existent discount, it removes it and creates a new one.
         
         Returns:
             number of discounted offers (int)
