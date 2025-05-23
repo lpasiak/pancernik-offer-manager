@@ -30,8 +30,9 @@ def context_menu_outlet():
 Co chcesz zrobić?
 1. Wystawić outlety
 2. Obniżki na outlety
-3. Przenieść sprzedane/archiwalne
-4. Atrybuty produktów
+3. Usunąć stare przekierowania
+4. Przenieść sprzedane/archiwalne
+5. Atrybuty produktów
 all. Wszystko powyżej
 q żeby wyjść.
 Akcja: """

@@ -66,10 +66,14 @@ def main():
                 outlet.run_outlet_discounter()
 
             elif action == '3':
+                # Remove old redirects
+                outlet.run_redirects_remover()
+
+            elif action == '4':
                 # Remove products that have been sold
                 outlet.run_outlet_archiver()
 
-            elif action == '4':
+            elif action == '5':
                 # Update attribute groups
                 outlet.run_outlet_attributer()
 

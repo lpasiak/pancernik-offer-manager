@@ -49,5 +49,5 @@ def run_promo_manager():
     run_promo_remover(close_logger=False)
     run_percent_promo_and_stock_importer(close_logger=False)
     run_fixed_promo_importer(close_logger=False)
-    run_allegro_discount_comparator(close_logger=False)
+    # run_allegro_discount_comparator(close_logger=False)
     run_promo_exporter(close_logger=False)

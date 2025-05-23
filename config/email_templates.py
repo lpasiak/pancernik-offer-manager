@@ -49,15 +49,16 @@ EMAIL_STYLING = """
 """
 
 def render_outlet_email_template(
-        created=0,
-        lacking=0,
-        discounted=0,
-        archived=0,
-        activated=0,
-        deactivated=0,
-        attributes=0,
-        category_attributes=0,
-        errors=0,
+        created,
+        lacking,
+        discounted,
+        redirects_removed,
+        archived,
+        activated,
+        deactivated,
+        attributes,
+        category_attributes,
+        errors,
         operation_logs=''):
     return f"""
     <!DOCTYPE html>
@@ -69,8 +70,9 @@ def render_outlet_email_template(
       <div class="container">
         <h1>Outlety {datetime.now().strftime("%d/%m/%Y, %H:%M")}</h1>
         <p>🎖️ <strong>Zaimportowane</strong> produkty: <strong>{created}</strong></p>
-        <p>🔁 <strong>Przeniesione</strong> produkty: <strong>{lacking}</strong> - <em>wymagają one wystawienia ręcznego.</em></p>
+        <p>💾 <strong>Przeniesione</strong> produkty: <strong>{lacking}</strong> - <em>wymagają one wystawienia ręcznego.</em></p>
         <p>🏷️ <strong>Przecenione</strong> produkty: <strong>{discounted}</strong></p>
+        <p>🔁 <strong>Usunięte</strong> przekierowania: <strong>{redirects_removed}</strong></p>
         <p>📎 <strong>Zarchiwizowane</strong> i usunięte z Shopera: <strong>{archived}</strong></p>
         <p>😇 <strong>Aktywowane</strong> na Shoperze: <strong>{activated}</strong></p>
         <p>💩 <strong>Deaktywowane</strong> na Shoperze: <strong>{deactivated}</strong></p>

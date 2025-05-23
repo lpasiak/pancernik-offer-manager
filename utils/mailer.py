@@ -6,31 +6,21 @@ from utils.logger import get_outlet_logger, get_promo_logger
 
 
 class OutletEmailSender:
-    def __init__(self,
-                 created=0,
-                 lacking=0,
-                 discounted=0,
-                 archived=0,
-                 activated=0,
-                 deactivated=0,
-                 attributes=0,
-                 category_attributes=0,
-                 errors=0,
-                 operation_logs=''):
-        
+    def __init__(self, **kwargs):
         self.sender = config.GOOGLE_EMAIL_SENDER
         self.password = config.GOOGLE_EMAIL_PASSWORD
         self.receivers = config.OUTLET_MAIL_RECIPIENT_LIST
-        self.created_products = created
-        self.lacking_products = lacking
-        self.discounted_products = discounted
-        self.archived_products = archived
-        self.activated_products = activated
-        self.deactivated_products = deactivated
-        self.attributes = attributes
-        self.category_attributes = category_attributes
-        self.errors = errors
-        self.logs = operation_logs
+        self.created_products = kwargs.get('created', 0)
+        self.lacking_products = kwargs.get('lacking', 0)
+        self.discounted_products = kwargs.get('discounted', 0)
+        self.redirects_removed = kwargs.get('redirects_removed', 0)
+        self.archived_products = kwargs.get('archived', 0)
+        self.activated_products = kwargs.get('activated', 0)
+        self.deactivated_products = kwargs.get('deactivated', 0)
+        self.attributes = kwargs.get('attributes', 0)
+        self.category_attributes = kwargs.get('category_attributes', 0)
+        self.errors = kwargs.get('errors', 0)
+        self.logs = kwargs.get('operation_logs', '')
         self.outlet_logger = get_outlet_logger().get_logger()
 
     def send_emails(self):
@@ -51,6 +41,7 @@ class OutletEmailSender:
                     created=self.created_products,
                     lacking=self.lacking_products,
                     discounted = self.discounted_products,
+                    redirects_removed = self.redirects_removed,
                     archived = self.archived_products,
                     activated = self.activated_products,
                     deactivated = self.deactivated_products,

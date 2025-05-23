@@ -3,6 +3,7 @@ from outlet_manager.managers.outlet_attributes import OutletAttributeManager
 from outlet_manager.managers.outlet_lacking import OutletLackingManager
 from outlet_manager.managers.outlet_discount import OutletDiscountManager
 from outlet_manager.managers.outlet_archiver import OutletArchiver
+from outlet_manager.managers.outlet_redirect_remover import OutletRedirectRemover
 from utils.logger import get_outlet_logger, close_outlet_logger
 from utils.mailer import OutletEmailSender
 
@@ -65,6 +66,26 @@ def run_outlet_discounter(close_logger=True):
         close_outlet_logger()
 
     return number_of_discounts
+
+def run_redirects_remover(close_logger=True):
+    print('\n----- Removing redirects -----\n')
+    outlet_log_manager = get_outlet_logger()
+    outlet_logger = outlet_log_manager.get_logger()
+    outlet_logger.info('<br>----- Removing redirects -----<br>')
+    out_redirects_remover = OutletRedirectRemover()
+    out_redirects_remover.connect()
+    number_of_redirects = out_redirects_remover.remove_redirects() or 0
+
+    if close_logger:
+        log_output = log_output = outlet_log_manager.get_log_as_string()
+        errors = log_output.count('❌')
+        outlet_sender = OutletEmailSender(redirects_removed=number_of_redirects,
+                                          errors=errors,
+                                          operation_logs=log_output)
+        outlet_sender.send_emails()
+        close_outlet_logger()
+
+    return number_of_redirects
 
 def run_outlet_archiver(close_logger=True):
     print('\n----- Deleting and moving sold products to archived -----\n')
