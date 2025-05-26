@@ -65,7 +65,7 @@ class OutletLackingManager:
         selected_offers = df_all_products[mask].copy()
         # If there are no products to move, return
         if selected_offers.empty:
-            self.outlet_logger.info('ℹ️ No products to move to the lacking sheet')
+            self.outlet_logger.info('ℹ️ Selected products to move to the lacking sheet: 0')
             return
 
         # Check if the products exist on Shoper
@@ -78,7 +78,7 @@ class OutletLackingManager:
                 selected_offers = selected_offers.drop(index)
 
         if selected_offers.empty:
-            self.outlet_logger.info('ℹ️ No products to move to the lacking sheet')
+            self.outlet_logger.info('ℹ️ Selected products to move to the lacking sheet: 0')
             return
 
         selected_offers = selected_offers[columns_to_keep]
@@ -90,6 +90,6 @@ class OutletLackingManager:
             values_df=selected_offers
         )
 
-        self.outlet_logger.info(f'✅ {len(selected_offers)} products to move to the lacking sheet')
+        self.outlet_logger.info(f'ℹ️ Selected products to move to the lacking sheet: {len(selected_offers)}')
 
         return len(selected_offers)
