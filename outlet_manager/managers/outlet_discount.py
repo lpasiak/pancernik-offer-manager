@@ -134,8 +134,6 @@ class OutletDiscountManager:
 
                 else:
                     self.outlet_logger.warning(f'❌ Failed to set {config.OUTLET_DISCOUNT_PERCENTAGE}% discount for {product_code}')
-                    
-                product_discount_counter += 1
 
             except Exception as e:
                 self.outlet_logger.critical(f'❌ Error creating special offer {product_code}: {e}')
