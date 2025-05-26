@@ -122,7 +122,7 @@ class OutletDiscountManager:
 
                 if type(response) == int:
                     product_discount_counter += 1
-                    self.outlet_logger.info(f'✅ Set {config.OUTLET_DISCOUNT_PERCENTAGE}% discount for {product_code} | {product_discount_counter}/{product_discount_count}')
+                    self.outlet_logger.info(f'✅ Set {config.OUTLET_DISCOUNT_PERCENTAGE}% discount for {product_code}')
                     
                     if google_sheets_row is not None:
                         gsheets_updates.append([
