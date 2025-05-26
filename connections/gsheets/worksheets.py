@@ -78,7 +78,6 @@ class GsheetsWorksheets:
         except Exception as e:
             print(f'❌ Failed to update worksheet: {str(e)}')
             self.outlet_logger.critical(f'❌ Failed to update worksheet: {str(e)}')
-            raise
 
     def batch_move_products(self, source_worksheet_name: str, target_worksheet_name: str, values_df: pd.DataFrame):
         """Move products from one worksheet to another.

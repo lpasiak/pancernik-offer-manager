@@ -1,7 +1,7 @@
 from .products import ShoperProducts
 import config
 from datetime import datetime
-from utils.logger import get_outlet_logger
+from utils.logger import get_outlet_logger, get_promo_logger
 
 
 class ShoperSpecialOffers:
@@ -10,6 +10,7 @@ class ShoperSpecialOffers:
         self.client = client
         self.products = ShoperProducts(client)
         self.outlet_logger = get_outlet_logger().get_logger()
+        self.promo_logger = get_promo_logger().get_logger()
 
     def create_special_offer(self, discount_data):
         """Create a special offer for a product.
@@ -42,13 +43,13 @@ class ShoperSpecialOffers:
                 return response.json()
             else:
                 error_description = response.json()['error_description']
-                print(f'❌ API Error: {error_description}')
                 self.outlet_logger.warning(f'❌ API Error: {error_description}')
+                self.promo_logger.warning(f'❌ API Error: {error_description}')
                 return {'success': False, 'error': error_description}
             
         except Exception as e:
-            print(f'❌ Request failed: {str(e)}')
             self.outlet_logger.warning(f'❌ Request failed: {str(e)}')
+            self.promo_logger.warning(f'❌ Request failed: {str(e)}')
             return str(e)
 
     def remove_special_offer_from_product(self, identifier, use_code=False):
@@ -76,11 +77,11 @@ class ShoperSpecialOffers:
                     return True
                 else:
                     error_description = response.json()['error_description']
-                    print(f'❌ API Error: {error_description}')
                     self.outlet_logger.warning(f'❌ API Error: {error_description}')
+                    self.promo_logger.warning(f'❌ API Error: {error_description}')
                     return {'success': False, 'error': error_description}
                     
         except Exception as e:
-            print(f'❌ Request failed: {str(e)}')
             self.outlet_logger.warning(f'❌ Request failed: {str(e)}')
+            self.promo_logger.warning(f'❌ Request failed: {str(e)}')
             return str(e)
