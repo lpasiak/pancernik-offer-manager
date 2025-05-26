@@ -51,7 +51,7 @@ class OutletDiscountManager:
         Returns:
             A pandas DataFrame containing the products that need discounting or None if no products are found.
         """
-        today = pd.Timestamp.today()
+        today = config.TODAY_PD
 
         df = self.gsheets_worksheets.get_data(sheet_name=config.OUTLET_SHEET_NAME, include_row_numbers=True)
 

@@ -29,7 +29,7 @@ def run_allegro_discount_comparator(close_logger=True):
 
     promo_manager = PromoManager(sheet_id=config.ALLEGRO_PROMO_SHEET_ID)
     promo_manager.connect()
-    promo_manager.test_func()
+    promo_manager.allegro_discount_select_offers()
 
     if close_logger:
         log_output = promo_log_manager.get_log_as_string()

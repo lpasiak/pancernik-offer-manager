@@ -307,10 +307,24 @@ class PromoManager:
             start_column = 'E',
         )
 
-    def test_func(self):
+    def allegro_discount_select_offers_to_discount(self):
+        
+        today = config.TODAY_PD
 
+        # Get all promotions
         df = self.gsheets_worksheets.get_data(sheet_name=config.ALLEGRO_PROMO_SHEET_NAME, include_row_numbers=True)
-        df = df[df['EAN'] != '#N/A']
-        print(df)
+        
+        mask = (
+            (df['EAN'] != '#N/A') &
+            (df['Promocja'] != 'Utworzona') &
+            (df['Promocja'] != 'Pominięta')
+        )
 
-        df.to_excel('promo_test.xlsx')
+        df = df[mask]
+
+        
+
+
+        print(df)
+        df.to_excel(config.SHEETS_DIR / 'promo_test.xlsx')
+

@@ -2,6 +2,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from datetime import datetime
 import os
+import pandas as pd
 
 # Root directory
 ROOT_DIR = Path(__file__).parent.parent
@@ -31,6 +32,7 @@ LOGGING_DIR = ROOT_DIR / 'logging'
 DRIVE_EXPORT_DIR = r'H:\Pansernik\Eksporty'
 
 TODAY = datetime.today().strftime('%d-%m-%Y')
+TODAY_PD = pd.Timestamp.today()
 
 REDIRECT_TARGET_OUTLET_URL = '/outlet'
 

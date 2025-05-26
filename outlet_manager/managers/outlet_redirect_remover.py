@@ -48,7 +48,7 @@ class OutletRedirectRemover:
         Returns:
             A pandas DataFrame containing the redirects to be removed or None if no redirects are found
         """
-        today = pd.Timestamp.today()
+        today = config.TODAY_PD
 
         df = self.gsheets_worksheets.get_data(sheet_name=config.OUTLET_SHEET_ARCHIVED_NAME, include_row_numbers=True)
 
