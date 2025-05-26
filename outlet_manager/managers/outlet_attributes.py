@@ -6,6 +6,7 @@ from connections.gsheets.worksheets import GsheetsWorksheets
 import config
 import pandas as pd
 from utils.logger import get_outlet_logger
+from tqdm import tqdm
 
 
 class OutletAttributeManager:
@@ -82,12 +83,10 @@ class OutletAttributeManager:
         response = self.shoper_attributes.update_attribute_group_categories(attribute_group_to_append, categories_to_import)
 
         if response:
-            print(f'✅ Attribute group {attribute_group_to_append} updated with {len(categories_to_import)} categories\n')
             self.outlet_logger.info(f'✅ Attribute group {attribute_group_to_append} updated with {len(categories_to_import)} categories')
         
             return len(categories_to_import)
         else:
-            print(f'❌ Attribute group {attribute_group_to_append} update failed')
             self.outlet_logger.warning(f'❌ Attribute group {attribute_group_to_append} update failed')
 
             return 0
@@ -106,6 +105,7 @@ class OutletAttributeManager:
 
         # Create a dictionary of products with EAN as key and list of IDs as value
         products = {}
+        products_length = len(single_ean_products)
         product_counter = 0
 
         # Create a dictionary of products with EAN as key and list of IDs as value
@@ -114,15 +114,16 @@ class OutletAttributeManager:
             product_ids_list = df_all_products[df_all_products['EAN'] == product_ean]['ID Shoper'].tolist()
             if product_ids_list:
                 products[product_ean] = ', '.join(map(str, product_ids_list))
-        
-        print(f'Updating {len(products)} main products attributes:\n')
 
         # Update the attribute of the product
-        for product_ean, product_ids in products.items():
+        for product_ean, product_ids in tqdm(products.items(), total=products_length, desc="Updating product attributes", unit=" product"):
             params = {attribute_id: product_ids}
             self.shoper_products.update_product_by_code(product_ean, use_code=True, attributes=params)
             product_counter += 1
         
-        self.outlet_logger.info(f'ℹ️ Product attributes updated: {product_counter}/{len(products)}')
+        if product_counter == products_length:
+            self.outlet_logger.info(f'✅ Product attributes updated: {product_counter}/{products_length}')
+        else:
+            self.outlet_logger.warning(f'❌ Product attributes updated: {product_counter}/{products_length}')
 
-        return len(products)
+        return product_counter

@@ -53,11 +53,8 @@ class ShoperPictures:
                 print(f'❌ API Error: {error_description}')
                 self.outlet_logger.critical(f'❌ API Error: {error_description}')
                 return {'success': False, 'error': error_description}
-            else:
-                print(f'✅ Uploaded image {image_data['order']}')
-                self.outlet_logger.info(f'✅ Uploaded image {image_data['order']}')
             
-            return response.json()
+            return response
         
         except Exception as e:
             print(f'❌ Request failed: {str(e)}')

@@ -9,6 +9,7 @@ from datetime import datetime
 import pandas as pd
 import config
 import time
+from tqdm import tqdm
 
 
 class OutletCreator:
@@ -68,8 +69,7 @@ class OutletCreator:
 
         df = df[mask]
 
-        print(f'ℹ️  Selected products ready to publish: {len(df)}')
-        self.outlet_logger.info(f'ℹ️  Selected products ready to publish: {len(df)}')
+        self.outlet_logger.info(f'ℹ️ Selected products ready to publish: {len(df)}')
 
         if len(df) > 0:
             return df
@@ -91,11 +91,7 @@ class OutletCreator:
         product_counter = 0
         gsheet_updates = []
 
-        self.outlet_logger.info(f'ℹ️ Creating {product_count} outlet offers')
-        print(f'ℹ️  Creating {product_count} outlet offers')
-
-
-        for _, product in df_offers.iterrows():
+        for _, product in tqdm(df_offers.iterrows(), total=product_count, desc="Creating outlet offers", unit=" offer"):
 
             try:
 
@@ -114,51 +110,77 @@ class OutletCreator:
                 
                 # If the product is not created, skip the rest of the current iteration and move to the next product
                 if created_offer_id is None:
-                    print(f'❌ Failed to create outlet offer for product {product['SKU']} | {product['EAN']}')
                     self.outlet_logger.warning(f'❌ Failed to create outlet offer for product {product['SKU']} | {product['EAN']}')
                     continue
                     
-                print(f'✅ Created outlet product with ID: {created_offer_id} | {product['SKU']} | {product['EAN']}')
+                product_counter += 1
+
                 self.outlet_logger.info(f'✅ Created outlet product with ID: {created_offer_id} | {product['SKU']} | {product['EAN']}')
                 
                 # Update product details
-                self.shoper_products.update_product_by_code(created_offer_id, ean=new_outlet.barcode)
-                self.shoper_products.update_product_by_code(created_offer_id, related=new_outlet.related)
-                
+                response_barcode = self.shoper_products.update_product_by_code(created_offer_id, ean=new_outlet.barcode)
+
+                if response_barcode == True:
+                    self.outlet_logger.info(f'✅ Updated product barcode with {new_outlet.barcode}')
+                else:
+                    self.outlet_logger.warning(f'❌ Failed to update product barcode with {new_outlet.barcode}')
+
+                response_related = self.shoper_products.update_product_by_code(created_offer_id, related=new_outlet.related)
+
+                if response_related == True:
+                    self.outlet_logger.info(f'✅ Updated product related with {new_outlet.related}')
+                else:
+                    self.outlet_logger.warning(f'❌ Failed to update product barcode with {new_outlet.related}')
+                    
                 # Update URL
                 product_url = new_outlet.product_url(created_offer_id)
                 product_url_json = {'pl_PL': {'seo_url': product_url}}
                 product_url_link = f'{config.SHOPER_SITE_URL}/{product_url}'
-                self.shoper_products.update_product_by_code(created_offer_id, translations=product_url_json)
+
+                response_url = self.shoper_products.update_product_by_code(created_offer_id, translations=product_url_json)
+
+                if response_url == True:
+                    self.outlet_logger.info(f'✅ Updated product url with {product_url_json}')
+                else:
+                    self.outlet_logger.warning(f'❌ Failed to update product url with {product_url_json}')
 
                 # Update images
                 outlet_pictures = new_outlet.set_outlet_pictures(created_offer_id)
+                images_uploaded = 0
+
                 for i, picture in enumerate(outlet_pictures, 1):
                     max_retries = 3
                     retry_count = 0
                     
                     while retry_count < max_retries:
                         try:
-                            self.shoper_pictures.update_product_image(created_offer_id, picture)
-                            break  # Success, exit retry loop
+                            response = self.shoper_pictures.update_product_image(created_offer_id, picture)
+
+                            if response.status_code == 200:
+                                images_uploaded = images_uploaded + 1
+                                break  # Success, exit retry loop
                             
                         except Exception as e:
                             retry_count += 1
                             if retry_count == max_retries:
-                                print(f'❌ Failed to upload image after {max_retries} attempts: {e}')
                                 self.outlet_logger.warning(f'❌ Failed to upload image after {max_retries} attempts: {e}')
                             else:
-                                print(f'⚠️ Image upload attempt {retry_count} failed, retrying...')
                                 time.sleep(1)  # Wait before retry
+
+                if images_uploaded > 0:
+                    self.outlet_logger.info(f'✅ Updated {images_uploaded} images')
 
                 # Update stock image
                 try:
                     created_product = self.shoper_products.get_product_by_code(created_offer_id)
                     if created_product and 'main_image' in created_product:
                         stock_gfx = created_product['main_image']['gfx_id']
-                        self.shoper_products.update_product_by_code(created_offer_id, stock={'gfx_id': stock_gfx})
+                        response = self.shoper_products.update_product_by_code(created_offer_id, stock={'gfx_id': stock_gfx})
+
+                        if response == True:
+                            self.outlet_logger.info(f'✅ Updated product main image')
+
                 except Exception as e:
-                    print(f'❌ Error updating stock image: {e}')
                     self.outlet_logger.warning(f'❌ Error updating stock image: {e}')
 
                 # Creating a list of updates to be made in gsheets
@@ -172,18 +194,11 @@ class OutletCreator:
                         product_category_id
                     ])
                 else:
-                    print(f'❌ SKU {product_code} not found in Google Sheets!')
                     self.outlet_logger.warning(f'❌ SKU {product_code} not found in Google Sheets!')
-
-                product_counter += 1
-                print(f'ℹ️  Offers created: {product_counter}/{product_count}')
-                print('-----------------------------------')
                 
             except Exception as e:
-                print(f'❌ Error creating outlet offer for product {product["SKU"]}: {e}')
                 self.outlet_logger.critical(f'❌ Error creating outlet offer for product {product["SKU"]}')
 
-        print(f'ℹ️  Created {product_counter} outlet offers')
         self.outlet_logger.info(f'ℹ️ Offers created: {product_counter}/{product_count}')
 
         # Update Google Sheets
@@ -205,5 +220,4 @@ class OutletCreator:
                 num_columns=5
             )
         except Exception as e:
-            print(f'❌ Failed to update Google Sheets: {str(e)}')
             self.outlet_logger.critical(f'❌ Failed to update Google Sheets: {str(e)}')

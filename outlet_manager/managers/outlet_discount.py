@@ -6,6 +6,7 @@ from connections.shoper.specialoffers import ShoperSpecialOffers
 import config
 import pandas as pd
 from utils.logger import get_outlet_logger
+from tqdm import tqdm
 
 
 class OutletDiscountManager:
@@ -73,7 +74,6 @@ class OutletDiscountManager:
 
         df = df[mask]
         
-        print(f'ℹ️  Selected products ready to discount: {len(df)}')
         self.outlet_logger.info(f'ℹ️ Selected products ready to discount: {len(df)}')
 
         if len(df) > 0:
@@ -96,7 +96,7 @@ class OutletDiscountManager:
         product_discount_counter = 0
         gsheets_updates = []
         
-        for _, product in df_offers_to_discount.iterrows():
+        for _, product in tqdm(df_offers_to_discount.iterrows(), total=product_discount_count, desc="Creating discounts", unit=" discount"):
 
             try:
                 # Get the row number of the product in the Google Sheets
@@ -121,8 +121,8 @@ class OutletDiscountManager:
                 response = self.shoper_special_offers.create_special_offer(product_data)
 
                 if type(response) == int:
-                    print(f'✅ Set {config.OUTLET_DISCOUNT_PERCENTAGE}% discount for {product_code}')
-                    self.outlet_logger.info(f'✅ Set {config.OUTLET_DISCOUNT_PERCENTAGE}% discount for {product_code}')
+                    product_discount_counter += 1
+                    self.outlet_logger.info(f'✅ Set {config.OUTLET_DISCOUNT_PERCENTAGE}% discount for {product_code} | {product_discount_counter}/{product_discount_count}')
                     
                     if google_sheets_row is not None:
                         gsheets_updates.append([
@@ -130,24 +130,16 @@ class OutletDiscountManager:
                             True
                         ])
                     else:
-                        print(f'❌ Warning: SKU {product_code} not found in Google Sheets!')
                         self.outlet_logger.warning(f'❌ Warning: SKU {product_code} not found in Google Sheets!')
 
                 else:
-                    print(f'❌ Failed to set {config.OUTLET_DISCOUNT_PERCENTAGE}% discount for {product_code}')
                     self.outlet_logger.warning(f'❌ Failed to set {config.OUTLET_DISCOUNT_PERCENTAGE}% discount for {product_code}')
                     
                 product_discount_counter += 1
 
-                print(f'Products discounted: {product_discount_counter}/{product_discount_count}')
-                print('-----------------------------------')
-
             except Exception as e:
-                print(f'❌ Error creating special offer {product_code}: {e}')
                 self.outlet_logger.critical(f'❌ Error creating special offer {product_code}: {e}')
                 continue
-
-            print(f'ℹ️  Products discounted: {product_discount_counter}/{product_discount_count}')
 
         if gsheets_updates:
             self.batch_update_discounted_offers_gsheets(gsheets_updates)
@@ -168,5 +160,4 @@ class OutletDiscountManager:
                 num_columns=1
             )
         except Exception as e:
-            print(f"❌ Failed to update Google Sheets: {str(e)}")
             self.outlet_logger.critical(f"❌ Failed to update Google Sheets: {str(e)}")

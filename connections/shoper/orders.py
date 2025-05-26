@@ -18,8 +18,6 @@ class ShoperOrders:
             list: A list of order products
         """
         try:
-            print("ℹ️  Downloading products from latest orders...")
-
             order_products = []
             params = {'limit': config.SHOPER_LIMIT}
             initial_response = self.client._handle_request('GET', f'{self.client.site_url}/webapi/rest/order-products', params=params)

@@ -69,7 +69,6 @@ class OutletRedirectRemover:
 
         df = df[mask]
 
-        print(f'ℹ️  Selected redirects ready to be removed: {len(df)}')
         self.outlet_logger.info(f'ℹ️ Selected redirects ready to be removed: {len(df)}')
 
         if len(df) > 0:

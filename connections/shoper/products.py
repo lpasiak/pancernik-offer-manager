@@ -108,8 +108,6 @@ class ShoperProducts:
             response = self.client._handle_request('DELETE', f'{self.client.site_url}/webapi/rest/products/{product_id}')
             
             if response.status_code == 200:
-                print(f'✅ Product {product_id} removed successfully')
-                self.outlet_logger.info(f'✅ Product {product_id} removed successfully')
                 return True
                 
             error_description = response.json()['error_description']
@@ -148,7 +146,6 @@ class ShoperProducts:
             response = self.client._handle_request('PUT', f'{self.client.site_url}/webapi/rest/products/{product_id}', json=params)
 
             if response.status_code == 200:
-                self.outlet_logger.info(f'✅ Product {product_id} updated successfully with {list(parameters.keys())}')
                 return True
                 
             error_description = response.json()['error_description']

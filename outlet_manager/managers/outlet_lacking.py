@@ -6,6 +6,7 @@ import config
 from datetime import datetime
 import pandas as pd
 from utils.logger import get_outlet_logger
+from tqdm import tqdm
 
 
 class OutletLackingManager:
@@ -62,28 +63,21 @@ class OutletLackingManager:
         df_all_products = df_all_products[columns_to_keep]
 
         selected_offers = df_all_products[mask].copy()
-
-        print('ℹ️  Checking if all the products exist on Shoper...')
-        
         # If there are no products to move, return
         if selected_offers.empty:
-            print('ℹ️  No products to move to the lacking sheet')
             self.outlet_logger.info('ℹ️ No products to move to the lacking sheet')
             return
 
         # Check if the products exist on Shoper
-        for index, row in selected_offers.iterrows():
+        for index, row in tqdm(selected_offers.iterrows(), total=len(selected_offers), desc="Checking products", unit=" product"):
             response = self.shoper_products.get_product_by_code(row['EAN'], use_code=True)
             
             if response is None or (isinstance(response, dict) and response.get('success') is False):
-                print(f'Product {row["EAN"]} does not exist on Shoper.')
                 self.outlet_logger.info(f'ℹ️ Product {row["EAN"]} does not exist on Shoper.')
             else:
                 selected_offers = selected_offers.drop(index)
-                print(f'Product {row["EAN"]} exists on Shoper.')
 
         if selected_offers.empty:
-            print('ℹ️  No products to move to the lacking sheet')
             self.outlet_logger.info('ℹ️ No products to move to the lacking sheet')
             return
 
@@ -96,7 +90,6 @@ class OutletLackingManager:
             values_df=selected_offers
         )
 
-        print(f'✅ {len(selected_offers)} products moved to the lacking sheet')
         self.outlet_logger.info(f'✅ {len(selected_offers)} products to move to the lacking sheet')
 
         return len(selected_offers)

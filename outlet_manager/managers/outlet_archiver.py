@@ -65,8 +65,7 @@ class OutletArchiver:
 
         if type == 'archive':
             products_df['URL'] = [products[idx]['URL'] for idx in products_df.index]
-
-        print(f'ℹ️  Products to {type}: {len(products_df)}')
+            
         self.outlet_logger.info(f'ℹ️ Products to {type}: {len(products_df)}')
         products_df.to_excel(config.SHEETS_DIR / f'products_to_{type}.xlsx', index=False)
 
@@ -136,7 +135,6 @@ class OutletArchiver:
                         }
 
                 except Exception as e:
-                    print(f"❌ Error for SKU {row['SKU']}: {e}")
                     self.outlet_logger.warning(f"❌ Error for SKU {row['SKU']}: {e}")
             
             # Generate DataFrames for each product category
@@ -147,7 +145,6 @@ class OutletArchiver:
             return products_to_archive_df, products_to_activate_df, products_to_deactivate_df
 
         except Exception as e:
-            print(f"❌ Error selecting products to be cleaned: {e}")
             self.outlet_logger.warning(f"❌ Error selecting products to be cleaned: {e}")
             return None, None, None
 
@@ -156,7 +153,7 @@ class OutletArchiver:
         date_removed = datetime.today().strftime('%Y-%m-%d')
 
         if sold_products_df is None or (isinstance(sold_products_df, pd.DataFrame) and sold_products_df.empty):
-            self.outlet_logger.info(f'❌ Nothing to archive.')
+            self.outlet_logger.info(f'ℹ️ Nothing to archive.')
             return
         
         try:
@@ -172,11 +169,16 @@ class OutletArchiver:
             sold_products_df = sold_products_df.replace({float('nan'): None, 'nan': None})
 
             sold_products_len = len(sold_products_df)
-            counter = 0
+            product_counter = 0
 
             # Remove from Shoper and create a redirection
-            for index, row in sold_products_df.iterrows():
-                self.shoper_products.remove_product(row['ID Shoper'])
+            for index, row in tqdm(sold_products_df.iterrows(), total=sold_products_len, desc="Archiving products", unit=" product"):
+                response = self.shoper_products.remove_product(row['ID Shoper'])
+
+                if response:
+                    self.outlet_logger.info(f'✅ Product {row['SKU']} archived.')
+                else:
+                    self.outlet_logger.warning(f'❌ Error archiving product {row['SKU']}.')
 
                 redirect_data = {
                 'redirected_url': row['URL'],
@@ -184,10 +186,15 @@ class OutletArchiver:
                 }
 
                 redirect_id = self.shoper_redirects.create_redirect(redirect_data)
+
+                if isinstance(redirect_id, int):
+                    self.outlet_logger.info(f'✅ Redirect {redirect_id} created.')
+                else:
+                    self.outlet_logger.warning(f'❌ Error creating a redirect for {row['SKU']}.')
+                    
                 sold_products_df.at[index, 'ID Przekierowania'] = redirect_id
 
-                counter += 1
-                print(f'Products: {counter}/{sold_products_len}')
+                product_counter = product_counter + 1
 
             # Move to archived sheet
             offers_to_move = sold_products_df[[
@@ -214,43 +221,60 @@ class OutletArchiver:
                 values_df=offers_to_move
             )
 
-            return sold_products_len
+            return product_counter
         
         except Exception as e:
-            print(f'❌ Error archiving products: {e}')
             self.outlet_logger.warning(f'❌ Error archiving products: {e}')
             return 0
     
     def reactivate_products(self, products_to_activate_df):
         """Reactivate products on Shoper"""
+        product_counter = 0
+
         try:
 
             if products_to_activate_df is None or products_to_activate_df.empty:
                 return 0
             
-            for _, row in products_to_activate_df.iterrows():
-                self.shoper_products.update_product_by_code(row['ID Shoper'], stock={'stock': 1}, translations={'pl_PL': {'active': 1}})
+            for _, row in tqdm(products_to_activate_df.iterrows(), total=len(products_to_activate_df), desc="Reactivating products", unit=" product"):
+                response = self.shoper_products.update_product_by_code(row['ID Shoper'], stock={'stock': 1}, translations={'pl_PL': {'active': 1}})
 
-            return len(products_to_activate_df)
+                if response:
+                    self.outlet_logger.info(f'✅ Reactivated product {row['SKU']}')
+                    product_counter = product_counter + 1
+                else:
+                    self.outlet_logger.warning(f'❌ Error reactivating product {row['SKU']}')
+
+            return product_counter
                     
         except Exception as e:
-            print(f"❌ Error reactivating products: {e}")
             self.outlet_logger.warning(f"❌ Error reactivating products: {e}")
             return 0
 
     def deactivate_products(self, products_to_deactivate_df):
         """Deactivate products on Shoper"""
+        product_counter = 0
+
         try:
             if products_to_deactivate_df is None or products_to_deactivate_df.empty:
                 return 0
             
-            for _, row in products_to_deactivate_df.iterrows():
-                self.shoper_products.update_product_by_code(row['ID Shoper'], stock={'stock': 0}, translations={'pl_PL': {'active': 0}})
+            for _, row in tqdm(products_to_deactivate_df.iterrows(),
+                               total=len(products_to_deactivate_df),
+                               desc="Deactivating products",
+                               unit=" product"):
+                
+                response = self.shoper_products.update_product_by_code(row['ID Shoper'], stock={'stock': 0}, translations={'pl_PL': {'active': 0}})
 
-            return len(products_to_deactivate_df)
+                if response:
+                    self.outlet_logger.info(f'✅ Deactivated product {row['SKU']}')
+                    product_counter = product_counter + 1
+                else:
+                    self.outlet_logger.warning(f'❌ Error deactivating product {row['SKU']}')
+
+            return product_counter
 
         except Exception as e:
-            print(f"❌ Error deactivating products: {e}")
             self.outlet_logger.warning(f"❌ Error deactivating products: {e}")
             return 0
 
