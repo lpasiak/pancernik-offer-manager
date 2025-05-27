@@ -96,6 +96,7 @@ def render_promo_email_template(
         ommited_promo_allegro=0,
         removed_promo_allegro=0,
         ommited_promo_allegro_early=0,
+        discounts_failed=0,
         errors=0,
         operation_logs=''):
     return f"""
@@ -110,6 +111,7 @@ def render_promo_email_template(
         <p>🎖️ <strong>Zaimportowane</strong> promocje: <strong>{created_promo_allegro}</strong></p>
         <p>🔁 <strong>Pominięte</strong> promocje: <strong>{ommited_promo_allegro}</strong> - <em>produkt już posiada promocję.</em></p>
         <p>📅 <strong>Pominięte</strong> promocje: <strong>{ommited_promo_allegro_early}</strong> - <em>za wcześnie na promocję.</em></p>
+        <p>❌ <strong>Pominięte</strong> promocje: <strong>{discounts_failed}</strong> - <em>bo wystąpił Error.</em></p>
         <p>🏷️ <strong>Usunięte</strong> promocje: <strong>{removed_promo_allegro}</strong></p>
         <p><strong>Liczba znalezionych błędów: {errors}</strong></p>
         <div class="footer">

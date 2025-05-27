@@ -70,6 +70,7 @@ class PromoEmailSender:
                  ommited_promo_allegro=0,
                  removed_promo_allegro=0,
                  ommited_promo_allegro_early=0,
+                 discounts_failed=0,
                  errors=0,
                  operation_logs=''):
         
@@ -80,6 +81,7 @@ class PromoEmailSender:
         self.ommited_promo_allegro = ommited_promo_allegro
         self.removed_promo_allegro = removed_promo_allegro
         self.ommited_promo_allegro_early = ommited_promo_allegro_early
+        self.discounts_failed = discounts_failed
         self.errors = errors
         self.logs = operation_logs
         self.promo_logger = get_promo_logger().get_logger()
@@ -103,6 +105,7 @@ class PromoEmailSender:
                     ommited_promo_allegro=self.ommited_promo_allegro,
                     removed_promo_allegro = self.removed_promo_allegro,
                     ommited_promo_allegro_early = self.ommited_promo_allegro_early,
+                    discounts_failed = self.discounts_failed,
                     errors = self.errors,
                     operation_logs=self.logs)
                 
