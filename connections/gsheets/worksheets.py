@@ -1,6 +1,6 @@
 import pandas as pd
 import config
-from utils.logger import get_outlet_logger
+from utils.logger import get_outlet_logger, get_promo_logger
 
 
 class GsheetsWorksheets:
@@ -9,6 +9,7 @@ class GsheetsWorksheets:
         """Initialize a Shoper Client"""
         self.client = client
         self.outlet_logger = get_outlet_logger().get_logger()
+        self.promo_logger = get_promo_logger().get_logger()
 
     def get_data(self, sheet_name, include_row_numbers=False):
         """Get data from a Google Sheets worksheet as a pandas DataFrame.
@@ -173,3 +174,47 @@ class GsheetsWorksheets:
             print(f"❌ Error saving data to Google Sheets: {e}")
             self.outlet_logger.critical(f"❌ Error saving data to Google Sheets: {e}")
             raise
+
+    def batch_copy_paste_data(self, source_worksheet_name: str, target_worksheet_name: str, values_df: pd.DataFrame):
+            """Copy products from one worksheet to another.
+            Args:
+                source_worksheet_name (str): Name of the source worksheet
+                target_worksheet_name (str): Name of the target worksheet
+                values_df (pd.DataFrame): DataFrame containing the values to move
+            """
+            try:
+                source_worksheet = self.client._handle_request(self.client.sheet.worksheet, source_worksheet_name)
+                target_worksheet = self.client._handle_request(self.client.sheet.worksheet, target_worksheet_name)
+
+                # Prepare the values
+                df_without_rows = values_df.drop('Row Number', axis=1)
+                values_to_append = df_without_rows.values.tolist()
+
+                # Get current sheet dimensions and calculate needed rows
+                current_rows = len(self.client._handle_request(target_worksheet.get_all_values))
+                needed_rows = current_rows + len(values_to_append)
+
+                # Resize the sheet if necessary by adding empty rows
+                if needed_rows > current_rows:
+                    self.client._handle_request(target_worksheet.resize, rows=needed_rows)
+
+                # Find the first empty row in the target worksheet
+                next_row = current_rows + 1  # Add 1 to start after the last row
+
+                # Prepare the batch data
+                batch_data = [{
+                    'range': f'A{next_row}',
+                    'values': values_to_append
+                }]
+
+                # Perform the batch update to add rows to target worksheet
+                try:
+                    self.client._handle_request(target_worksheet.batch_update, batch_data)
+                    self.promo_logger.info(f"✅ Successfully moved {len(values_to_append)} products.")
+                except Exception as e:
+                    self.promo_logger.critical(f"❌ Failed to move products to lacking products sheet: {str(e)}")
+                    return
+
+            except Exception as e:
+                self.promo_logger.critical(f"❌ Error moving products: {e}")
+                raise
