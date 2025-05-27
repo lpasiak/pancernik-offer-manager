@@ -128,7 +128,7 @@ class OutletCreator:
                 response_related = self.shoper_products.update_product_by_code(created_offer_id, related=new_outlet.related)
 
                 if response_related == True:
-                    self.outlet_logger.info(f'✅ Updated product related with {new_outlet.related}')
+                    self.outlet_logger.info(f'✅ Updated product related')
                 else:
                     self.outlet_logger.warning(f'❌ Failed to update product barcode with {new_outlet.related}')
                     
@@ -140,7 +140,7 @@ class OutletCreator:
                 response_url = self.shoper_products.update_product_by_code(created_offer_id, translations=product_url_json)
 
                 if response_url == True:
-                    self.outlet_logger.info(f'✅ Updated product url with {product_url_json}')
+                    self.outlet_logger.info(f'✅ Updated product url')
                 else:
                     self.outlet_logger.warning(f'❌ Failed to update product url with {product_url_json}')
 
