@@ -176,45 +176,69 @@ class GsheetsWorksheets:
             raise
 
     def batch_copy_paste_data(self, source_worksheet_name: str, target_worksheet_name: str, values_df: pd.DataFrame):
-            """Copy products from one worksheet to another.
-            Args:
-                source_worksheet_name (str): Name of the source worksheet
-                target_worksheet_name (str): Name of the target worksheet
-                values_df (pd.DataFrame): DataFrame containing the values to move
-            """
+        """Copy products from one worksheet to another.
+        Args:
+            source_worksheet_name (str): Name of the source worksheet
+            target_worksheet_name (str): Name of the target worksheet
+            values_df (pd.DataFrame): DataFrame containing the values to move
+        """
+        try:
+            source_worksheet = self.client._handle_request(self.client.sheet.worksheet, source_worksheet_name)
+            target_worksheet = self.client._handle_request(self.client.sheet.worksheet, target_worksheet_name)
+
+            # Prepare the values
+            df_without_rows = values_df.drop('Row Number', axis=1)
+            values_to_append = df_without_rows.values.tolist()
+
+            # Get current sheet dimensions and calculate needed rows
+            current_rows = len(self.client._handle_request(target_worksheet.get_all_values))
+            needed_rows = current_rows + len(values_to_append)
+
+            # Resize the sheet if necessary by adding empty rows
+            if needed_rows > current_rows:
+                self.client._handle_request(target_worksheet.resize, rows=needed_rows)
+
+            # Find the first empty row in the target worksheet
+            next_row = current_rows + 1  # Add 1 to start after the last row
+
+            # Prepare the batch data
+            batch_data = [{
+                'range': f'A{next_row}',
+                'values': values_to_append
+            }]
+
+            # Perform the batch update to add rows to target worksheet
             try:
-                source_worksheet = self.client._handle_request(self.client.sheet.worksheet, source_worksheet_name)
-                target_worksheet = self.client._handle_request(self.client.sheet.worksheet, target_worksheet_name)
-
-                # Prepare the values
-                df_without_rows = values_df.drop('Row Number', axis=1)
-                values_to_append = df_without_rows.values.tolist()
-
-                # Get current sheet dimensions and calculate needed rows
-                current_rows = len(self.client._handle_request(target_worksheet.get_all_values))
-                needed_rows = current_rows + len(values_to_append)
-
-                # Resize the sheet if necessary by adding empty rows
-                if needed_rows > current_rows:
-                    self.client._handle_request(target_worksheet.resize, rows=needed_rows)
-
-                # Find the first empty row in the target worksheet
-                next_row = current_rows + 1  # Add 1 to start after the last row
-
-                # Prepare the batch data
-                batch_data = [{
-                    'range': f'A{next_row}',
-                    'values': values_to_append
-                }]
-
-                # Perform the batch update to add rows to target worksheet
-                try:
-                    self.client._handle_request(target_worksheet.batch_update, batch_data)
-                    self.promo_logger.info(f"✅ Successfully moved {len(values_to_append)} products.")
-                except Exception as e:
-                    self.promo_logger.critical(f"❌ Failed to move products to lacking products sheet: {str(e)}")
-                    return
-
+                self.client._handle_request(target_worksheet.batch_update, batch_data)
+                self.promo_logger.info(f"✅ Successfully moved {len(values_to_append)} products.")
             except Exception as e:
-                self.promo_logger.critical(f"❌ Error moving products: {e}")
-                raise
+                self.promo_logger.critical(f"❌ Failed to move products to lacking products sheet: {str(e)}")
+                return
+
+        except Exception as e:
+            self.promo_logger.critical(f"❌ Error moving products: {e}")
+            raise
+
+    def batch_remove_data(self, source_worksheet_name: str, updates_row_number_list: list):
+        """Batch remove rows from a worksheet.
+        Args:
+            source_worksheet_name (str): Name of the worksheet to remove rows from
+            updates_row_number_list (list): List of row numbers to remove
+        """
+        
+        source_worksheet = self.client._handle_request(self.client.sheet.worksheet, source_worksheet_name)
+
+        try:
+            row_numbers = sorted(updates_row_number_list, reverse=True)
+            counter_length = len(row_numbers)
+            counter = 0
+            
+            for row in row_numbers:
+                self.client._handle_request(source_worksheet.delete_rows, int(row))
+                counter += 1
+                print(f"✅ Deleted row {row} from {source_worksheet_name} | {counter}/{counter_length}")
+                self.promo_logger.info(f"✅ Deleted row {row} from {source_worksheet_name} | {counter}/{counter_length}")
+
+        except Exception as e:
+            print(f"❌ Failed to remove products from the source worksheet: {str(e)}")
+            self.promo_logger.critical(f"❌ Failed to remove products from the source worksheet: {str(e)}")
