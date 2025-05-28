@@ -34,8 +34,7 @@ class PromoManager:
             # Initialize Google Sheets connections
             self.gsheets_client = GSheetsClient(
                 config.GOOGLE_CREDENTIALS_FILE,
-                '1Tn0pmuHs9yXQvIZxwxp8VOK6v4CGNMWx5ixeTHQ6vZc'
-                # self.sheet_id
+                self.sheet_id
             )
             self.gsheets_client.connect()
             self.gsheets_worksheets = GsheetsWorksheets(self.gsheets_client)
