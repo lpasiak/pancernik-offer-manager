@@ -29,7 +29,8 @@ def run_allegro_discount_comparator(close_logger=True):
 
     promo_manager = PromoManager(sheet_id=config.ALLEGRO_PROMO_SHEET_ID)
     promo_manager.connect()
-    discounts_created, discounts_ommited, discounts_too_early = promo_manager.allegro_discount_offers()
+    discounts_created, discounts_ommited, discounts_too_early, discounts_failed = promo_manager.allegro_discount_offers()
+    discounts_removed = promo_manager.allegro_discount_offers_remover()
 
     if close_logger:
         log_output = promo_log_manager.get_log_as_string()
@@ -37,6 +38,8 @@ def run_allegro_discount_comparator(close_logger=True):
         promo_sender = PromoEmailSender(created_promo_allegro=discounts_created,
                                         ommited_promo_allegro=discounts_ommited,
                                         ommited_promo_allegro_early=discounts_too_early,
+                                        discounts_failed=discounts_failed,
+                                        removed_promo_allegro=discounts_removed,
                                         errors=errors,
                                         operation_logs=log_output)
         promo_sender.send_emails()

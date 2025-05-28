@@ -314,18 +314,20 @@ class PromoManager:
 
         # Get all promotions
         df = self.gsheets_worksheets.get_data(sheet_name=config.ALLEGRO_PROMO_SHEET_NAME, include_row_numbers=True)
-        
+        df_helper = self.gsheets_worksheets.get_data(sheet_name=config.ALLEGRO_PROMO_SHEET_HELPER_NAME, include_row_numbers=True)
+
         df['Data startu'] = pd.to_datetime(
             df['Data rozpoczęcia'], 
             format='%Y-%m-%d',
             errors='coerce')
 
-        df['Data zakończenia'] = pd.to_datetime(
+        df['Data końca'] = pd.to_datetime(
             df['Data zakończenia'], 
             format='%d-%m-%Y',
             errors='coerce')
 
         df['EAN'] = df['EAN'].str.strip()
+        df_helper['EAN'] = df_helper['EAN'].str.strip()
 
         df = df[df['EAN'] != '#N/A']
 
@@ -334,37 +336,25 @@ class PromoManager:
 
         days_difference = (today - df['Data startu']).dt.days
         
-        # DEBUG
-        df = df.head(5)
-        
-        offers_too_early_to_discount_mask = (
-            (df['Promocja'].str.contains('Utworzona', na=False) == False) &
-            (df['Promocja'].str.contains('Pominięta', na=False) == False) &
-            (df['Promocja'].str.contains('Error', na=False) == False) &
-            (days_difference < 0))
-        offers_too_early_to_discount = df[offers_too_early_to_discount_mask]
+        df = df[~df['EAN'].isin(df_helper['EAN'])]
 
+        # Filter using loc to ensure proper index alignment
+        offers_too_early_to_discount = df.loc[days_difference < 0]
 
-        for _, row in offers_too_early_to_discount.iterrows():
-            self.promo_logger.info(f'ℹ️ {row['EAN']} Offer is too early for a discount.')
+        # for _, row in offers_too_early_to_discount.iterrows():
+        #     self.promo_logger.info(f'ℹ️ {row['EAN']} Offer is too early for a discount.')
 
         discounts_ommited_too_early = len(offers_too_early_to_discount)
 
-        offers_to_discount_mask = (
-            (df['Promocja'].str.contains('Utworzona', na=False) == False) &
-            (df['Promocja'].str.contains('Pominięta', na=False) == False) &
-            (df['Promocja'].str.contains('Error', na=False) == False) &
-            (days_difference >= 0))
-        offers_to_discount = df[offers_to_discount_mask]
+        # Filter using loc for offers to discount
+        offers_to_discount = df.loc[days_difference >= 0]
+        offers_to_discount = offers_to_discount[~offers_to_discount['EAN'].isin(df_helper['EAN'])]
         
         offers_to_discount_counter = len(offers_to_discount)
 
         discounts_created = 0
         discounts_ommited = 0
-        updates = []
-
-        # DEBUG
-        i = 0
+        discounts_failed = 0
 
         # Processing offers, that have a proper date
         for _, row in tqdm(offers_to_discount.iterrows(), total=offers_to_discount_counter,
@@ -373,14 +363,17 @@ class PromoManager:
             try:
                 product = self.shoper_products.get_product_by_code(row['EAN'], use_code=True)
 
+                if product.get('success') == False:
+                    offers_to_discount.loc[offers_to_discount['EAN'] == row['EAN'], 'Promocja'] = f'Error | {product.get('error')}'
+                    # self.promo_logger.warning(f'❌ Error: {product.get('error')}')
+                    discounts_failed = discounts_failed + 1
+                    continue
+
                 # Ommit offers that have special offer
                 if product.get('special_offer') is not None:
                     self.promo_logger.info(f'⚠️ {row['EAN']} Offer already has a special offer')
                     
-                    updates.append([
-                        int(row['Row Number']),
-                        'Pominięta'
-                    ])
+                    offers_to_discount.loc[offers_to_discount['EAN'] == row['EAN'], 'Promocja'] = 'Pominięta'
 
                     discounts_ommited = discounts_ommited + 1
                     
@@ -391,10 +384,8 @@ class PromoManager:
                     if row['Cena promo'] >= product_price and row['Cena bazowa'] >= product_price:
                         self.promo_logger.warning(f'❌ {row['EAN']} Offer has higher price than bazowa and promo.')
                     
-                        updates.append([
-                            int(row['Row Number']),
-                            f'Error | cena produktu jest niższa'
-                        ])
+                        offers_to_discount.loc[offers_to_discount['EAN'] == row['EAN'], 'Promocja'] = 'Error | ❌ Promo price too low.'
+                        discounts_failed = discounts_failed + 1
                         continue
                         
                     elif row['Cena promo'] > row['Cena bazowa']:
@@ -404,42 +395,102 @@ class PromoManager:
                         discount_type = 'Promo'
                         discount = round(product_price - row['Cena promo'], 2)
 
-                    # special_offer_id = self.shoper_special_offers.create_special_offer(
-                    #     product_id=product['product_id'],
-                    #     discount=discount,
-                    #     discount_type=2,
-                    #     date_to=row['Data zakończenia']
-                    # )
+                    date_to = row['Data zakończenia']
+                    
+                    discount_data = {
+                        'product_id': product['product_id'],
+                        'discount': discount,
+                        'discount_type': 2,
+                        'date_to': date_to
+                    }
 
-                    # DEBUG
-                    i = i + 1
-                    special_offer_id = i
+                    special_offer_id = self.shoper_special_offers.create_special_offer(discount_data)
                 
                     if isinstance(special_offer_id, int):
                         
-                        self.promo_logger.info(f'✅ {row['EAN']} Offer created with a discount {discount} | {discount_type}')
+                        self.promo_logger.info(f'✅ {row['EAN']} Offer created with a discount {discount} | Cena {discount_type}')
                         discounts_created = discounts_created + 1
 
-                        updates.append([
-                            int(row['Row Number']),
-                            f'Utworzona | zniżka: {discount}'
-                        ])
+                        offers_to_discount.loc[offers_to_discount['EAN'] == row['EAN'], 'Promocja'] = f'Utworzona | Cena {discount_type}'
+                        offers_to_discount.loc[offers_to_discount['EAN'] == row['EAN'], 'Zniżka'] = discount
+                        offers_to_discount.loc[offers_to_discount['EAN'] == row['EAN'], 'ID zniżki'] = special_offer_id
 
-            except Exception:
-                updates.append([
-                    int(row['Row Number']),
-                    f'Error'
-                ])      
+            except Exception as e:
+                offers_to_discount.loc[offers_to_discount['EAN'] == row['EAN'], 'Promocja'] = 'Error'
+                self.promo_logger.warning(f'❌ Error: {e}')
+                discounts_failed = discounts_failed + 1
 
-        self.gsheets_worksheets.batch_update_from_a_list(
-            worksheet_name = config.ALLEGRO_PROMO_SHEET_NAME,
-            updates = updates,
-            start_column = 'L',
+        # Reformat before pasting to Allegro Helper
+        numeric_columns = ['Cena bazowa', 'Cena promo', 'Zniżka', 'ID zniżki']
+        for col in numeric_columns:
+            if col in offers_to_discount.columns:
+                # Convert to numeric first, then fill NA values
+                offers_to_discount[col] = pd.to_numeric(offers_to_discount[col], errors='coerce').fillna(0)
+
+        offers_to_discount['EAN'] = offers_to_discount['EAN'].astype('object')
+        offers_to_discount['Data rozpoczęcia'] = offers_to_discount['Data rozpoczęcia'].astype('object')
+        offers_to_discount['Data zakończenia'] = offers_to_discount['Data zakończenia'].astype('object')
+        offers_to_discount['Nr oferty'] = offers_to_discount['Nr oferty'].astype('object')
+        offers_to_discount = offers_to_discount.drop(['Data startu', 'Data końca'], axis=1)
+
+        if len(offers_to_discount) > 0:
+            self.gsheets_worksheets.batch_copy_paste_data(
+                target_worksheet_name=config.ALLEGRO_PROMO_SHEET_HELPER_NAME,
+                values_df=offers_to_discount
+            )
+
+        return discounts_created, discounts_ommited, discounts_ommited_too_early, discounts_failed
+
+    def allegro_discount_offers_remover(self):
+        today = config.TODAY_PD
+
+        # Get all promotions
+        df = self.gsheets_worksheets.get_data(sheet_name=config.ALLEGRO_PROMO_SHEET_NAME, include_row_numbers=True)
+        df_helper = self.gsheets_worksheets.get_data(sheet_name=config.ALLEGRO_PROMO_SHEET_HELPER_NAME, include_row_numbers=True)
+
+        df['EAN'] = df['EAN'].str.strip()
+        df_helper['EAN'] = df_helper['EAN'].str.strip()
+
+        # Get offers removed from GSheets
+        offers_removed_from_gsheets = df_helper[~df_helper['EAN'].isin(df['EAN'])].copy()
+
+        number_of_offers_removed_from_gsheets = len(offers_removed_from_gsheets)
+        print(number_of_offers_removed_from_gsheets)
+
+        offers_removed_from_gsheets['Data zakończenia'] = pd.to_datetime(
+            offers_removed_from_gsheets['Data zakończenia'],
+            format='%Y-%m-%d', 
+            errors='coerce'
         )
 
-        return discounts_created, discounts_ommited, discounts_ommited_too_early
+        days_difference = ((today - offers_removed_from_gsheets['Data zakończenia']).dt.days).astype(int)
+        offers_removed_from_gsheets['różnica dni'] = days_difference
 
-# Offers already created or ommited
-    # Do nothing
-# Offers missing, that had "Promocja Utworzona"
-    # Remove them
+        offers_remove_counter = 0
+
+        # Has the product been removed too early?
+        mask = (
+            (offers_removed_from_gsheets['Promocja'].str.contains('Utworzona', na=False)) &
+            (days_difference <= 0)
+        )
+        
+        offers_to_remove = offers_removed_from_gsheets[mask]
+
+        for _, row in tqdm(offers_to_remove.iterrows(), total=len(offers_to_remove),
+                                desc='Removing special offers', unit=' product'):
+            
+            response = self.shoper_special_offers.remove_special_offer_from_product(
+                identifier = row['EAN'],
+                use_code=True
+            )
+
+            if response == True:
+                offers_remove_counter = offers_remove_counter + 1
+                self.promo_logger.info(f'✅ {row['EAN']} Offer discount removed.')
+            else:
+                self.promo_logger.critical(f'❌ {row['EAN']} Failed to remove offer discount.')
+
+        updates = offers_removed_from_gsheets['Row Number'].tolist()
+        self.gsheets_worksheets.batch_remove_data(config.ALLEGRO_PROMO_SHEET_HELPER_NAME, updates)
+
+        return offers_remove_counter
