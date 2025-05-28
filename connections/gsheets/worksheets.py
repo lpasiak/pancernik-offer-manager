@@ -175,15 +175,13 @@ class GsheetsWorksheets:
             self.outlet_logger.critical(f"❌ Error saving data to Google Sheets: {e}")
             raise
 
-    def batch_copy_paste_data(self, source_worksheet_name: str, target_worksheet_name: str, values_df: pd.DataFrame):
+    def batch_copy_paste_data(self, target_worksheet_name: str, values_df: pd.DataFrame):
         """Copy products from one worksheet to another.
         Args:
-            source_worksheet_name (str): Name of the source worksheet
             target_worksheet_name (str): Name of the target worksheet
             values_df (pd.DataFrame): DataFrame containing the values to move
         """
         try:
-            source_worksheet = self.client._handle_request(self.client.sheet.worksheet, source_worksheet_name)
             target_worksheet = self.client._handle_request(self.client.sheet.worksheet, target_worksheet_name)
 
             # Prepare the values
