@@ -5,3 +5,4 @@ from .shopify_connect import ShopifyAPIClient
 from .gsheets_connect import GSheetsClient
 from .easystorage_connect import EasyStorageClient
 from .idosell_connect import IdoSellAPIClient
+from .allegro_connect import AllegroAPIClient
