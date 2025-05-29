@@ -22,13 +22,6 @@ class AllegroAPIClient:
             'Authorization': f'Bearer {self.token}',
             'Accept': config.ALLEGRO_API_VERSION
         })
-        print('Allegro connected')
-
-    def get(self, endpoint, params=None):
-        url = f'{config.ALLEGRO_API_URL_SANDBOX}/{endpoint}'
-        response = self.session.get(url, params=params)
-        response.raise_for_status
-        return response.json()
 
 
 class AllegroTokenManager:
