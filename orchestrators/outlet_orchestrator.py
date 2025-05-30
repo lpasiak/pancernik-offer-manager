@@ -145,9 +145,9 @@ def run_outlet_manager():
     created_offers = run_outlet_creator(close_logger=False)
     lacking_offers = run_outlet_empty_checker(close_logger=False)
     discounted_offers = run_outlet_discounter(close_logger=False)
+    redirects_removed = run_redirects_remover(close_logger=False)
     archived_offers, activated_offers, deactivated_offers = run_outlet_archiver(close_logger=False)
     attribute_groups, attribute_main = run_outlet_attributer(close_logger=False)
-    redirects_removed = run_redirects_remover(close_logger=False)
 
     log_output = outlet_log_manager.get_log_as_string()
     errors = log_output.count('❌')
