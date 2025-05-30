@@ -7,6 +7,7 @@ Z czym dziś chcesz pracować?
 3. Menedżer zestawów
 4. Shopify
 5. IdoSell
+6. Allegro
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
@@ -70,6 +71,14 @@ def context_menu_idosell():
     menu_text = """--------------------------------
 Co chcesz zrobić?
 1. Dograć produktom ceny ostatniej dostawy, wagi i wymiary
+q żeby wyjść.
+Akcja: """
+    return str(input(menu_text))
+
+def context_menu_allegro():
+    menu_text = """--------------------------------
+Co chcesz zrobić?
+1. Test
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
