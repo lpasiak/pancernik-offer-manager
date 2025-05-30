@@ -9,7 +9,7 @@ class AllegroOffers:
         self.client = client
 
     def get_an_offer_by_id(self, identifier):
-        url = f'{config.ALLEGRO_API_URL_SANDBOX}/sale/product-offers/{identifier}'
+        url = f'{config.ALLEGRO_API_URL}/sale/product-offers/{identifier}'
         response = self.client.session.get(url)
 
         return response.json()

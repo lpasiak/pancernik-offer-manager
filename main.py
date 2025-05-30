@@ -4,6 +4,8 @@ import orchestrators.promo_orchestrator as promo
 from bundle_manager.bundle_manager import BundleManager
 from connections.shopify.products import ShopifyProducts
 from connections.shopify_connect import ShopifyAPIClient
+from connections import AllegroAPIClient
+from connections.allegro.offers import AllegroOffers
 from idosell_manager.idosell_manager import IdoSellManager
 import config
 
@@ -163,6 +165,23 @@ def main():
 
             if action == '1':
                 idosell_manager.upload_product_information()
+            
+            elif action.lower() == 'q':
+                print('Do zobaczenia!')
+                break
+
+            else:
+                print('Nie ma takiego wyboru :/')
+
+        # ----- IdoSell manager ------ #
+        elif action == '6':
+            action = config.context_menu_allegro()
+            allegro_client = AllegroAPIClient()
+            allegro_client.connect()
+            allegro_offers = AllegroOffers(allegro_client)
+
+            if action == '1':
+                allegro_offers.get_an_offer_by_id(7778626016)
             
             elif action.lower() == 'q':
                 print('Do zobaczenia!')
