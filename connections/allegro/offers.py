@@ -1,6 +1,4 @@
-import config, json
-import pandas as pd
-from tqdm import tqdm
+import config
 
 
 class AllegroOffers:
@@ -10,6 +8,6 @@ class AllegroOffers:
 
     def get_an_offer_by_id(self, identifier):
         url = f'{config.ALLEGRO_API_URL}/sale/product-offers/{identifier}'
-        response = self.client.session.get(url)
+        response = self.client.session.request('GET', url)
 
         return response.json()
