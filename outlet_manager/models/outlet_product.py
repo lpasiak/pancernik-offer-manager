@@ -1,6 +1,6 @@
 import random
 import config
-
+from utils.logger import get_outlet_logger
 
 class OutletProduct:
     """
@@ -28,6 +28,7 @@ class OutletProduct:
         self.main_category_id = self.source_product['category_id']
         self.related = self.source_product['related']
         self.attributes = self._transform_attributes()
+        self.outlet_logger = get_outlet_logger().get_logger()
 
     def transform_to_outlet(self):
         """Transform the product to an outlet product and return as a dicitonary."""
@@ -107,7 +108,7 @@ class OutletProduct:
                 return self.source_product['attributes'][group_id][type_id]
                 
             except (KeyError, TypeError):
-                print(f"Warning: Could not determine product type for {self.outlet_code}")
+                self.outlet_logger.warning(f'⚠️ Warning: Could not determine product type for {self.outlet_code}')
                 return None
         return None
 
