@@ -330,9 +330,10 @@ class PromoManager:
 
         df = df[df['EAN'] != '#N/A']
 
-        df['Cena bazowa'] = df['Cena bazowa'].str.replace('zł', '').str.strip().str.replace(',', '.').astype(float)
-        df['Cena promo'] = df['Cena promo'].str.replace('zł', '').str.strip().str.replace(',', '.').astype(float)
-
+        df['Cena bazowa'] = df['Cena bazowa'].str.replace('zł', '').str.replace(r'\s+', '', regex=True).str.replace(',', '.').astype(float)
+        df['Cena promo'] = df['Cena promo'].str.replace('zł', '').str.replace(r'\s+', '', regex=True).str.replace(',', '.').astype(float)
+        
+        # Calculate days difference for remaining logic
         days_difference = (today - df['Data startu']).dt.days
         
         df = df[~df['EAN'].isin(df_helper['EAN'])]
@@ -340,8 +341,8 @@ class PromoManager:
         # Filter using loc to ensure proper index alignment
         offers_too_early_to_discount = df.loc[days_difference < 0]
 
-        # for _, row in offers_too_early_to_discount.iterrows():
-        #     self.promo_logger.info(f'ℹ️ {row['EAN']} Offer is too early for a discount.')
+        for _, row in offers_too_early_to_discount.iterrows():
+            self.promo_logger.info(f'ℹ️ {row['EAN']} Offer is too early for a discount.')
 
         discounts_ommited_too_early = len(offers_too_early_to_discount)
 
