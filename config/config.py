@@ -29,16 +29,18 @@ PROMO_MAIL_RECIPIENT_LIST = [email.strip() for email in PROMO_MAIL_RECIPIENTS.sp
 SHEETS_DIR = ROOT_DIR / 'sheets'
 LOGGING_DIR = ROOT_DIR / 'logging'
 
-DRIVE_EXPORT_DIR = r'H:\Pansernik\Eksporty'
+DRIVE_EXPORT_DIR = r'H:\Pansernik\Eksporty' if os.path.exists('H:') else ROOT_DIR
 
 TODAY = datetime.today().strftime('%d-%m-%Y')
 TODAY_PD = pd.Timestamp.today()
 
 REDIRECT_TARGET_OUTLET_URL = '/outlet'
 
-
 # Shoper SITE - can be either TEST (development) or MAIN (deployment)
+# Allegro SITE - can be either SANDBOX (development) or MAIN (deployment)
 SITE = 'MAIN'
+ALLEGRO_SITE = 'SANDBOX'
+
 SHOPER_SITE_URL = os.getenv(f'SHOPER_SITE_URL_{SITE}')
 SHOPER_LOGIN = os.getenv(f'SHOPER_LOGIN_{SITE}')
 SHOPER_PASSWORD = os.getenv(f'SHOPER_PASSWORD_{SITE}')
@@ -67,8 +69,6 @@ IDOSELL_API_VERSION = 'v5'
 BIZON_SHEET_ID = os.getenv('BIZON_SHEET_ID')
 BIZON_PRODUCT_INFO = 'Informacja produktowa'
 
-# Allegro SITE
-ALLEGRO_SITE = 'SANDBOX'
 ALLEGRO_API_SECRET = os.getenv(f'ALLEGRO_API_SECRET_{ALLEGRO_SITE}')
 ALLEGRO_CLIENT_ID = os.getenv(f'ALLEGRO_CLIENT_ID_{ALLEGRO_SITE}')
 ALLEGRO_API_URL = os.getenv(f'ALLEGRO_API_URL_{ALLEGRO_SITE}')
