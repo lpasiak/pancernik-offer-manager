@@ -336,7 +336,7 @@ class PromoManager:
         # Calculate days difference for remaining logic
         days_difference = (today - df['Data startu']).dt.days
         
-        df = df[~df['EAN'].isin(df_helper['EAN'])]
+        df = df[~df['Nr oferty'].isin(df_helper['Nr oferty'])]
 
         # Filter using loc to ensure proper index alignment
         offers_too_early_to_discount = df.loc[days_difference < 0]
@@ -452,7 +452,7 @@ class PromoManager:
         df_helper['EAN'] = df_helper['EAN'].str.strip()
 
         # Get offers removed from GSheets
-        offers_removed_from_gsheets = df_helper[~df_helper['EAN'].isin(df['EAN'])].copy()
+        offers_removed_from_gsheets = df_helper[~df_helper['Nr oferty'].isin(df['Nr oferty'])].copy()
 
         number_of_offers_removed_from_gsheets = len(offers_removed_from_gsheets)
         print(number_of_offers_removed_from_gsheets)
