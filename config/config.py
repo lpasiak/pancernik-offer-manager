@@ -74,10 +74,10 @@ ALLEGRO_CLIENT_ID = os.getenv(f'ALLEGRO_CLIENT_ID_{ALLEGRO_SITE}')
 ALLEGRO_API_URL = os.getenv(f'ALLEGRO_API_URL_{ALLEGRO_SITE}')
 ALLEGRO_API_VERSION = 'application/vnd.allegro.public.v1+json'
 
-# Easystorage API
-EASYSTORAGE_CREDENTIALS = {
-    'username': os.getenv('EASYSTORAGE_LOGIN'),
-    'password': os.getenv('EASYSTORAGE_PASSWORD')
+# Easystorage and Subiekt API
+DOMAIN_CREDENTIALS = {
+    'username': os.getenv('DOMAIN_LOGIN'),
+    'password': os.getenv('DOMAIN_PASSWORD')
 }
 
 # PROMOTION MANAGER Google Sheets

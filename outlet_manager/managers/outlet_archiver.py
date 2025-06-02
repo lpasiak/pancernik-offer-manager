@@ -48,7 +48,7 @@ class OutletArchiver:
             self.gsheets_worksheets = GsheetsWorksheets(self.gsheets_client)
 
             # Initialize EasyStorage connection
-            self.easystorage_client = EasyStorageClient(config.EASYSTORAGE_CREDENTIALS)
+            self.easystorage_client = EasyStorageClient(config.DOMAIN_CREDENTIALS)
             self.easystorage_client.connect()
             self.easystorage_products = EasyStorageProducts(self.easystorage_client)
             
