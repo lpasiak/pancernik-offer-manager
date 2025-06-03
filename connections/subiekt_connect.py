@@ -10,8 +10,10 @@ class SubiektClient:
         self.credentials = credentials
         self.session = requests.Session()
         self.token = None
-        self.pancernik_account_id = None
-        self.bizon_account_id = None
+        self.allowed_databases = None
+        self.database_2025 = None
+        self.database_2023 = None
+        self.database_bizon = None
 
     def connect(self):
         auth_endpoint = f'https://api.subiekt.pancernik.local/api/v1/authorization/authorize'
@@ -19,11 +21,15 @@ class SubiektClient:
 
         if response.status_code == 200:
             self.token = response.json()['token']
-            self.session.headers.update({'Authorization': f'Bearer {self. token}'})
-
+            self.session.headers.update({
+                'Authorization': f'Bearer {self.token}',
+                'accept': 'application/json',
+            })
         # Getting an account id
-        allowed_databases_endpoint = f'https://api.subiekt.pancernik.local/api/v1/configuration/allowed-databases/'
-        response = self.session.request(method='GET', url=allowed_databases_endpoint, verify=False)
+        allowed_databases_endpoint = f'https://api.subiekt.pancernik.local/api/v1/configuration/allowed-databases'
+        response = self.session.request('GET', url=allowed_databases_endpoint, verify=False)
 
         self.allowed_databases = response.json()
-        print(self.allowed_databases)
+        self.database_2025 = self.allowed_databases[0]
+        self.database_2023 = self.allowed_databases[1]
+        self.database_bizon = self.allowed_databases[2]
