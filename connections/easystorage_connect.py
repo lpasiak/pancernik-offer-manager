@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 import urllib3
+import config
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -15,7 +16,7 @@ class EasyStorageClient:
         self.bizon_account_id = None
 
     def connect(self):
-        auth_endpoint = f'https://easystorage.engine.pancernik.local/api/v1/authorization/authorize'
+        auth_endpoint = f'{config.EASYSTORAGE_URL}/api/v1/authorization/authorize'
         response = self.session.request('POST', url=auth_endpoint, json=self.credentials, verify=False)
 
         if response.status_code == 200:
@@ -23,7 +24,7 @@ class EasyStorageClient:
             self.session.headers.update({'Authorization': f'Bearer {self. token}'})
 
         # Getting an account id
-        account_endpoint = f'https://easystorage.engine.pancernik.local/api/v1/accounts/'
+        account_endpoint = f'{config.EASYSTORAGE_URL}/api/v1/accounts/'
         response = self.session.request(method='GET', url=account_endpoint, verify=False)
 
         self.pancernik_account_id = response.json()[1]['id']

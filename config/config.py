@@ -80,6 +80,9 @@ DOMAIN_CREDENTIALS = {
     'password': os.getenv('DOMAIN_PASSWORD')
 }
 
+EASYSTORAGE_URL = os.getenv('EASYSTORAGE_URL')
+SUBIEKT_URL = os.getenv('SUBIEKT_URL')
+
 # PROMOTION MANAGER Google Sheets
 PROMO_SHEET_ID = os.getenv('PROMO_SHEET_ID')
 PROMO_SHEET_EXPORT_NAME = 'Eksport'
