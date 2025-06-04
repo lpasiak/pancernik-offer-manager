@@ -1,12 +1,7 @@
-from connections.shoper_connect import ShoperAPIClient
-from connections.shoper.products import ShoperProducts
-from connections.shoper.pictures import ShoperPictures
-from connections.shoper.categories import ShoperCategories
-from connections.shopify_connect import ShopifyAPIClient
+from connections import ShoperAPIClient, ShopifyAPIClient, EasyStorageClient, IdoSellAPIClient
+from connections.shoper import ShoperProducts, ShoperProducers, ShoperCategories
 from connections.shopify.products import ShopifyProducts
-from connections.easystorage_connect import EasyStorageClient
 from connections.easystorage.products import EasyStorageProducts
-from connections.idosell_connect import IdoSellAPIClient
 from connections.idosell.products import IdoSellProducts
 import config
 import json
@@ -46,8 +41,8 @@ class ExportManagerShoper:
     def __init__(self):
         self.shoper_client = None
         self.shoper_products = None
-        self.shoper_pictures = None
-        self.idosell_client = None
+        self.shoper_categories = None
+        self.shoper_producers = None
         
     def connect(self):
         """Initialize all necessary connections with Shoper"""
@@ -60,9 +55,9 @@ class ExportManagerShoper:
             )
             self.shoper_client.connect()
             self.shoper_products = ShoperProducts(self.shoper_client)
-            self.shoper_pictures = ShoperPictures(self.shoper_client)
             self.shoper_categories = ShoperCategories(self.shoper_client)
-            
+            self.shoper_producers = ShoperProducers(self.shoper_client)
+
             return True
             
         except Exception as e:
@@ -70,8 +65,9 @@ class ExportManagerShoper:
             return False
 
     def export_all_data_from_shoper(self):
-        self.export_shoper_products()
+        # self.export_shoper_products()
         self.export_shoper_categories()
+        self.export_shoper_producers()
 
     def export_shoper_products(self):
         products = self.shoper_products.get_all_products_json()
@@ -83,6 +79,10 @@ class ExportManagerShoper:
         print(f"✅ Successfully downloaded {len(categories)} categories")
         save_to_files(items_to_save=categories, file='shoper-categories')
 
+    def export_shoper_producers(self):
+        producers = self.shoper_producers.get_all_producers_json()
+        print(f"✅ Successfully downloaded {len(producers)} producers")
+        save_to_files(items_to_save=producers, file='shoper-producers')
 
 class ExportManagerShopify:
     def __init__(self):

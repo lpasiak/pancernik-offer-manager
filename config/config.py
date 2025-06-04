@@ -83,6 +83,9 @@ DOMAIN_CREDENTIALS = {
 EASYSTORAGE_URL = os.getenv('EASYSTORAGE_URL')
 SUBIEKT_URL = os.getenv('SUBIEKT_URL')
 
+# PRICES MANAGER Google Sheets
+PRICES_SHEET_FOR_COGS_ID = os.getenv('PRICES_SHEET_FOR_COGS_ID')
+
 # PROMOTION MANAGER Google Sheets
 PROMO_SHEET_ID = os.getenv('PROMO_SHEET_ID')
 PROMO_SHEET_EXPORT_NAME = 'Eksport'
@@ -108,6 +111,8 @@ OUTLET_DAYS_TO_BE_REMOVED = 60
 
 OUTLET_REDIRECT_DAYS_TO_BE_REMOVED = 21
 
+# Shoper parameters
+
 OUTLET_MAIN_PRODUCT_ATTRIBUTE_IDS = {
     'MAIN': {'id': '1402', 'group': '577'},
     'TEST': {'id': '29', 'group': '9'}
@@ -116,6 +121,10 @@ OUTLET_MAIN_PRODUCT_ATTRIBUTE_IDS = {
 PRODUCT_TYPE = {
     'MAIN': {'id': '1370', 'group': '550'},
     'TEST': {'id': '28', 'group': '8'}
+}
+
+COST_OF_GOODS_SOLD = {
+    'MAIN': {'id': '1686', 'group': '550'},
 }
 
 # CLEANUP MANAGER Google Sheets
