@@ -65,7 +65,7 @@ class ExportManagerShoper:
             return False
 
     def export_all_data_from_shoper(self):
-        # self.export_shoper_products()
+        self.export_shoper_products()
         self.export_shoper_categories()
         self.export_shoper_producers()
 
