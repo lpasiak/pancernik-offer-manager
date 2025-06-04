@@ -41,6 +41,12 @@ def run_idosell_exporter():
     idosell_export_manager.connect()
     idosell_export_manager.export_idosell_products_descriptions()
 
+def run_shoper_bautiful_products_exporter():
+    print('\n----- ℹ️  Exporting Shoper Beautiful Information -----\n')
+    shoper_export_manager = ExportManagerShoper()
+    shoper_export_manager.connect()
+    shoper_export_manager.export_beautiful_shoper_products()
+
 def run_massive_exporter():
     run_shoper_exporter()
     run_shopify_light_exporter()

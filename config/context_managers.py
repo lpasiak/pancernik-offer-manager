@@ -21,6 +21,7 @@ Skąd chcesz pobrać dane?
 4. EasyStorage Pancernik
 5. EasyStorage Bizon
 6. IdoSell
+7. Shoper | Beautiful products
 all. Wszystko powyżej
 q żeby wyjść.
 Akcja: """

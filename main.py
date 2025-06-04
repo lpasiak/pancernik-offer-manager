@@ -42,6 +42,10 @@ def main():
                 # Export IdoSell products
                 export.run_idosell_exporter()
 
+            elif action =='7':
+                # Export Shoper Beautiful Products
+                export.run_shoper_bautiful_products_exporter()
+                
             elif action == 'all':
                 # Do all the steps
                 export.run_massive_exporter()
