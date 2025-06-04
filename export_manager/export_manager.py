@@ -1,5 +1,5 @@
 from connections import ShoperAPIClient, ShopifyAPIClient, EasyStorageClient, IdoSellAPIClient
-from connections.shoper import ShoperProducts, ShoperProducers, ShoperCategories
+from connections.shoper import ShoperProducts, ShoperProducers, ShoperCategories, ShoperAttributes
 from connections.shopify.products import ShopifyProducts
 from connections.easystorage.products import EasyStorageProducts
 from connections.idosell.products import IdoSellProducts
@@ -43,6 +43,7 @@ class ExportManagerShoper:
         self.shoper_products = None
         self.shoper_categories = None
         self.shoper_producers = None
+        self.shoper_attributes = None
         
     def connect(self):
         """Initialize all necessary connections with Shoper"""
@@ -57,6 +58,7 @@ class ExportManagerShoper:
             self.shoper_products = ShoperProducts(self.shoper_client)
             self.shoper_categories = ShoperCategories(self.shoper_client)
             self.shoper_producers = ShoperProducers(self.shoper_client)
+            self.shoper_attributes = ShoperAttributes(self.shoper_client)
 
             return True
             
@@ -65,24 +67,76 @@ class ExportManagerShoper:
             return False
 
     def export_all_data_from_shoper(self):
-        self.export_shoper_products()
-        self.export_shoper_categories()
-        self.export_shoper_producers()
+        shoper_producers = self.export_shoper_producers()
+        # shoper_categories = self.export_shoper_categories()
+        shoper_products = self.export_shoper_products()
+        shoper_attribute_groups = self.export_shoper_attribute_groups()
+        shoper_attributes = self.export_shoper_attributes()
+
+        return shoper_producers, shoper_products, shoper_attribute_groups, shoper_attributes
 
     def export_shoper_products(self):
         products = self.shoper_products.get_all_products_json()
         print(f"✅ Successfully downloaded {len(products)} products")
         save_to_files(items_to_save=products, file='shoper-products')
+        return products
 
     def export_shoper_categories(self):
         categories = self.shoper_categories.get_all_categories_json()
         print(f"✅ Successfully downloaded {len(categories)} categories")
         save_to_files(items_to_save=categories, file='shoper-categories')
+        return categories
 
     def export_shoper_producers(self):
         producers = self.shoper_producers.get_all_producers_json()
         print(f"✅ Successfully downloaded {len(producers)} producers")
         save_to_files(items_to_save=producers, file='shoper-producers')
+        return producers
+    
+    def export_shoper_attribute_groups(self):
+        attribute_groups = self.shoper_attributes.get_all_attribute_groups_json()
+        print(f"✅ Successfully downloaded {len(attribute_groups)} attribute groups")
+        save_to_files(items_to_save=attribute_groups, file='shoper-attribute_groups')
+        return attribute_groups
+    
+    def export_shoper_attributes(self):
+        attributes = self.shoper_attributes.get_all_attributes_json()
+        print(f"✅ Successfully downloaded {len(attributes)} attributes")
+        save_to_files(items_to_save=attributes, file='shoper-attributes')
+        return attributes
+
+    def export_beautiful_shoper_products(self):
+        producers, products, attribute_groups, attributes = self.export_all_data_from_shoper()
+        new_list = []
+
+        for product_id, product in products.items():
+            new_product = {
+                'product_id': product['product_id'],
+                'code': product['code'],
+                'ean': product.get('ean', ''),
+                'name': product['translations']['pl_PL'].get('name', ''),
+                'producer': self.map_producer(producers, product.get('producer_id', '')),
+                'price': product['stock']['price'],
+                'promo_price': product.get('promo_price', ''),
+                'active': product['translations']['pl_PL'].get('active', ''),
+                'seo_url': product['translations']['pl_PL'].get('seo_url', ''),
+                'add_date': product['add_date'],
+                'category_id': product['category_id'],
+                'producer_id': product['producer_id']
+            }
+
+            new_list.append(new_product)
+
+        print(f"ℹ️  Generated {len(new_list)} beautiful products.")
+        save_to_files(items_to_save=new_list, file='shoper-beautiful-products')
+
+    def map_producer(self, producers, producer_id):
+        if not producer_id or not producers:
+            return ''
+        
+        producer = producers.get(producer_id, {})
+        return producer.get('name', '')
+    
 
 class ExportManagerShopify:
     def __init__(self):

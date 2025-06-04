@@ -213,9 +213,14 @@ class ShoperProducts:
             for page in tqdm(range(2, number_of_pages + 1), desc="Downloading pages", unit=" page"):
                 params = {'limit': config.SHOPER_LIMIT, 'page': page}
                 response = self.client._handle_request('GET', f'{self.client.site_url}/webapi/rest/products', params=params)
+                
                 if response.status_code != 200:
                     print(f"❌ Error fetching page {page}")
-                    continue  # optionally handle differently
+                    continue
+
+                # Debug
+                if page == 5:
+                    break
 
                 page_data = response.json().get('list', [])
                 if not page_data:
