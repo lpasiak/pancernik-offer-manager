@@ -124,7 +124,8 @@ PRODUCT_TYPE = {
 }
 
 COST_OF_GOODS_SOLD = {
-    'MAIN': {'id': '1686', 'group': '550'},
+    'id': '1686',
+    'group': '550'
 }
 
 # CLEANUP MANAGER Google Sheets

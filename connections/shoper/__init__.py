@@ -6,3 +6,4 @@ from .producers import ShoperProducers
 from .products import ShoperProducts
 from .redirects import ShoperRedirects
 from .specialoffers import ShoperSpecialOffers
+from .gauges import ShoperGauges

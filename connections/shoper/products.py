@@ -218,10 +218,6 @@ class ShoperProducts:
                     print(f"❌ Error fetching page {page}")
                     continue
 
-                # Debug
-                if page == 5:
-                    break
-
                 page_data = response.json().get('list', [])
                 if not page_data:
                     break

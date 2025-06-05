@@ -1,5 +1,5 @@
 from connections import ShoperAPIClient, ShopifyAPIClient, EasyStorageClient, IdoSellAPIClient
-from connections.shoper import ShoperProducts, ShoperProducers, ShoperCategories, ShoperAttributes
+from connections.shoper import ShoperProducts, ShoperProducers, ShoperCategories, ShoperAttributes, ShoperGauges
 from connections.shopify.products import ShopifyProducts
 from connections.easystorage.products import EasyStorageProducts
 from connections.idosell.products import IdoSellProducts
@@ -44,6 +44,7 @@ class ExportManagerShoper:
         self.shoper_categories = None
         self.shoper_producers = None
         self.shoper_attributes = None
+        self.shoper_gauges = None
         
     def connect(self):
         """Initialize all necessary connections with Shoper"""
@@ -59,6 +60,7 @@ class ExportManagerShoper:
             self.shoper_categories = ShoperCategories(self.shoper_client)
             self.shoper_producers = ShoperProducers(self.shoper_client)
             self.shoper_attributes = ShoperAttributes(self.shoper_client)
+            self.shoper_gauges = ShoperGauges(self.shoper_client)
 
             return True
             
@@ -67,13 +69,14 @@ class ExportManagerShoper:
             return False
 
     def export_all_data_from_shoper(self):
-        shoper_producers = self.export_shoper_producers()
+        producers = self.export_shoper_producers()
         # shoper_categories = self.export_shoper_categories()
-        shoper_products = self.export_shoper_products()
-        shoper_attribute_groups = self.export_shoper_attribute_groups()
-        shoper_attributes = self.export_shoper_attributes()
+        products = self.export_shoper_products()
+        attribute_groups = self.export_shoper_attribute_groups()
+        attributes = self.export_shoper_attributes()
+        gauges = self.export_shoper_gauges()
 
-        return shoper_producers, shoper_products, shoper_attribute_groups, shoper_attributes
+        return producers, products, attribute_groups, attributes, gauges
 
     def export_shoper_products(self):
         products = self.shoper_products.get_all_products_json()
@@ -104,9 +107,15 @@ class ExportManagerShoper:
         print(f"✅ Successfully downloaded {len(attributes)} attributes")
         save_to_files(items_to_save=attributes, file='shoper-attributes')
         return attributes
+    
+    def export_shoper_gauges(self):
+        gauges = self.shoper_gauges.get_all_gauges_json()
+        print(f"✅ Successfully downloaded {len(gauges)} gauges")
+        save_to_files(items_to_save=gauges, file='shoper-gauges')
+        return gauges
 
     def export_beautiful_shoper_products(self):
-        producers, products, attribute_groups, attributes = self.export_all_data_from_shoper()
+        producers, products, attribute_groups, attributes, gauges = self.export_all_data_from_shoper()
         new_list = []
 
         for product_id, product in products.items():
@@ -120,9 +129,11 @@ class ExportManagerShoper:
                 'promo_price': product.get('promo_price', ''),
                 'active': product['translations']['pl_PL'].get('active', ''),
                 'seo_url': product['translations']['pl_PL'].get('seo_url', ''),
+                'gauge': self.map_gauge(gauges, product.get('gauge_id', '')),
+                'cogs': self.map_cogs(product['attributes']),
                 'add_date': product['add_date'],
                 'category_id': product['category_id'],
-                'producer_id': product['producer_id']
+                'producer_id': product['producer_id'],
             }
 
             new_list.append(new_product)
@@ -136,6 +147,28 @@ class ExportManagerShoper:
         
         producer = producers.get(producer_id, {})
         return producer.get('name', '')
+    
+    def map_gauge(self, gauges, gauge_id):
+
+        if not gauge_id or not gauges:
+            return ''
+            
+        for gauge in gauges:
+            if int(gauge['gauge_id']) == int(gauge_id):
+                translations = gauge.get('translations', {})
+                pl_translation = translations.get('pl_PL', {})
+                return pl_translation.get('name', '')
+        return ''
+    
+    def map_cogs(self, product_attributes):
+        if not isinstance(product_attributes, dict):
+            return ''
+            
+        attribute_group = product_attributes.get(config.COST_OF_GOODS_SOLD['group'], {})
+        if not isinstance(attribute_group, dict):
+            return ''
+            
+        return attribute_group.get(config.COST_OF_GOODS_SOLD['id'], '')
     
 
 class ExportManagerShopify:

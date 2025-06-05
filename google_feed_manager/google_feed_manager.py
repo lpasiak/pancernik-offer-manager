@@ -5,6 +5,7 @@ from connections.gsheets.worksheets import GsheetsWorksheets
 import config
 import pandas as pd
 import json
+from tqdm import tqdm
 
 
 class GoogleCostOfGoodsSold:
@@ -40,21 +41,28 @@ class GoogleCostOfGoodsSold:
             return False
         
     def _convert_json_to_df(self, filepath):
-        """Convert JSON file to DataFrame
-        Args:
-            filepath (str): Path to the JSON file
-        Returns:
-            pd.DataFrame: DataFrame with selected columns
-        """
-        with open(filepath, 'r', encoding='utf-8') as file:
-            data = json.load(file)
-            data_list = list(data.values())
-
-            return pd.DataFrame(data_list)
+        try:
+            with open(filepath, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+                return pd.DataFrame(data)
+        except Exception as e:
+            print(f'❌ Error in _convert_json_to_df: {e}')
 
     def get_all_products_from_shoper(self):
         df_products = self._convert_json_to_df(config.SHEETS_DIR / 'api-exports' / 'shoper-beautiful-products.json')
         return df_products
 
-    def get_prices_bizon(self):
-        self.gsheets_worksheets.get_data('Bizon')
+    def import_bizon_prices_to_shoper(self):
+        price_df = self.gsheets_worksheets.get_data('Bizon')
+        product_df = self.get_all_products_from_shoper()
+
+        # mask = (
+        #     (product_df['producer'] == 'Bizon') &
+
+        # )
+        # product_df = product_df[mask]
+
+        print(price_df)
+        print(product_df)
+
+
