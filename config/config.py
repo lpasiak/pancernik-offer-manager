@@ -128,6 +128,11 @@ COST_OF_GOODS_SOLD = {
     'group': '550'
 }
 
+PRODUCER_SERIES = {
+    'id': '1160',
+    'group': '550'
+}
+
 # CLEANUP MANAGER Google Sheets
 CLEANUP_SHEET_ID = os.getenv('CLEANUP_SHEET_ID')
 CLEANUP_SHEET_DIMENSIONS_NAME = 'Wymiary'

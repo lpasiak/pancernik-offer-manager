@@ -131,6 +131,7 @@ class ExportManagerShoper:
                 'seo_url': product['translations']['pl_PL'].get('seo_url', ''),
                 'gauge': self.map_gauge(gauges, product.get('gauge_id', '')),
                 'cogs': self.map_cogs(product['attributes']),
+                'series': self.map_product_series(product['attributes']),
                 'add_date': product['add_date'],
                 'category_id': product['category_id'],
                 'producer_id': product['producer_id'],
@@ -169,6 +170,16 @@ class ExportManagerShoper:
             return ''
             
         return attribute_group.get(config.COST_OF_GOODS_SOLD['id'], '')
+    
+    def map_product_series(self, product_attributes):
+        if not isinstance(product_attributes, dict):
+            return ''
+            
+        attribute_group = product_attributes.get(config.PRODUCER_SERIES['group'], {})
+        if not isinstance(attribute_group, dict):
+            return ''
+            
+        return attribute_group.get(config.PRODUCER_SERIES['id'], '')
     
 
 class ExportManagerShopify:
