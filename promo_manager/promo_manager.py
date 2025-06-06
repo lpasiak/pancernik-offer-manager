@@ -329,6 +329,7 @@ class PromoManager:
         df_helper['EAN'] = df_helper['EAN'].str.strip()
 
         df = df[df['EAN'] != '#N/A']
+        df = df[df['Kanał sprzedaży'] != 'sma_bizon']
 
         df['Cena bazowa'] = df['Cena bazowa'].str.replace('zł', '').str.replace(r'\s+', '', regex=True).str.replace(',', '.').astype(float)
         df['Cena promo'] = df['Cena promo'].str.replace('zł', '').str.replace(r'\s+', '', regex=True).str.replace(',', '.').astype(float)
