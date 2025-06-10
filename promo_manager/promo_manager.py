@@ -455,9 +455,6 @@ class PromoManager:
         # Get offers removed from GSheets
         offers_removed_from_gsheets = df_helper[~df_helper['Nr oferty'].isin(df['Nr oferty'])].copy()
 
-        number_of_offers_removed_from_gsheets = len(offers_removed_from_gsheets)
-        print(number_of_offers_removed_from_gsheets)
-
         offers_removed_from_gsheets['Data zakończenia'] = pd.to_datetime(
             offers_removed_from_gsheets['Data zakończenia'],
             format='%Y-%m-%d', 
