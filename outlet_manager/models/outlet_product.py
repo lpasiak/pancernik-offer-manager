@@ -210,8 +210,6 @@ class OutletProduct:
                     for key, value in attribute.items():
                         attribute_dict[key] = value
                 else:
-                    # print(f"Warning: Skipping non-dict attribute: {attribute}")
-                    # Not sure why I added this... Will have to investigate it.
                     pass
                         
         # Handle if attributes is a dictionary
@@ -221,8 +219,6 @@ class OutletProduct:
                     for key, value in attributes.items():
                         attribute_dict[key] = value
                 else:
-                    # print(f"Warning: Skipping non-dict attributes for group {group}: {attributes}")
-                    # Not sure why I added this... Will have to investigate it.
                     pass
 
         # Add outlet attributes
