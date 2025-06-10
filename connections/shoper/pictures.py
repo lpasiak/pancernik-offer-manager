@@ -60,3 +60,31 @@ class ShoperPictures:
             self.outlet_logger.critical(f'❌ Request failed: {str(e)}')
             return str(e)
 
+    # def add_product_image(self, product_id, photo_url):
+    #     """Update product image
+    #     Args:
+    #         product_id (int): Product id
+    #         photo_url (str): Full product url
+    #     Returns:
+    #         int: Image ID if succesful
+    #     """
+        
+    #     picture_name = photo_url.split('/')[-1]
+
+    #     image_body = {
+    #         'product_id': product_id,
+    #         'url': photo_url,
+    #         'translations': {
+    #             'pl_PL': {
+    #                 'name': picture_name,
+    #                 'description': picture_name
+    #             }
+    #         }
+    #     }
+
+    #     response = self.client._handle_request('POST', f'{self.client.site_url}/webapi/rest/product-images', params=image_body)
+
+    #     print(response)
+
+    #     breakpoint()
+    #     print(response.json())
