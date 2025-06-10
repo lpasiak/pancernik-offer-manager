@@ -37,10 +37,9 @@ class ShoperPictures:
             self.outlet_logger.critical(f'❌ Request failed: {str(e)}')
             return str(e)
         
-    def update_product_image(self, product_id, image_data):
+    def update_product_image(self, image_data):
         """Update product image
         Args:
-            product_id (int): Product code
             image_data (dict): Image data
         Returns:
             dict|None: Image data if successful, None if failed
@@ -60,3 +59,4 @@ class ShoperPictures:
             print(f'❌ Request failed: {str(e)}')
             self.outlet_logger.critical(f'❌ Request failed: {str(e)}')
             return str(e)
+

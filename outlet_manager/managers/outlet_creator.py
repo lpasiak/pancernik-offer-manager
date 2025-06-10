@@ -154,7 +154,7 @@ class OutletCreator:
                     
                     while retry_count < max_retries:
                         try:
-                            response = self.shoper_pictures.update_product_image(created_offer_id, picture)
+                            response = self.shoper_pictures.update_product_image(picture)
 
                             if response.status_code == 200:
                                 images_uploaded = images_uploaded + 1
