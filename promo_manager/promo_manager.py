@@ -339,7 +339,12 @@ class PromoManager:
         # Calculate days difference for remaining logic
         days_difference = (today - df['Data startu']).dt.days
         
-        df = df[~df['Nr oferty'].isin(df_helper['Nr oferty'])]
+        df = df[~df.apply(lambda row: any(
+            (row['Nr oferty'] == helper_row['Nr oferty']) and
+            (row['Data rozpoczęcia'] == helper_row['Data rozpoczęcia']) and 
+            (row['Data zakończenia'] == helper_row['Data zakończenia'])
+            for _, helper_row in df_helper.iterrows()
+        ), axis=1)]
 
         # Filter using loc to ensure proper index alignment
         offers_too_early_to_discount = df.loc[days_difference < 0]
@@ -411,7 +416,7 @@ class PromoManager:
                 
                     if isinstance(special_offer_id, int):
                         
-                        self.promo_logger.info(f'✅ {row['EAN']} Offer created with a discount {discount} | Cena {discount_type}')
+                        self.promo_logger.info(f'✅ Offer created | {row['EAN']} | Start: {row['Data rozpoczęcia']} | Koniec: {row['Data zakończenia']} | Bazowa: {row['Cena bazowa']} | Promo: {row['Cena promo']}')
                         discounts_created = discounts_created + 1
 
                         offers_to_discount.loc[offers_to_discount['EAN'] == row['EAN'], 'Promocja'] = f'Utworzona | Cena {discount_type}'
@@ -454,8 +459,12 @@ class PromoManager:
         df['EAN'] = df['EAN'].str.strip()
         df_helper['EAN'] = df_helper['EAN'].str.strip()
 
-        # Get offers removed from GSheets
-        offers_removed_from_gsheets = df_helper[~df_helper['Nr oferty'].isin(df['Nr oferty'])].copy()
+        offers_removed_from_gsheets = df_helper[~df_helper.apply(lambda row: any(
+            (row['Nr oferty'] == df_row['Nr oferty']) and
+            (row['Data rozpoczęcia'] == df_row['Data rozpoczęcia']) and
+            (row['Data zakończenia'] == df_row['Data zakończenia'])
+            for _, df_row in df.iterrows()
+        ), axis=1)].copy()
 
         offers_removed_from_gsheets['Data zakończenia'] = pd.to_datetime(
             offers_removed_from_gsheets['Data zakończenia'],
@@ -486,7 +495,7 @@ class PromoManager:
 
             if response == True:
                 offers_remove_counter = offers_remove_counter + 1
-                self.promo_logger.info(f'✅ {row['EAN']} Offer discount removed.')
+                self.promo_logger.info(f'ℹ️ Offer removed | {row['EAN']} | Start: {row['Data rozpoczęcia']} | Koniec: {row['Data zakończenia']} | Bazowa: {row['Cena bazowa']} | Promo: {row['Cena promo']}')
             else:
                 self.promo_logger.critical(f'❌ {row['EAN']} Failed to remove offer discount.')
 
