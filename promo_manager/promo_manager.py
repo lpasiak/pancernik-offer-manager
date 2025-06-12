@@ -61,6 +61,7 @@ class PromoManager:
         df['discount_type'] = df['special_offer'].apply(lambda x: x['discount_type'])
         df['discount_type'] = df['discount_type'].apply(lambda x: 'stały' if x == '2' else 'procentowy' if x == '3' else 'stały' if x == '1' else x)
         df['discount_amount'] = df['special_offer'].apply(lambda x: x['discount'])
+        df['promo_id'] = df['special_offer'].apply(lambda x: x['promo_id'])
         
         # Filter out products that contain 'OUT' in code
         df = df[~df['code'].str.contains('OUT', case=False, na=False)]
@@ -74,7 +75,8 @@ class PromoManager:
             'Typ promocji': df['discount_type'].astype('object'),
             'Data początku': df['date_from'].astype('object'),
             'Data końca': df['date_to'].astype('object'),
-            'ID produktu': df['product_id'].astype('object')
+            'ID produktu': df['product_id'].astype('object'),
+            "ID zniżki": df['promo_id'].astype('object')
         })
 
         # Save to promo sheets
