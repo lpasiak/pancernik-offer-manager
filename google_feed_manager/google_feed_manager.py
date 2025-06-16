@@ -94,17 +94,29 @@ class GoogleCostOfGoodsSold:
         bizon_product_df['COGS'] = bizon_product_df['Koszt produkcji netto'].astype(str).str.replace(',', '.') + ' PLN'
         bizon_product_df = bizon_product_df[['product_id', 'code', 'COGS', 'Koszt produkcji netto']]
 
-        for index, row in tqdm(bizon_product_df.iterrows(), total=len(bizon_product_df), desc="Updating Bizon products", unit=" product"):
+        for _, row in tqdm(bizon_product_df.iterrows(), total=len(bizon_product_df), desc="Updating Bizon products", unit=" product"):
             self.shoper_products.update_product_by_code(row['product_id'], 
                                                         attributes={config.COST_OF_GOODS_SOLD['id']: row['COGS']},
                                                         stock={'price_buying': row['Koszt produkcji netto']})
-            
+
     def import_bewood_dropshipping_prices_to_shoper(self, product_df):
         price_df = self.gsheets_worksheets.get_data('Bewood', include_row_numbers=False)
 
         product_mask = (
             (product_df['producer'] == 'Bewood') &
-            (product_df['gauge'].str.contains('Wydłużony czas realizacji'))
+            (product_df['gauge'].str.contains('Wydłużony czas realizacji')) &
+            (product_df['series'] != '')
         )
 
         product_df = product_df[product_mask]
+
+        bewood_product_df = pd.merge(
+            product_df,
+            price_df,
+            left_on='series',
+            right_on='Seria',
+            how='left'
+        )
+
+        print(bewood_product_df)
+        bewood_product_df.to_excel('xd.xlsx')
