@@ -1,10 +1,12 @@
 
 from connections import ShoperAPIClient, GSheetsClient, SubiektClient
+from connections.subiekt import SubiektProducts
 from connections.shoper.products import ShoperProducts
 from connections.gsheets.worksheets import GsheetsWorksheets
 import config
 import pandas as pd
 import json
+import re
 from tqdm import tqdm
 
 
@@ -12,6 +14,7 @@ class GoogleCostOfGoodsSold:
     def __init__(self):
         self.shoper_client = None
         self.gsheets_client = None
+        self.subiekt_client = None
         self.shoper_products = None
         self.gsheets_worksheets = None
         
@@ -34,6 +37,10 @@ class GoogleCostOfGoodsSold:
             )
             self.gsheets_client.connect()
             self.gsheets_worksheets = GsheetsWorksheets(self.gsheets_client)
+
+            self.subiekt_client = SubiektClient()
+            self.subiekt_client.connect()
+            self.subiekt_products = SubiektProducts(self.subiekt_client)
             return True
             
         except Exception as e:
@@ -69,55 +76,138 @@ class GoogleCostOfGoodsSold:
         return product_df
 
     def import_bizon_prices_to_shoper(self, product_df):
-        price_df = self.gsheets_worksheets.get_data('Bizon')
 
-        product_df = product_df[product_df['producer'] == 'Bizon']
+        try:
+            price_df = self.gsheets_worksheets.get_data('Bizon')
 
-        price_mask = (
-            (price_df['EAN'].notna()) &
-            (price_df['EAN'] != '') &
-            (price_df['EAN'] != 0) &
-            (price_df['EAN'] != '0') &
-            (price_df['EAN'] != '#N/A')
-        )
-        price_df = price_df[price_mask]
-        price_df['EAN'] = price_df['EAN'].astype(str)
-        
-        bizon_product_df = pd.merge(
-            product_df,
-            price_df,
-            left_on='code',
-            right_on='EAN',
-            how='left'
-        )
+            product_df = product_df[product_df['producer'] == 'Bizon']
 
-        bizon_product_df['COGS'] = bizon_product_df['Koszt produkcji netto'].astype(str).str.replace(',', '.') + ' PLN'
-        bizon_product_df = bizon_product_df[['product_id', 'code', 'COGS', 'Koszt produkcji netto']]
+            price_mask = (
+                (price_df['EAN'].notna()) &
+                (price_df['EAN'] != '') &
+                (price_df['EAN'] != 0) &
+                (price_df['EAN'] != '0') &
+                (price_df['EAN'] != '#N/A')
+            )
+            price_df = price_df[price_mask]
+            price_df['EAN'] = price_df['EAN'].astype(str)
+            
+            bizon_product_df = pd.merge(
+                product_df,
+                price_df,
+                left_on='code',
+                right_on='EAN',
+                how='left'
+            )
 
-        for index, row in tqdm(bizon_product_df.iterrows(), total=len(bizon_product_df), desc="Updating Bizon products", unit=" product"):
-            self.shoper_products.update_product_by_code(row['product_id'], 
-                                                        attributes={config.COST_OF_GOODS_SOLD['id']: row['COGS']},
-                                                        stock={'price_buying': row['Koszt produkcji netto']})
+            bizon_product_df['COGS'] = bizon_product_df['Koszt produkcji netto'].astype(str).str.replace(',', '.') + ' PLN'
+            bizon_product_df = bizon_product_df[['product_id', 'COGS', 'Koszt produkcji netto']]
+
+            for _, row in tqdm(bizon_product_df.iterrows(), total=len(bizon_product_df), desc="Updating Bizon products", unit=" product"):
+                self.shoper_products.update_product_by_code(row['product_id'], 
+                                                            attributes={config.COST_OF_GOODS_SOLD['id']: row['COGS']},
+                                                            stock={'price_buying': row['Koszt produkcji netto']})
+        except Exception as e:
+            print(f'❌ Failed to upload Bizon COGS: {e}')
             
     def import_bewood_dropshipping_prices_to_shoper(self, product_df):
-        price_df = self.gsheets_worksheets.get_data('Bewood', include_row_numbers=False)
 
-        product_mask = (
-            (product_df['producer'] == 'Bewood') &
-            (product_df['gauge'].str.contains('Wydłużony czas realizacji'))
-            (product_df['gauge'].str.contains('Wydłużony czas realizacji')) &
-            (product_df['series'] != '')
-        )
+        try:
+            price_df = self.gsheets_worksheets.get_data('Bewood', include_row_numbers=False)
 
-        product_df = product_df[product_mask]
+            product_mask = (
+                (product_df['producer'] == 'Bewood') &
+                (product_df['gauge'].str.contains('Wydłużony czas realizacji')) &
+                (product_df['series'] != '')
+            )
 
-        bewood_product_df = pd.merge(
-                    product_df,
-                    price_df,
-                    left_on='series',
-                    right_on='Seria',
-                    how='left'
-        )
+            product_df = product_df[product_mask]
 
-        print(bewood_product_df)
-        bewood_product_df.to_excel('xd.xlsx')
+            bewood_product_df = pd.merge(
+                        product_df,
+                        price_df,
+                        left_on='series',
+                        right_on='Seria',
+                        how='left'
+            )
+
+            print(bewood_product_df)
+
+            bewood_product_df['COGS'] = bewood_product_df['Cena zakupu netto'].astype(str).str.replace(',', '.') + ' PLN'
+            bewood_product_df = bewood_product_df[['product_id', 'COGS', 'Cena zakupu netto']]
+
+            for _, row in tqdm(bewood_product_df.iterrows(), total=len(bewood_product_df), desc="Updating Bewood drop products", unit=" product"):
+                self.shoper_products.update_product_by_code(row['product_id'], 
+                                                            attributes={config.COST_OF_GOODS_SOLD['id']: row['COGS']},
+                                                            stock={'price_buying': row['Cena zakupu netto']})
+        except Exception as e:
+            print(f'❌ Failed to upload Bewood Drop COGS: {e}')
+
+    def import_grizz_dropshipping_prices_to_shoper(self, product_df):
+
+        try:
+            product_mask = (
+                (product_df['producer'] == 'GrizzProtector') &
+                (product_df['gauge'].str.contains('Wydłużony czas realizacji'))
+            )
+
+            product_df = product_df[product_mask].copy()
+
+            print(product_df)
+            product_df['price'] = product_df['price'].astype(float)
+            product_df['bought_net_price'] = product_df['price'].map(lambda price: round((price * 0.68) / 1.23, 2))
+            product_df['COGS'] = product_df['bought_net_price'].astype(str).str.replace(',', '.') + ' PLN'
+
+            product_df = product_df[['product_id', 'COGS', 'bought_net_price']]
+            product_df.to_excel('grizz.xlsx', index=False)
+
+            for _, row in tqdm(product_df.iterrows(), total=len(product_df), desc="Updating Grizz drop products", unit=" product"):
+                self.shoper_products.update_product_by_code(row['product_id'], 
+                                                            attributes={config.COST_OF_GOODS_SOLD['id']: row['COGS']},
+                                                            stock={'price_buying': row['bought_net_price']})
+
+        except Exception as e:
+            print(f'❌ Failed to upload Grizz Drop COGS: {e}')
+
+    @staticmethod
+    def clean_excel_string(value):
+        if isinstance(value, str):
+            return re.sub(r"[\x00-\x1F\x7F-\x9F]", "", value)
+        return value
+
+    def export_to_excel(self, df):
+        df_clean = df.applymap(self.clean_excel_string)
+        df_clean.to_excel('xd.xlsx')
+
+    def import_grizz_local_prices_to_shoper(self, product_df):
+        
+        subiekt_products = self.subiekt_products.get_products(self.subiekt_client.database_2025)
+        subiekt_products_df = pd.DataFrame(subiekt_products)
+        subiekt_products_df = subiekt_products_df.applymap(self.clean_excel_string)
+
+        subiekt_products_df.to_excel('xd.xlsx')
+        
+
+        # try:
+        #     product_mask = (
+        #         (product_df['producer'] == 'GrizzProtector') &
+        #         (~product_df['gauge'].str.contains('Wydłużony czas realizacji'))
+        #     )
+
+        #     product_df = product_df[product_mask].copy()
+
+        #     print(product_df)
+        #     product_df['price'] = product_df['price'].astype(float)
+        #     product_df['bought_net_price'] = product_df['price'].map(lambda price: round((price * 0.68) / 1.23, 2))
+        #     product_df['COGS'] = product_df['bought_net_price'].astype(str).str.replace(',', '.') + ' PLN'
+
+        #     product_df = product_df[['product_id', 'COGS', 'bought_net_price']]
+        #     product_df.to_excel('grizz.xlsx', index=False)
+
+        #     for _, row in tqdm(product_df.iterrows(), total=len(product_df), desc="Updating Grizz drop products", unit=" product"):
+        #         self.shoper_products.update_product_by_code(row['product_id'], 
+        #                                                     attributes={config.COST_OF_GOODS_SOLD['id']: row['COGS']},
+        #                                                     stock={'price_buying': row['bought_net_price']})
+
+        # except Exception as e:
+        #     print(f'❌ Failed to upload Grizz Drop COGS: {e}')

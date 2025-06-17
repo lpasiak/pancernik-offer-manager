@@ -66,10 +66,10 @@ class BundleManager:
                 final_images = []
                 
                 for image in source_images:
-                    image_id = f"{image['gfx_id']}.{image['extension']}"
+                    image_path = f"{image['unic_name']}.{image['extension']}"
 
                     image_item = {
-                        'url': f"{config.SHOPER_SITE_URL}/userdata/public/gfx/{image_id}",
+                        'url': f"{config.SHOPER_SITE_URL}/userdata/public/gfx/{image_path}",
                         'main': str(image['main']),
                         'order': image['order'],
                         'name': image['translations']['pl_PL']['name']

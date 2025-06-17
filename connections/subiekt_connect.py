@@ -8,8 +8,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class SubiektClient:
 
-    def __init__(self, credentials):
-        self.credentials = credentials
+    def __init__(self):
+        self.credentials = config.DOMAIN_CREDENTIALS
         self.session = requests.Session()
         self.token = None
         self.allowed_databases = None

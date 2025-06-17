@@ -237,7 +237,7 @@ class OutletProduct:
         site_url = config.SHOPER_SITE_URL
         
         for image in source_images:
-            image_id = f"{image['gfx_id']}.{image['extension']}"
+            image_id = f"{image['unic_name']}.{image['extension']}"
 
             image_item = {
                 'product_id': new_product_id,
