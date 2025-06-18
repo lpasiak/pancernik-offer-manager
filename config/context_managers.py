@@ -8,6 +8,7 @@ Z czym dziś chcesz pracować?
 4. Shopify
 5. IdoSell
 6. Allegro
+7. Google
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))
@@ -80,6 +81,14 @@ def context_menu_allegro():
     menu_text = """--------------------------------
 Co chcesz zrobić?
 1. Test
+q żeby wyjść.
+Akcja: """
+    return str(input(menu_text))
+
+def context_menu_google():
+    menu_text = """--------------------------------
+Co chcesz zrobić?
+1. Zaimportować COGS-a
 q żeby wyjść.
 Akcja: """
     return str(input(menu_text))

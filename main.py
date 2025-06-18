@@ -1,10 +1,11 @@
 import orchestrators.outlet_orchestrator as outlet
 import orchestrators.export_orchestrator as export
 import orchestrators.promo_orchestrator as promo
+import orchestrators.cogs_orchestrator as cogs
+
 from bundle_manager.bundle_manager import BundleManager
 from connections.shopify.products import ShopifyProducts
-from connections.shopify_connect import ShopifyAPIClient
-from connections import AllegroAPIClient
+from connections import AllegroAPIClient, ShopifyAPIClient
 from connections.allegro.offers import AllegroOffers
 from idosell_manager.idosell_manager import IdoSellManager
 import config
@@ -177,7 +178,7 @@ def main():
             else:
                 print('Nie ma takiego wyboru :/')
 
-        # ----- IdoSell manager ------ #
+        # ----- Allegro manager ------ #
         elif action == '6':
             action = config.context_menu_allegro()
             allegro_client = AllegroAPIClient()
@@ -194,6 +195,19 @@ def main():
             else:
                 print('Nie ma takiego wyboru :/')
 
+        # ----- Google Feed manager ------ #
+        elif action == '7':
+            action = config.context_menu_google()
+
+            if action == '1':
+                cogs.update_missing_cogs()
+            
+            elif action.lower() == 'q':
+                print('Do zobaczenia!')
+                break
+
+            else:
+                print('Nie ma takiego wyboru :/')
         # Exit the program
         elif action.lower() == 'q':
             print('Do zobaczenia!')
