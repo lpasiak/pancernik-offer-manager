@@ -43,7 +43,7 @@ def main():
                 # Export IdoSell products
                 export.run_idosell_exporter()
 
-            elif action =='7':
+            elif action == '7':
                 # Export Shoper Beautiful Products
                 export.run_shoper_bautiful_products_exporter()
                 
@@ -208,6 +208,7 @@ def main():
 
             else:
                 print('Nie ma takiego wyboru :/')
+                
         # Exit the program
         elif action.lower() == 'q':
             print('Do zobaczenia!')
