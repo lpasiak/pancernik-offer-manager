@@ -42,7 +42,7 @@ REDIRECT_TARGET_OUTLET_URL = '/outlet'
 # Shoper SITE - can be either TEST (development) or MAIN (deployment)
 # Allegro SITE - can be either SANDBOX (development) or MAIN (deployment)
 SITE = 'MAIN'
-ALLEGRO_SITE = 'SANDBOX'
+ALLEGRO_SITE = 'MAIN'
 
 SHOPER_SITE_URL = os.getenv(f'SHOPER_SITE_URL_{SITE}')
 SHOPER_LOGIN = os.getenv(f'SHOPER_LOGIN_{SITE}')
