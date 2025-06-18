@@ -18,6 +18,8 @@ class GoogleCostOfGoodsSold:
         self.shoper_products = None
         self.gsheets_worksheets = None
         
+        self.subiekt_pancernik_2025 = None
+        
     def connect(self):
         """Initialize all necessary connections"""
         try:
@@ -41,6 +43,8 @@ class GoogleCostOfGoodsSold:
             self.subiekt_client = SubiektClient()
             self.subiekt_client.connect()
             self.subiekt_products = SubiektProducts(self.subiekt_client)
+
+            self.subiekt_pancernik_2025 = pd.DataFrame(self.subiekt_products.get_products(self.subiekt_client.database_2025))
             return True
             
         except Exception as e:
@@ -131,8 +135,6 @@ class GoogleCostOfGoodsSold:
                         how='left'
             )
 
-            print(bewood_product_df)
-
             bewood_product_df['COGS'] = bewood_product_df['Cena zakupu netto'].astype(str).str.replace(',', '.') + ' PLN'
             bewood_product_df = bewood_product_df[['product_id', 'COGS', 'Cena zakupu netto']]
 
@@ -153,13 +155,11 @@ class GoogleCostOfGoodsSold:
 
             product_df = product_df[product_mask].copy()
 
-            print(product_df)
             product_df['price'] = product_df['price'].astype(float)
             product_df['bought_net_price'] = product_df['price'].map(lambda price: round((price * 0.68) / 1.23, 2))
             product_df['COGS'] = product_df['bought_net_price'].astype(str).str.replace(',', '.') + ' PLN'
 
             product_df = product_df[['product_id', 'COGS', 'bought_net_price']]
-            product_df.to_excel('grizz.xlsx', index=False)
 
             for _, row in tqdm(product_df.iterrows(), total=len(product_df), desc="Updating Grizz drop products", unit=" product"):
                 self.shoper_products.update_product_by_code(row['product_id'], 
@@ -169,45 +169,34 @@ class GoogleCostOfGoodsSold:
         except Exception as e:
             print(f'❌ Failed to upload Grizz Drop COGS: {e}')
 
-    @staticmethod
-    def clean_excel_string(value):
-        if isinstance(value, str):
-            return re.sub(r"[\x00-\x1F\x7F-\x9F]", "", value)
-        return value
-
-    def export_to_excel(self, df):
-        df_clean = df.applymap(self.clean_excel_string)
-        df_clean.to_excel('xd.xlsx')
-
     def import_grizz_local_prices_to_shoper(self, product_df):
         
-        subiekt_products = self.subiekt_products.get_products(self.subiekt_client.database_2025)
-        subiekt_products_df = pd.DataFrame(subiekt_products)
-        subiekt_products_df = subiekt_products_df.applymap(self.clean_excel_string)
+        price_df = pd.DataFrame(self.subiekt_pancernik_2025)
 
-        subiekt_products_df.to_excel('xd.xlsx')
-        
+        try:
+            product_mask = (
+                (product_df['producer'] == 'GrizzProtector') &
+                (~product_df['gauge'].str.contains('Wydłużony czas realizacji'))
+            )
 
-        # try:
-        #     product_mask = (
-        #         (product_df['producer'] == 'GrizzProtector') &
-        #         (~product_df['gauge'].str.contains('Wydłużony czas realizacji'))
-        #     )
+            product_df = product_df[product_mask].copy()
 
-        #     product_df = product_df[product_mask].copy()
+            grizz_local_products = pd.merge(
+                product_df,
+                price_df,
+                left_on='code',
+                right_on='sku',
+                how='left'
+            )
+            grizz_local_products['bought_net_price'] = grizz_local_products['tw_Pole1'].astype(str).str.replace(',', '.')
+            grizz_local_products['COGS'] = grizz_local_products['bought_net_price'].astype(str).str.replace(',', '.') + ' PLN'
 
-        #     print(product_df)
-        #     product_df['price'] = product_df['price'].astype(float)
-        #     product_df['bought_net_price'] = product_df['price'].map(lambda price: round((price * 0.68) / 1.23, 2))
-        #     product_df['COGS'] = product_df['bought_net_price'].astype(str).str.replace(',', '.') + ' PLN'
+            grizz_local_products = grizz_local_products[['product_id', 'COGS', 'bought_net_price']]
 
-        #     product_df = product_df[['product_id', 'COGS', 'bought_net_price']]
-        #     product_df.to_excel('grizz.xlsx', index=False)
+            for _, row in tqdm(grizz_local_products.iterrows(), total=len(grizz_local_products), desc="Updating Grizz local products", unit=" product"):
+                self.shoper_products.update_product_by_code(row['product_id'], 
+                                                            attributes={config.COST_OF_GOODS_SOLD['id']: row['COGS']},
+                                                            stock={'price_buying': row['bought_net_price']})
 
-        #     for _, row in tqdm(product_df.iterrows(), total=len(product_df), desc="Updating Grizz drop products", unit=" product"):
-        #         self.shoper_products.update_product_by_code(row['product_id'], 
-        #                                                     attributes={config.COST_OF_GOODS_SOLD['id']: row['COGS']},
-        #                                                     stock={'price_buying': row['bought_net_price']})
-
-        # except Exception as e:
-        #     print(f'❌ Failed to upload Grizz Drop COGS: {e}')
+        except Exception as e:
+            print(f'❌ Failed to upload Grizz Local COGS: {e}')
