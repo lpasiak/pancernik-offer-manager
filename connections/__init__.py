@@ -7,3 +7,5 @@ from .easystorage_connect import EasyStorageClient
 from .subiekt_connect import SubiektClient
 from .idosell_connect import IdoSellAPIClient
 from .allegro_connect import AllegroAPIClient
+from .ebay_connect import EbayAPIClient
+from .openai_connect import OpenAIClient

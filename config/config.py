@@ -14,6 +14,9 @@ ENV_FILE = ROOT_DIR / 'credentials' / 'env'
 # Load environment variables from .env file
 load_dotenv(ENV_FILE)
 
+# OpenAI
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
 # Mailer
 GOOGLE_EMAIL_SENDER = os.getenv('GOOGLE_EMAIL_SENDER')
 GOOGLE_EMAIL_PASSWORD = os.getenv('GOOGLE_EMAIL_PASSWORD')
