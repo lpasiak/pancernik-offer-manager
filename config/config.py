@@ -77,6 +77,14 @@ ALLEGRO_CLIENT_ID = os.getenv(f'ALLEGRO_CLIENT_ID_{ALLEGRO_SITE}')
 ALLEGRO_API_URL = os.getenv(f'ALLEGRO_API_URL_{ALLEGRO_SITE}')
 ALLEGRO_API_VERSION = 'application/vnd.allegro.public.v1+json'
 
+# Ebay API
+
+EBAY_API_TOKEN = os.getenv('EBAY_API_TOKEN')
+EBAY_SANDBOX_API_TOKEN = os.getenv('EBAY_SANDBOX_API_TOKEN')
+
+EBAY_CLIENT_ID = os.getenv('EBAY_CLIENT_ID')
+EBAY_SANDBOX_CLIENT_ID = os.getenv('EBAY_SANDBOX_CLIENT_ID')
+
 # Easystorage and Subiekt API
 DOMAIN_CREDENTIALS = {
     'username': os.getenv('DOMAIN_LOGIN'),
