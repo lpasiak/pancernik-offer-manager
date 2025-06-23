@@ -6,11 +6,17 @@ class EbayProducts:
     def __init__(self, client):
         self.client = client
 
-    def get_product_listing(self):
-        response = self.client.session.request('GET', 
-                                               'https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item?limit=2&offset=0'
+    def get_product_listing(self, limit=1, offset=0):
+        try:
+            endpoint = "https://api.ebay.com/sell/inventory/v1/inventory_item"
+            params = {
+                "limit": limit,
+                "offset": offset
+            }
 
-        )
-        print(response)
-        print(response.text)
-        print(response.json)
+            response = self.client.session.get(endpoint, params=params)
+            print(response.text)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            print(f'Error in eBay get_product_listing: {e}')
