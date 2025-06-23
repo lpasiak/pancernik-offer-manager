@@ -20,8 +20,8 @@ class OutletEmailSender:
         self.attributes = kwargs.get('attributes', 0)
         self.category_attributes = kwargs.get('category_attributes', 0)
         self.errors = kwargs.get('errors', 0)
-        self.logs = kwargs.get('operation_logs', '')
         self.outlet_logger = get_outlet_logger().get_logger()
+
 
     def send_emails(self):
 
@@ -47,10 +47,21 @@ class OutletEmailSender:
                     deactivated = self.deactivated_products,
                     attributes = self.attributes,
                     category_attributes = self.category_attributes,
-                    errors = self.errors,
-                    operation_logs=self.logs)
+                    errors = self.errors)
                 
                 msg.add_alternative(html_content, subtype='html')
+
+                try:
+                    log_file_path = get_outlet_logger().log_path
+                    log_filename = get_promo_logger().log_filename
+
+                    with open(log_file_path, 'rb') as f:
+                        file_data = f.read()
+
+                    msg.add_attachment(file_data, maintype='application', subtype='octet-stream', filename=log_filename)
+
+                except Exception as e:
+                    print(f'❌ Failed to attach log file: {e}')
 
                 # Send the email
                 with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
@@ -106,11 +117,22 @@ class PromoEmailSender:
                     removed_promo_allegro = self.removed_promo_allegro,
                     ommited_promo_allegro_early = self.ommited_promo_allegro_early,
                     discounts_failed = self.discounts_failed,
-                    errors = self.errors,
-                    operation_logs=self.logs)
+                    errors = self.errors)
                 
                 msg.add_alternative(html_content, subtype='html')
 
+                try:
+                    log_file_path = get_promo_logger().log_path
+                    log_filename = get_promo_logger().log_filename
+
+                    with open(log_file_path, 'rb') as f:
+                        file_data = f.read()
+                        
+                    msg.add_attachment(file_data, maintype='application', subtype='octet-stream', filename=log_filename)
+
+                except Exception as e:
+                    print(f'❌ Failed to attach log file: {e}')
+                
                 # Send the email
                 with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
                     smtp.ehlo()

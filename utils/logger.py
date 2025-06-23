@@ -19,10 +19,11 @@ class Logger:
         self.memory_handler = logging.StreamHandler(self.log_stream)
         self.memory_handler.setFormatter(HTMLFormatter('%(asctime)s - %(levelname)s - %(message)s'))
         self.logger.addHandler(self.memory_handler)
+        self.log_filename = log_filename
 
         os.makedirs(log_dir, exist_ok=True)
 
-        self.log_path = os.path.join(config.LOGGING_DIR, log_filename)
+        self.log_path = os.path.join(config.LOGGING_DIR, self.log_filename)
 
         self._setup_handler()
 

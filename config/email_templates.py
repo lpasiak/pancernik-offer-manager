@@ -32,19 +32,6 @@ EMAIL_STYLING = """
           font-size: 14px;
           color: #999;
         }
-        .logs p {
-          font-family: monospace;
-          font-size: 12px;
-          margin: 0.5rem 0;
-        }
-        .logs {
-          background-color: white;
-          border-radius: 8px;
-          padding: 30px;
-          max-width: 800px;
-          margin: auto;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
       </style>
 """
 
@@ -58,8 +45,7 @@ def render_outlet_email_template(
         deactivated,
         attributes,
         category_attributes,
-        errors,
-        operation_logs=''):
+        errors):
     return f"""
     <!DOCTYPE html>
     <html>
@@ -80,12 +66,8 @@ def render_outlet_email_template(
         <p>🗃️ Liczba kategorii z <strong>podpiętymi grupami atrybutów</strong>: <strong>{category_attributes}</strong></p>
         <p><strong>Liczba znalezionych błędów: {errors}</strong></p>
         <div class="footer">
-          <em>Poniżej znajdują się logi operacji. Polecam w nie zajrzeć jeżeli wystąpiły błędy.</em>
+          <em>W załączniku znajdują się logi operacji. Polecam w nie zajrzeć jeżeli wystąpiły błędy.</em>
         </div>
-      </div>
-      <div class="logs">
-        <h2>Logi operacji</h2>
-        {operation_logs}
       </div>
     </body>
     </html>
@@ -97,8 +79,7 @@ def render_promo_email_template(
         removed_promo_allegro=0,
         ommited_promo_allegro_early=0,
         discounts_failed=0,
-        errors=0,
-        operation_logs=''):
+        errors=0):
     return f"""
     <!DOCTYPE html>
     <html>
@@ -115,12 +96,8 @@ def render_promo_email_template(
         <p>🏷️ <strong>Usunięte</strong> promocje: <strong>{removed_promo_allegro}</strong></p>
         <p><strong>Liczba znalezionych błędów: {errors}</strong></p>
         <div class="footer">
-          <em>Poniżej znajdują się logi operacji. Polecam w nie zajrzeć jeżeli wystąpiły błędy</em>
+          <em>W załączniku znajdują się logi operacji. Polecam w nie zajrzeć jeżeli wystąpiły błędy</em>
         </div>
-      </div>
-      <div class="logs">
-        <h2>Logi operacji</h2>
-        {operation_logs}
       </div>
     </body>
     </html>
