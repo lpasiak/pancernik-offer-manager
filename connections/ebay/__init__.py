@@ -1,1 +1,1 @@
-from .products import EbayProducts
+from .inventory import EbayInventory

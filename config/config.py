@@ -78,9 +78,9 @@ ALLEGRO_API_URL = os.getenv(f'ALLEGRO_API_URL_{ALLEGRO_SITE}')
 ALLEGRO_API_VERSION = 'application/vnd.allegro.public.v1+json'
 
 # Ebay API
-EBAY_API_TOKEN = os.getenv('EBAY_API_TOKEN')
 EBAY_CLIENT_ID = os.getenv('EBAY_CLIENT_ID')
 EBAY_CLIENT_SECRET = os.getenv('EBAY_CLIENT_SECRET')
+EBAY_DEV_ID = os.getenv('EBAY_DEV_ID')
 EBAY_REDIRECT_URI = os.getenv('EBAY_REDIRECT_URI')
 
 # Easystorage and Subiekt API

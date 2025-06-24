@@ -7,6 +7,18 @@ import webbrowser
 import requests
 import config
 
+# Different APIs use different Authentication methods. 
+# EbayAPIClient is built with RESTful InventoryAPI in mind, 
+# whereas there are still eBay APIs that use older authentication
+# methods - e.g. TradingAPI :((
+
+
+class EbayTradingAPIClient:
+    def __init__(self):
+        pass
+
+
+
 
 class EbayAPIClient:
     def __init__(self):
@@ -15,7 +27,7 @@ class EbayAPIClient:
         self.session = requests.Session()
 
     def connect(self):
-        self.oauth = EbayOAuthClient(
+        self.oauth = EbayOAuthTokenClient(
             client_id=config.EBAY_CLIENT_ID,
             client_secret=config.EBAY_CLIENT_SECRET,
             redirect_uri=config.EBAY_REDIRECT_URI
@@ -27,7 +39,8 @@ class EbayAPIClient:
             "Content-Type": "application/json"
         })
 
-class EbayOAuthClient:
+
+class EbayOAuthTokenClient:
     AUTH_URL = 'https://auth.ebay.com/oauth2/authorize'
     TOKEN_URL = 'https://api.ebay.com/identity/v1/oauth2/token'
     API_SCOPE = 'https://api.ebay.com/oauth/api_scope/sell.inventory'
@@ -76,7 +89,11 @@ class EbayOAuthClient:
 
         token_data = response.json()
         self.access_token = token_data['access_token']
-        self.refresh_token = token_data['refresh_token']
+        self.refresh_token = token_data.get('refresh_token')
+
+        if not self.refresh_token:
+            print("Warning: No refresh_token received. You will have to re-authenticate manually after the token expires.")
+
         self.save_tokens(token_data)
         return token_data
 
@@ -126,14 +143,21 @@ class EbayOAuthClient:
         token_data = self.load_tokens()
         if token_data:
             self.access_token = token_data['access_token']
-            self.refresh_token = token_data['refresh_token']
+            self.refresh_token = token_data.get('refresh_token', 0)
             if self.is_token_expired(token_data):
-                print('Access token expired. Refreshing...')
-                self.refresh_access_token()
+                if self.refresh_token == 0:
+                    print('Access token expired. Refreshing...')
+                    self.refresh_access_token()
+                else:
+                    print('Access token expired and no refresh token available. Manual re-authentication required.')
+                    self.manual_auth_flow()
 
         else:
             print('No saved token. Manual authorization required.')
-            self.open_authorization_url()
-            raw_code = input('Paste your auth code from the URL: ')
-            auth_code = urllib.parse.unquote(raw_code)
-            self.exchange_code_for_token(auth_code)
+            self.manual_auth_flow()
+
+    def manual_auth_flow(self):
+        self.open_authorization_url()
+        raw_code = input('Paste your auth code from the URL: ')
+        auth_code = urllib.parse.unquote(raw_code)
+        self.exchange_code_for_token(auth_code)
