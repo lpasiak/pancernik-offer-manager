@@ -168,35 +168,3 @@ class GoogleCostOfGoodsSold:
 
         except Exception as e:
             print(f'❌ Failed to upload Grizz Drop COGS: {e}')
-
-    def import_grizz_local_prices_to_shoper(self, product_df):
-        
-        price_df = pd.DataFrame(self.subiekt_pancernik_2025)
-
-        try:
-            product_mask = (
-                (product_df['producer'] == 'GrizzProtector') &
-                (~product_df['gauge'].str.contains('Wydłużony czas realizacji'))
-            )
-
-            product_df = product_df[product_mask].copy()
-
-            grizz_local_products = pd.merge(
-                product_df,
-                price_df,
-                left_on='code',
-                right_on='sku',
-                how='left'
-            )
-            grizz_local_products['bought_net_price'] = grizz_local_products['tw_Pole1'].astype(str).str.replace(',', '.')
-            grizz_local_products['COGS'] = grizz_local_products['bought_net_price'].astype(str).str.replace(',', '.') + ' PLN'
-
-            grizz_local_products = grizz_local_products[['product_id', 'COGS', 'bought_net_price']]
-
-            for _, row in tqdm(grizz_local_products.iterrows(), total=len(grizz_local_products), desc="Updating Grizz local products", unit=" product"):
-                self.shoper_products.update_product_by_code(row['product_id'], 
-                                                            attributes={config.COST_OF_GOODS_SOLD['id']: row['COGS']},
-                                                            stock={'price_buying': row['bought_net_price']})
-
-        except Exception as e:
-            print(f'❌ Failed to upload Grizz Local COGS: {e}')
