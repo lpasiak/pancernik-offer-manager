@@ -32,7 +32,7 @@ PROMO_MAIL_RECIPIENT_LIST = [email.strip() for email in PROMO_MAIL_RECIPIENTS.sp
 SHEETS_DIR = ROOT_DIR / 'sheets'
 LOGGING_DIR = ROOT_DIR / 'logging'
 
-DRIVE_EXPORT_DIR = r'H:\Pansernik\Eksporty' if os.path.exists('H:') else ROOT_DIR
+DRIVE_EXPORT_DIR = r'W:\Pansernik\Eksporty' if os.path.exists('W:') else ROOT_DIR
 
 TODAY = datetime.today().strftime('%d-%m-%Y')
 TODAY_PD = pd.Timestamp.today()

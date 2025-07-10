@@ -6,16 +6,16 @@ from lxml import etree
 url = "https://mobiwear.pl/data/export/feed10024_136da4b82a149cf3d9c16964.xml"
 file_path = f'{config.SHEETS_DIR}/mobiwear.xml'
 
-# def download_xml_file(path, url):
-#     response = requests.get(url)
-#     if response.status_code == 200:
-#         with open(path, "wb") as f:
-#             f.write(response.content)
-#         print("File downloaded and saved as downloaded_file.xml")
-#     else:
-#         print(f"Failed to download file. Status code: {response.status_code}")
+def download_xml_file(path, url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(path, "wb") as f:
+            f.write(response.content)
+        print("File downloaded and saved as downloaded_file.xml")
+    else:
+        print(f"Failed to download file. Status code: {response.status_code}")
         
-# download_xml_file(file_path, url)
+download_xml_file(file_path, url)
 
 tree = etree.parse(file_path)
 root = tree.getroot()

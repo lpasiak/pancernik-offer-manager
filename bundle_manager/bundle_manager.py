@@ -48,6 +48,7 @@ class BundleManager:
 
         df_sku = self.gsheets_worksheets.get_data(sheet_name=config.BUNDLE_SHEET_NAME, include_row_numbers=True)
         df_sku['Case SKU'] = df_sku['SKU'].str.split('_').str[0]
+        df_sku = df_sku[df_sku['Zdjęcia od etui'].isna() | (df_sku['Zdjęcia od etui'] == '')]
 
         gsheets_updates = []
 
@@ -56,6 +57,9 @@ class BundleManager:
         for index, row in tqdm(df_sku.iterrows(), total=number_of_products, desc="Processing images", unit=' image'):
             try:
                 product = self.shoper_products.get_product_by_code(identifier=row['Case SKU'], use_code=True, pictures=True)
+
+                if not isinstance(product, dict):
+                    continue
 
                 if not product.get('img'):
                     continue
