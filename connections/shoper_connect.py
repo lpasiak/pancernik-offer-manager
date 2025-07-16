@@ -20,14 +20,12 @@ class ShoperAPIClient:
 
             if response.status_code == 429:
                 retry_after = int(response.headers.get('Retry-After', 1))
-                print(f"429 Too Many Requests. Retrying after {retry_after} seconds...")
                 time.sleep(retry_after)
                 attempt += 1
                 continue
 
             elif response.status_code in {500, 502, 503, 504}:
                 wait = backoff_factor ** attempt
-                print(f"{response.status_code} Server Error. Retrying in {wait:.1f} seconds...")
                 time.sleep(wait)
                 attempt += 1
                 continue
